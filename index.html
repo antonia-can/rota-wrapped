@@ -111,12 +111,13 @@ footer a{color:var(--pale)}
   <label>Volunteer Inactivity report<input type="text" id="r_inactivity"></label>
   </details>
 
-  <h3>Varah font in Three Rings Files (optional)</h3>
-  <p class="hint">Links to the four font files uploaded to your branch's Three Rings Files, visible to volunteers only. Without them the dashboard uses Calibri.</p>
+  <details><summary class="hint" style="margin-top:18px;cursor:pointer">Varah font (already filled in: put the four Varah files in a Filestore folder called <b>Rota Wrapped</b>, visible to your volunteers)</summary>
+  <p class="hint">The button fetches the font from your branch's Three Rings Filestore with the user's own login. If the files aren't there, the dashboard uses Calibri.</p>
   <label>Varah Regular<input type="text" id="f_Regular"></label>
   <label>Varah Bold<input type="text" id="f_Bold"></label>
   <label>Varah Italic<input type="text" id="f_Italic"></label>
   <label>Varah Bold Italic<input type="text" id="f_BoldItalic"></label>
+  </details>
 
   <button class="action" id="make" type="button">Make the set-up link</button>
   <div class="out hidden" id="out">
@@ -181,6 +182,7 @@ const DEFAULTS = {rota: "/stats/export_rotas.json?start_date={start}&end_date={e
   roles: "/stats/roles.csv", closures: "/stats/shift_closures.csv?start_date={start}&end_date={end}",
   inactivity: "/stats/vol_inactivity.csv?start_date={start}&end_date={end}"};
 const REPORTS = ["rota", "directory", "roles", "closures", "inactivity"], FACES = ["Regular", "Bold", "Italic", "BoldItalic"];
+const FONT_DEFAULT = f => `/filestore/Rota%20Wrapped/Varah-${f}.otf?cmd=download`;
 
 const enc = o => btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(o)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 const dec = s => JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0))));
@@ -201,7 +203,7 @@ function buttonCode(cfg) {
 function readForm() {
   const cfg = {branch: $("branch").value.trim(), since: $("since").value, holidays: $("holidays").checked, reports: {}, fonts: []};
   for (const k of REPORTS) { const v = toPattern($("r_" + k).value) || DEFAULTS[k] || ""; if (v) cfg.reports[k] = v; }
-  for (const f of FACES) { const v = $("f_" + f).value.trim(); if (v) cfg.fonts.push([f, toPattern(v)]); }
+  for (const f of FACES) { const v = $("f_" + f).value.trim() || FONT_DEFAULT(f); cfg.fonts.push([f, toPattern(v)]); }
   return cfg;
 }
 function fillForm(cfg) {
@@ -210,6 +212,7 @@ function fillForm(cfg) {
   for (const [f, u] of cfg.fonts || []) if ($("f_" + f)) $("f_" + f).value = u;
 }
 for (const k of REPORTS) $("r_" + k).value = DEFAULTS[k];
+for (const f of FACES) $("f_" + f).value = FONT_DEFAULT(f);
 
 $("make").addEventListener("click", () => {
   const cfg = readForm();
