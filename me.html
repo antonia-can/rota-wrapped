@@ -218,7 +218,7 @@ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   <h1>My Rota Wrapped</h1>
   <p>Your own listening contribution, built from Three Rings with your own login. Nothing is stored or sent anywhere.</p>
   <div class="fetching hidden" id="fetching"><b>Fetching your shifts from Three Rings…</b> <span id="fbTime"></span>
-    <ul class="fbList" id="fbList"></ul><p id="fbNote">This usually takes a few seconds. Keep the Three Rings tab open.</p></div>
+    <ul class="fbList" id="fbList"></ul><p id="fbNote">This generally takes a couple of minutes, so don't worry if it seems slow. Keep the Three Rings tab open until your report appears.</p></div>
   <div id="notFromButton">
     <p style="margin-top:14px">Open this page with the <b>My Rota Wrapped</b> button while you're logged in to Three Rings.</p>
     <label class="drop">Or, if the button gave you a data file, drop it here<input type="file" id="bundleFile" accept=".json"></label>
@@ -510,8 +510,9 @@ if (/from-three-rings/.test(location.hash) && window.opener) {
   let got = false, secs = 0, heard = false;
   const tick = setInterval(() => {
     if (got) { clearInterval(tick); return; }
-    secs++; $("fbTime").textContent = `${secs} seconds so far.`;
-    if (secs === 15) $("fbNote").textContent = "Still working. Please keep both tabs open.";
+    secs++; $("fbTime").textContent = `${secs < 60 ? secs + " seconds" : Math.floor(secs / 60) + " min " + String(secs % 60).padStart(2, "0") + " sec"} so far.`;
+    if (secs === 60) $("fbNote").textContent = "Still working. This generally takes a couple of minutes, so please keep both tabs open.";
+    if (secs === 300) $("fbNote").textContent = "This is taking longer than usual. Check the Three Rings tab for a message, or close this tab and click the button again.";
     if (secs === 25 && !heard) $("fbNote").textContent = "The Three Rings tab hasn't replied yet. Check it for a message, and make sure you're still logged in.";
   }, 1000);
   window.addEventListener("message", e => {
