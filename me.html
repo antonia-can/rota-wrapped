@@ -422,7 +422,7 @@ function render(r) {
   const ring = pct == null ? 0 : Math.min(pct, 100);
   const showNights = !!CFG.nightEvery;
   const upcoming = r.future.slice(0, 4);
-  const leading = r.isLeader || r.ledPast.length;
+  const leading = r.isLeader;   // only people with the Shift Leaders role see the leading tile
   const leaveText = r.leave.filter(([s, e]) => e >= r.own && s <= r.today).map(([s, e]) => `${short(Math.max(s, r.own))} to ${e > r.today + 3000 ? "no end date" : short(e)}`).join(", ");
 
   $("report").innerHTML = `
