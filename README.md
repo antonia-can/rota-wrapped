@@ -15,6 +15,10 @@ This repository holds code only. It contains no branch or volunteer data, and th
 
 If the dashboard tab can't receive the data, the button offers it as a single file, which can be dropped into the dashboard by hand.
 
+## My Rota Wrapped
+
+A second button gives every volunteer their own contribution report: hours given against the branch expectation (with leave of absence taken out), month by month, usual days and times, overnights due, booked shifts, leading and milestones. It works out who is logged in from the Three Rings page and reads only that person's Directory record and availability, plus the shift list Three Rings already shows them. It never shows anyone else's details.
+
 ## Three Rings
 
 The button follows the Three Rings guidance for bookmarklets: it uses the person's own session and makes fewer than ten requests per click, well within the limit of 30 a minute.
@@ -26,5 +30,6 @@ The Samaritans Varah font is licensed for Samaritans use. The `fonts` folder hol
 ## Files
 
 - `index.html`: the set-up form and install instructions
-- `dashboard.html`: the dashboard
+- `dashboard.html`: the branch dashboard
+- `me.html`: My Rota Wrapped, the personal report
 - `fonts/`: the Varah font, encrypted

@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Rota Wrapped</title>
+<style>
+
+
+:root{--primary:#84BD00;--green:#00A862;--teal:#00A589;--petrol:#115E67;--pale:#B6D8A3;--navy:#004455;--yellow:#FECB4E;--orange:#EC6D36;--paper:#f3f7ee;--white:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-snap-type:y proximity;scroll-behavior:smooth}
+body{font-family:Varah,Calibri,"Segoe UI",Arial,sans-serif;background:var(--navy);color:var(--white);-webkit-font-smoothing:antialiased}
+main{max-width:980px;margin:0 auto;padding:16px}
+.demo{position:sticky;top:0;z-index:5;background:var(--yellow);color:var(--navy);text-align:center;font-weight:700;padding:8px 16px;font-size:14px}
+.card{position:relative;overflow:hidden;min-height:88vh;border-radius:6px;padding:48px 40px;margin:0 0 16px;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center}
+
+/* Section labels echo the notched title bars in the brand guide */
+.kicker{position:relative;align-self:flex-start;display:inline-block;font-weight:700;font-size:15px;padding:7px 14px 8px;margin-bottom:22px;background:var(--primary);color:var(--navy)}
+.kicker::after{content:"";position:absolute;right:6px;bottom:-9px;width:4px;height:12px;background:inherit}
+.kicker::before{content:"";position:absolute;left:10px;top:-7px;width:4px;height:10px;background:inherit}
+
+h1{font-size:clamp(56px,11vw,124px);line-height:.95;font-weight:700;letter-spacing:-.02em}
+h2{font-size:clamp(30px,5vw,50px);line-height:1.08;font-weight:700;letter-spacing:-.01em;margin-bottom:18px}
+h3{font-size:22px;font-weight:700;margin-bottom:12px}
+.sub{font-size:19px;max-width:580px;margin-bottom:18px}
+.lead{font-size:clamp(20px,3vw,28px);margin-bottom:26px}
+.big{font-size:clamp(96px,20vw,200px);font-weight:700;line-height:.9;letter-spacing:-.04em}
+.caveat{margin-top:26px;font-size:16px;background:rgba(0,0,0,.2);padding:12px 16px;border-radius:4px;max-width:620px}
+
+.cover{background:var(--navy);color:var(--white)}
+.cover .logo{height:72px;width:auto;align-self:flex-start;margin-bottom:44px;position:relative;z-index:2}
+.logo-slot{position:relative;z-index:2;align-self:flex-start;margin-bottom:40px;border:2px dashed var(--white);padding:10px 16px;font-weight:700;font-size:22px;line-height:1}
+.logo-slot small{display:block;font-weight:400;font-size:12px;margin-top:4px}
+.cover h1{line-height:1.02;margin-bottom:28px}
+.cover h1,.cover .kicker,.cover .sub{position:relative;z-index:2}
+.cover .sub{font-size:21px}
+.blob{position:absolute;z-index:1}
+.b-a{width:300px;height:230px;background:var(--pale);right:-40px;top:-30px}
+.b-a::after{content:"";position:absolute;width:190px;height:170px;background:var(--teal);left:-110px;top:140px}
+.b-b{width:230px;height:130px;background:var(--primary);right:-30px;bottom:-20px}
+.scroll{position:absolute;bottom:22px;left:40px;font-weight:700;z-index:2;color:var(--pale)}
+
+.numbers{background:var(--pale);color:var(--navy)}
+.numbers .kicker{background:var(--petrol);color:var(--white)}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:34px}
+.trio div{background:var(--white);border-radius:4px;padding:18px;border-bottom:6px solid var(--green)}
+.trio b{display:block;font-size:clamp(28px,5vw,46px);font-weight:700}
+.trio span{font-size:15px}
+.weekly{display:flex;align-items:flex-end;gap:6px;height:140px}
+.wk{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.wk span{width:100%;background:var(--petrol);border-radius:3px 3px 0 0;min-height:4px}
+.wk em{font-style:normal;font-size:12px;margin-top:6px}
+.axis{font-size:14px;margin-top:8px}
+
+.contribution{background:var(--petrol)}
+.hl{color:var(--primary)}
+.split{display:flex;align-items:center;gap:36px;flex-wrap:wrap;margin-bottom:34px}
+.donut{width:220px;height:220px;border-radius:50%;display:grid;place-items:center}
+.donut div{width:130px;height:130px;border-radius:50%;background:var(--petrol);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut b{font-size:46px;font-weight:700;line-height:1}
+.donut span{font-size:14px}
+.legend{list-style:none;font-size:19px}
+.legend li{margin:10px 0;display:flex;align-items:center;gap:12px}
+.legend i{width:18px;height:18px;display:inline-block}
+.dist{display:flex;gap:12px;height:200px;align-items:flex-end}
+.col{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.count{font-weight:700;font-size:24px;margin-bottom:6px}
+.pillar{width:100%;border-radius:3px 3px 0 0}
+.b0{background:var(--orange)}.b1{background:var(--yellow)}.b2{background:var(--pale)}.b3{background:var(--green)}.b4{background:var(--primary)}
+.lab{font-size:14px;font-weight:700;margin-top:8px;text-align:center}
+
+.watch-card{background:var(--yellow);color:var(--navy)}
+.watch-card .kicker{background:var(--navy);color:var(--white)}
+.inactive-card{background:var(--white);color:var(--navy)}
+.inactive-card .kicker{background:var(--orange);color:var(--white)}
+.people{list-style:none;display:grid;gap:10px;max-height:58vh;overflow:auto;padding-right:4px}
+.people li{background:rgba(255,255,255,.6);border-radius:4px;padding:14px 18px;display:grid;grid-template-columns:1fr 160px 60px;gap:4px 14px;align-items:center}
+.inactive-card .people li{background:var(--paper);grid-template-columns:1fr auto;border-left:5px solid var(--orange)}
+.who{font-weight:700;font-size:19px}
+.tag{font-size:12px;font-weight:700;background:var(--navy);color:var(--white);padding:3px 8px;margin-left:10px;vertical-align:middle}
+.bar{height:12px;background:rgba(0,68,85,.15);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--navy)}
+.pct{font-weight:700;font-size:21px;text-align:right}
+.days{font-weight:700;font-size:23px;color:var(--orange);text-align:right}
+.meta{grid-column:1/-1;font-size:15px}
+.next{display:inline-block;margin-left:10px;font-weight:700;background:var(--primary);color:var(--navy);padding:2px 9px;font-size:13px}
+.next.none{background:rgba(0,68,85,.12)}
+.empty{font-size:22px;font-weight:700}
+
+.leave-card{background:var(--paper);color:var(--navy)}
+.leave-card .kicker{background:var(--teal);color:var(--white)}
+.leave-card .people li{background:var(--white);grid-template-columns:1fr auto;border-left:5px solid var(--teal)}
+.leave-card .days{color:var(--petrol);font-size:19px}
+.returned{margin-top:18px;font-size:16px;background:var(--pale);padding:12px 16px;border-radius:4px;max-width:720px}
+.nights{background:linear-gradient(160deg,var(--petrol),var(--navy) 70%)}
+.nights .big{color:var(--primary)}
+.moon{position:absolute;right:60px;top:60px;width:120px;height:120px;border-radius:50%;box-shadow:-26px 14px 0 0 var(--yellow);transform:rotate(-10deg)}
+
+.method{background:var(--paper);color:var(--navy);min-height:auto;font-size:16px;line-height:1.55}
+.method p{margin-bottom:10px;max-width:760px}
+
+@media (max-width:640px){
+  .card{padding:34px 22px;min-height:auto}
+  .trio{grid-template-columns:1fr}
+  .people li{grid-template-columns:1fr 60px}
+  .people li .bar{grid-column:1/-1;order:3}
+  .moon{width:70px;height:70px;right:24px;top:24px}
+  .b-a{width:150px;height:110px}.b-a::after{display:none}.b-b{width:140px;height:70px}
+  .cover .logo{height:52px}
+  .scroll{position:static;margin-top:8px}
+  .b-a{top:-50px;right:-70px}
+}
+@media print{html{scroll-snap-type:none}.card{min-height:auto;break-inside:avoid}.people{max-height:none}}
+
+body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.toolbar{position:sticky;top:0;z-index:6;display:flex;gap:10px;justify-content:flex-end;padding:10px 16px;background:var(--navy)}
+.btn{font:inherit;font-weight:700;font-size:15px;border:1px solid var(--pale);border-radius:4px;padding:10px 16px;cursor:pointer;background:var(--paper);color:var(--navy)}
+.hidden{display:none!important}
+.waiting{background:var(--white);color:var(--navy);border-radius:6px;padding:36px 40px;margin-bottom:16px}
+.waiting h1{font-size:clamp(36px,7vw,60px);margin-bottom:10px}
+.waiting .logo{height:52px;margin-bottom:24px;display:block}
+.fetching{background:var(--primary);color:var(--navy);padding:14px 18px;border-radius:4px;font-size:17px;margin:16px 0}
+.fbList{list-style:none;display:flex;flex-wrap:wrap;gap:6px 18px;margin:10px 0 8px;font-size:16px}
+.fbList i{font-style:normal;font-weight:700;display:inline-block;width:20px}
+.fb-waiting{opacity:.65}.fb-failed{color:#8a1c12}
+.drop{display:block;border:2px dashed var(--teal);border-radius:6px;padding:22px;text-align:center;font-size:17px;background:var(--paper);cursor:pointer;margin-top:14px}
+.drop input{display:none}
+.err{background:#fff4d6;border-left:6px solid var(--yellow);padding:12px 16px;margin-top:14px;font-size:16px}
+.gauge{height:26px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden;max-width:640px;margin:6px 0 10px}
+.gauge span{display:block;height:100%;background:var(--primary);border-radius:999px}
+.months{display:flex;gap:10px;margin-top:22px}
+.mo{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0}
+.mo b{font-size:15px;margin-bottom:4px;height:20px}
+.plot{position:relative;width:100%;height:160px}
+.plot .bar{position:absolute;bottom:0;left:0;right:0;background:var(--primary);border-radius:3px 3px 0 0;min-height:3px}
+.plot .exp{position:absolute;left:-3px;right:-3px;height:3px;background:var(--white)}
+.plot .leave{position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 6px,transparent 6px 12px)}
+.mo em{font-style:normal;font-size:13px;margin-top:6px}
+.key{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;font-weight:700;margin-top:12px}
+.key i{display:inline-block;width:14px;height:14px;margin-right:6px;vertical-align:-2px}
+.habit{border-collapse:separate;border-spacing:4px;margin-top:14px}
+.habit th{font-size:13px;font-weight:700;padding:2px 4px;text-align:center}
+.habit tr th:first-child{text-align:left}
+.habit td{width:54px;height:34px;border-radius:4px;text-align:center;font-weight:700;font-size:14px;background:rgba(0,68,85,.07)}
+.habitwrap{overflow-x:auto}
+.list{list-style:none;display:grid;gap:8px;margin-top:10px;max-width:640px}
+.list li{background:rgba(255,255,255,.65);border-radius:4px;padding:10px 14px;font-size:17px}
+.list li span{float:right;font-size:14px;opacity:.8}
+.mile{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:10px}
+.mile div{background:var(--white);border-radius:4px;padding:16px;border-bottom:6px solid var(--primary)}
+.mile b{display:block;font-size:30px;line-height:1.1}
+.mile span{font-size:15px}
+.toggle{display:flex;gap:10px;align-items:center;font-size:16px;margin-top:10px}
+.heat-card{background:var(--white);color:var(--navy)}
+.heat-card .kicker{background:var(--petrol);color:var(--white)}
+.load-card{background:var(--paper);color:var(--navy)}
+.load-card .kicker{background:var(--teal);color:var(--white)}
+@media print{.toolbar{display:none}.card{min-height:auto;break-inside:avoid}}
+</style></head>
+<body>
+<div class="toolbar hidden" id="toolbar"><button class="btn" id="printBtn">Print or save as PDF</button></div>
+<main>
+<section class="waiting" id="waiting">
+  <img class="logo" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjU5IiB2aWV3Qm94PSIwIDAgMjIwIDU5Ij4KPGRlZnM+CjxjbGlwUGF0aCBpZD0iY2xpcC0wIj4KPHBhdGggY2xpcC1ydWxlPSJub256ZXJvIiBkPSJNIDAgMC4wNzAzMTI1IEwgMjE5LjI0NjA5NCAwLjA3MDMxMjUgTCAyMTkuMjQ2MDk0IDU4LjUxMTcxOSBMIDAgNTguNTExNzE5IFogTSAwIDAuMDcwMzEyNSAiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8ZyBjbGlwLXBhdGg9InVybCgjY2xpcC0wKSI+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDUxLjc2NTQ0MiUsIDc0LjExODA0MiUsIDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDIxLjAzOTA2MiAwLjA3MDMxMjUgTCAyMS4wMzkwNjIgOS4xMjEwOTQgQyAyMS4wMzkwNjIgMTAuMTA5Mzc1IDIwLjIzODI4MSAxMC45MTAxNTYgMTkuMjUgMTAuOTEwMTU2IEMgMTguMjYxNzE5IDEwLjkxMDE1NiAxNy40NTcwMzEgMTAuMTA5Mzc1IDE3LjQ1NzAzMSA5LjEyMTA5NCBMIDE3LjQ1NzAzMSAwLjA3MDMxMjUgTCAtMC4wMjM0Mzc1IDAuMDcwMzEyNSBMIC0wLjAyMzQzNzUgNTguNTExNzE5IEwgMTk4LjE1NjI1IDU4LjUxMTcxOSBMIDE5OC4xNTYyNSA0OS40NDkyMTkgQyAxOTguMTU2MjUgNDguNDYwOTM4IDE5OC45NTcwMzEgNDcuNjU2MjUgMTk5Ljk0NTMxMiA0Ny42NTYyNSBDIDIwMC45MzM1OTQgNDcuNjU2MjUgMjAxLjczODI4MSA0OC40NjA5MzggMjAxLjczODI4MSA0OS40NDkyMTkgTCAyMDEuNzM4MjgxIDU4LjUxMTcxOSBMIDIxOS4yNDYwOTQgNTguNTExNzE5IEwgMjE5LjI0NjA5NCAwLjA3MDMxMjUgWiBNIDIxLjAzOTA2MiAwLjA3MDMxMjUgIi8+CjwvZz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxMTQuMTE3MTg4IDI1LjEzMjgxMiBDIDExNC4xMTcxODggMjcuNDEwMTU2IDExMi42OTE0MDYgMjguNDc2NTYyIDEwOS43NjU2MjUgMjguNDc2NTYyIEwgMTA3LjExNzE4OCAyOC40NzY1NjIgTCAxMDcuMTE3MTg4IDIxLjc5Mjk2OSBMIDEwOS43NjU2MjUgMjEuNzkyOTY5IEMgMTEyLjY5MTQwNiAyMS43OTI5NjkgMTE0LjExNzE4OCAyMi44NTkzNzUgMTE0LjExNzE4OCAyNS4xMzI4MTIgTSAxMTQuODI0MjE5IDMxLjE0ODQzOCBDIDExNi40OTIxODggMzAuNjUyMzQ0IDExNy4zMDQ2ODggMjkuNTc0MjE5IDExNy45MjE4NzUgMjguNTc0MjE5IEMgMTE4LjU2NjQwNiAyNy41MjM0MzggMTE4Ljg4MjgxMiAyNi40MTc5NjkgMTE4Ljg4MjgxMiAyNS4xMDU0NjkgQyAxMTguODgyODEyIDIyLjg5NDUzMSAxMTguMTM2NzE5IDIxLjE2NDA2MiAxMTYuNjcxODc1IDE5Ljg5ODQzOCBDIDExNS4yMDcwMzEgMTguNjM2NzE5IDExMy4xNzk2ODggMTcuOTk2MDk0IDExMC42NDA2MjUgMTcuOTk2MDk0IEwgMTA0LjE0MDYyNSAxNy45OTYwOTQgQyAxMDMuMTI4OTA2IDE3Ljk5NjA5NCAxMDIuMzc4OTA2IDE4LjczODI4MSAxMDIuMzk0NTMxIDE5Ljc1IEwgMTAyLjM5NDUzMSA0MC4yMzgyODEgTCAxMDcuMTE3MTg4IDQwLjIzODI4MSBMIDEwNy4xMTcxODggMzIuMjg5MDYyIEwgMTA5LjY2MDE1NiAzMi4yODkwNjIgQyAxMDkuODUxNTYyIDMyLjI4OTA2MiAxMTAuMjAzMTI1IDMyLjI4NTE1NiAxMTAuNDg0Mzc1IDMyLjI2MTcxOSBMIDExNS4zMzU5MzggNDAuMjM4MjgxIEwgMTIwLjU2MjUgNDAuMjM4MjgxIFogTSAxMTQuODI0MjE5IDMxLjE0ODQzOCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxMjQuNTU0Njg4IDE4IEMgMTIzLjUzOTA2MiAxOCAxMjIuNzkyOTY5IDE4LjczODI4MSAxMjIuODA4NTk0IDE5Ljc1IEwgMTIyLjgwODU5NCA0MC4yMzgyODEgTCAxMjcuNTM1MTU2IDQwLjIzODI4MSBMIDEyNy41MzUxNTYgMTcuOTk2MDk0IFogTSAxMjQuNTU0Njg4IDE4ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDE3My42NTYyNSAxNy45OTYwOTQgTCAxNzEuMDkzNzUgMTcuOTk2MDk0IEMgMTcwLjA4MjAzMSAxNy45OTYwOTQgMTY5LjMzNTkzOCAxOC43MzgyODEgMTY5LjM0NzY1NiAxOS43NSBMIDE2OS4zNDc2NTYgNDAuMjM4MjgxIEwgMTczLjg0NzY1NiA0MC4yMzgyODEgTCAxNzMuODQ3NjU2IDI1LjU4OTg0NCBMIDE4NS4xMTMyODEgNDAuMjM4MjgxIEwgMTg5LjI0MjE4OCA0MC4yMzgyODEgTCAxODkuMjQyMTg4IDE3Ljk5NjA5NCBMIDE4NC43MzgyODEgMTguMDA3ODEyIEwgMTg0LjczODI4MSAzMi40NDkyMTkgWiBNIDE3My42NTYyNSAxNy45OTYwOTQgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTQ4LjMxMjUgMTcuOTk2MDk0IEwgMTMxLjYwNTQ2OSAxOCBDIDEzMC41OTM3NSAxOCAxMjkuODQ3NjU2IDE4LjczODI4MSAxMjkuODU5Mzc1IDE5Ljc1IEwgMTI5Ljg1OTM3NSAyMS45Mzc1IEwgMTM2LjY1MjM0NCAyMS45Mzc1IEwgMTM2LjY1MjM0NCA0MC4yMzgyODEgTCAxNDEuMzc4OTA2IDQwLjIzODI4MSBMIDE0MS4zNzg5MDYgMjEuOTM3NSBMIDE0OC4zMTI1IDIxLjkzNzUgWiBNIDE0OC4zMTI1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSA2Mi4xNjQwNjIgMzMuNzI2NTYyIEMgNjIuNTc4MTI1IDM0LjM0NzY1NiA2My4xNzk2ODggMzQuOTE0MDYyIDY0LjA1ODU5NCAzNC45MTQwNjIgQyA2NC45NDE0MDYgMzQuOTE0MDYyIDY1LjU0Mjk2OSAzNC4zNTE1NjIgNjUuOTU3MDMxIDMzLjcyNjU2MiBMIDcxLjM3ODkwNiAyNS41MjczNDQgTCA3MS4zNzg5MDYgNDAuMjM4MjgxIEwgNzUuOTIxODc1IDQwLjIzODI4MSBMIDc1LjkyMTg3NSAxOCBMIDcxLjI2OTUzMSAxOCBMIDY0LjE1MjM0NCAyOC43MTg3NSBMIDU3LjA1MDc4MSAxOCBMIDUzLjk5NjA5NCAxOCBDIDUyLjk4MDQ2OSAxOCA1Mi4yMzQzNzUgMTguNzM0Mzc1IDUyLjI1IDE5Ljc1IEwgNTIuMjUgNDAuMjM4MjgxIEwgNTYuNzI2NTYyIDQwLjIzODI4MSBMIDU2LjcyNjU2MiAyNS41MjczNDQgWiBNIDYyLjE2NDA2MiAzMy43MjY1NjIgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTAuOTMzNTk0IDM4Ljg0Mzc1IEMgMTMuMTQ4NDM4IDQwLjQ4NDM3NSAxNi4wODU5MzggNDEuMTE3MTg4IDE4Ljc0NjA5NCA0MS4xMTcxODggQyAyMS40MTAxNTYgNDEuMTE3MTg4IDIzLjUwMzkwNiA0MC40Njg3NSAyNS4wNTQ2ODggMzkuMjY1NjI1IEMgMjYuNjIxMDk0IDM4LjA1MDc4MSAyNy40MjU3ODEgMzYuMzY3MTg4IDI3LjQ5MjE4OCAzNC4yNjE3MTkgQyAyNy41NTA3ODEgMzIuNTA3ODEyIDI3LjA5NzY1NiAzMC44NTE1NjIgMjUuNTI3MzQ0IDI5LjQ4NDM3NSBDIDI0LjU0Mjk2OSAyOC42Mjg5MDYgMjMuMDc0MjE5IDI4LjAzMTI1IDIxLjExNzE4OCAyNy4zMjQyMTkgQyAyMC4yNjk1MzEgMjcuMDE5NTMxIDE4LjMwODU5NCAyNi4zNTU0NjkgMTcuNzYxNzE5IDI2LjA4NTkzOCBDIDE3LjIzNDM3NSAyNS44MjQyMTkgMTYuMzUxNTYyIDI1LjEwNTQ2OSAxNi4zNjMyODEgMjMuOTg4MjgxIEMgMTYuMzc1IDIyLjU0Mjk2OSAxNy43MjI2NTYgMjEuNTI3MzQ0IDE5Ljk1MzEyNSAyMS41MjczNDQgQyAyMi4wNzgxMjUgMjEuNTI3MzQ0IDI0LjE2NDA2MiAyMi4xNDg0MzggMjUuODU5Mzc1IDIzLjQwNjI1IEwgMjYuNDY4NzUgMjEuODc1IEMgMjYuODE2NDA2IDIwLjkxNzk2OSAyNy4wMjczNDQgMjAuMTAxNTYyIDI2LjcyNjU2MiAxOS41MjM0MzggQyAyNi4zMjgxMjUgMTguNzQyMTg4IDI0LjczNDM3NSAxOC4xNzU3ODEgMjMuNTM1MTU2IDE3Ljg3ODkwNiBDIDIyLjMzNTkzOCAxNy41ODIwMzEgMjEuMjE4NzUgMTcuNDY0ODQ0IDE5Ljg1MTU2MiAxNy40NjQ4NDQgQyAxOC4yMDcwMzEgMTcuNDY0ODQ0IDE2Ljc1MzkwNiAxNy43NDIxODggMTUuNTE5NTMxIDE4LjI4OTA2MiBDIDE0LjI3MzQzOCAxOC44Mzk4NDQgMTMuMzA4NTk0IDE5LjYxNzE4OCAxMi42NDg0MzggMjAuNjAxNTYyIEMgMTEuOTg4MjgxIDIxLjU4MjAzMSAxMS42MDkzNzUgMjIuNzY1NjI1IDExLjU5Mzc1IDI0LjA1MDc4MSBDIDExLjU3ODEyNSAyNS44MzIwMzEgMTIuMTMyODEyIDI3LjI1MzkwNiAxMy4xODc1IDI4LjMzOTg0NCBDIDE0LjIyNjU2MiAyOS40MTc5NjkgMTUuODA4NTk0IDMwLjEwOTM3NSAxOC40MjE4NzUgMzEuMTIxMDk0IEMgMTkuNzM4MjgxIDMxLjYyODkwNiAyMS4yNzM0MzggMzIuMTcxODc1IDIxLjg2NzE4OCAzMi42Mjg5MDYgQyAyMi40NDE0MDYgMzMuMDc0MjE5IDIyLjc1MzkwNiAzMy42NTYyNSAyMi43NDYwOTQgMzQuMzc1IEMgMjIuNzMwNDY5IDM2LjA0Njg3NSAyMS4xNDg0MzggMzcuMDU0Njg4IDE4LjYyODkwNiAzNy4wNTQ2ODggQyAxNi4wODk4NDQgMzcuMDU0Njg4IDEzLjkyOTY4OCAzNi4wNDI5NjkgMTIuNDIxODc1IDM0LjgzNTkzOCBaIE0gMTAuOTMzNTk0IDM4Ljg0Mzc1ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDE5MS42ODM1OTQgMzguODQzNzUgQyAxOTMuODk0NTMxIDQwLjQ4NDM3NSAxOTYuODMyMDMxIDQxLjExNzE4OCAxOTkuNDkyMTg4IDQxLjExNzE4OCBDIDIwMi4xNjAxNTYgNDEuMTE3MTg4IDIwNC4yNSA0MC40Njg3NSAyMDUuODA0Njg4IDM5LjI2NTYyNSBDIDIwNy4zNjcxODggMzguMDUwNzgxIDIwOC4xNzU3ODEgMzYuMzY3MTg4IDIwOC4yNDIxODggMzQuMjYxNzE5IEMgMjA4LjI5Njg3NSAzMi41MDc4MTIgMjA3Ljg0Mzc1IDMwLjg1MTU2MiAyMDYuMjczNDM4IDI5LjQ4NDM3NSBDIDIwNS4yODkwNjIgMjguNjI4OTA2IDIwMy44MjQyMTkgMjguMDMxMjUgMjAxLjg2MzI4MSAyNy4zMjQyMTkgQyAyMDEuMDE1NjI1IDI3LjAxOTUzMSAxOTkuMDU4NTk0IDI2LjM1NTQ2OSAxOTguNTExNzE5IDI2LjA4NTkzOCBDIDE5Ny45ODA0NjkgMjUuODI0MjE5IDE5Ny4wOTc2NTYgMjUuMTA1NDY5IDE5Ny4xMDkzNzUgMjMuOTg4MjgxIEMgMTk3LjEyNSAyMi41NDI5NjkgMTk4LjQ2ODc1IDIxLjUyNzM0NCAyMDAuNjk5MjE5IDIxLjUyNzM0NCBDIDIwMi44MjgxMjUgMjEuNTI3MzQ0IDIwNC45MTAxNTYgMjIuMTQ4NDM4IDIwNi42MDU0NjkgMjMuNDA2MjUgTCAyMDcuMjE4NzUgMjEuODc1IEMgMjA3LjU2MjUgMjAuOTE3OTY5IDIwNy43NzM0MzggMjAuMTAxNTYyIDIwNy40NzY1NjIgMTkuNTIzNDM4IEMgMjA3LjA3NDIxOSAxOC43NDIxODggMjA1LjQ4MDQ2OSAxOC4xNzU3ODEgMjA0LjI4MTI1IDE3Ljg3ODkwNiBDIDIwMy4wODU5MzggMTcuNTgyMDMxIDIwMS45Njg3NSAxNy40NjQ4NDQgMjAwLjU5NzY1NiAxNy40NjQ4NDQgQyAxOTguOTU3MDMxIDE3LjQ2NDg0NCAxOTcuNSAxNy43NDIxODggMTk2LjI2NTYyNSAxOC4yODkwNjIgQyAxOTUuMDE5NTMxIDE4LjgzOTg0NCAxOTQuMDU0Njg4IDE5LjYxNzE4OCAxOTMuMzk0NTMxIDIwLjYwMTU2MiBDIDE5Mi43MzQzNzUgMjEuNTgyMDMxIDE5Mi4zNTkzNzUgMjIuNzY1NjI1IDE5Mi4zNDM3NSAyNC4wNTA3ODEgQyAxOTIuMzI0MjE5IDI1LjgzMjAzMSAxOTIuODgyODEyIDI3LjI1MzkwNiAxOTMuOTMzNTk0IDI4LjMzOTg0NCBDIDE5NC45NzY1NjIgMjkuNDE3OTY5IDE5Ni41NTQ2ODggMzAuMTA5Mzc1IDE5OS4xNjc5NjkgMzEuMTIxMDk0IEMgMjAwLjQ4NDM3NSAzMS42Mjg5MDYgMjAyLjAxOTUzMSAzMi4xNzE4NzUgMjAyLjYxMzI4MSAzMi42Mjg5MDYgQyAyMDMuMTg3NSAzMy4wNzQyMTkgMjAzLjUwMzkwNiAzMy42NTYyNSAyMDMuNDk2MDk0IDM0LjM3NSBDIDIwMy40NzY1NjIgMzYuMDQ2ODc1IDIwMS44OTg0MzggMzcuMDU0Njg4IDE5OS4zNzUgMzcuMDU0Njg4IEMgMTk2LjgzNTkzOCAzNy4wNTQ2ODggMTk0LjY3NTc4MSAzNi4wNDI5NjkgMTkzLjE2Nzk2OSAzNC44MzU5MzggWiBNIDE5MS42ODM1OTQgMzguODQzNzUgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMzYuMDc4MTI1IDMwLjg3MTA5NCBMIDM4Ljk5NjA5NCAyMi45MTQwNjIgTCA0MS45MjU3ODEgMzAuODcxMDk0IFogTSA0MS41NzgxMjUgMTcuOTk2MDk0IEwgMzkuNDk2MDk0IDE4IEMgMzcuNTQyOTY5IDE4IDM2LjQ4NDM3NSAxOC41ODk4NDQgMzUuNzEwOTM4IDIwLjUyMzQzOCBMIDI3Ljg4NjcxOSA0MC4yMzgyODEgTCAzMi42NDA2MjUgNDAuMjM4MjgxIEwgMzQuNjQ0NTMxIDM0Ljc3NzM0NCBMIDQzLjM2MzI4MSAzNC43NzczNDQgTCA0NS4zNzUgNDAuMjM4MjgxIEwgNTAuMzkwNjI1IDQwLjIzODI4MSBaIE0gNDEuNTc4MTI1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSA4NS44NjcxODggMzAuODcxMDk0IEwgODguNzg1MTU2IDIyLjkxNDA2MiBMIDkxLjcxNDg0NCAzMC44NzEwOTQgWiBNIDkxLjM2NzE4OCAxNy45OTYwOTQgTCA4OS4yODUxNTYgMTggQyA4Ny4zMzIwMzEgMTggODYuMjczNDM4IDE4LjU4OTg0NCA4NS41IDIwLjUyMzQzOCBMIDc3LjY3NTc4MSA0MC4yMzgyODEgTCA4Mi40Mjk2ODggNDAuMjM4MjgxIEwgODQuNDMzNTk0IDM0Ljc3NzM0NCBMIDkzLjE1MjM0NCAzNC43NzczNDQgTCA5NS4xNjQwNjIgNDAuMjM4MjgxIEwgMTAwLjE3OTY4OCA0MC4yMzgyODEgWiBNIDkxLjM2NzE4OCAxNy45OTYwOTQgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTUyLjkyMTg3NSAzMC44NzEwOTQgTCAxNTUuODM5ODQ0IDIyLjkxNDA2MiBMIDE1OC43Njk1MzEgMzAuODcxMDk0IFogTSAxNTguNDIxODc1IDE3Ljk5NjA5NCBMIDE1Ni4zMzk4NDQgMTggQyAxNTQuMzg2NzE5IDE4IDE1My4zMjgxMjUgMTguNTg5ODQ0IDE1Mi41NTQ2ODggMjAuNTIzNDM4IEwgMTQ0LjczMDQ2OSA0MC4yMzgyODEgTCAxNDkuNDg0Mzc1IDQwLjIzODI4MSBMIDE1MS40ODgyODEgMzQuNzc3MzQ0IEwgMTYwLjIwNzAzMSAzNC43NzczNDQgTCAxNjIuMjIyNjU2IDQwLjIzODI4MSBMIDE2Ny4yMzQzNzUgNDAuMjM4MjgxIFogTSAxNTguNDIxODc1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAzNi4wNzgxMjUgMzAuODcxMDk0IEwgMzguOTk2MDk0IDIyLjkxNDA2MiBMIDQxLjkyNTc4MSAzMC44NzEwOTQgWiBNIDQxLjU3ODEyNSAxNy45OTYwOTQgTCAzOS40OTYwOTQgMTggQyAzNy41NDI5NjkgMTggMzYuNDg0Mzc1IDE4LjU4OTg0NCAzNS43MTA5MzggMjAuNTIzNDM4IEwgMjcuODg2NzE5IDQwLjIzODI4MSBMIDMyLjY0MDYyNSA0MC4yMzgyODEgTCAzNC42NDQ1MzEgMzQuNzc3MzQ0IEwgNDMuMzYzMjgxIDM0Ljc3NzM0NCBMIDQ1LjM3NSA0MC4yMzgyODEgTCA1MC4zOTA2MjUgNDAuMjM4MjgxIFogTSA0MS41NzgxMjUgMTcuOTk2MDk0ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDg1Ljg2NzE4OCAzMC44NzEwOTQgTCA4OC43ODUxNTYgMjIuOTE0MDYyIEwgOTEuNzE0ODQ0IDMwLjg3MTA5NCBaIE0gOTEuMzY3MTg4IDE3Ljk5NjA5NCBMIDg5LjI4NTE1NiAxOCBDIDg3LjMzMjAzMSAxOCA4Ni4yNzM0MzggMTguNTg5ODQ0IDg1LjUgMjAuNTIzNDM4IEwgNzcuNjc1NzgxIDQwLjIzODI4MSBMIDgyLjQyOTY4OCA0MC4yMzgyODEgTCA4NC40MzM1OTQgMzQuNzc3MzQ0IEwgOTMuMTUyMzQ0IDM0Ljc3NzM0NCBMIDk1LjE2NDA2MiA0MC4yMzgyODEgTCAxMDAuMTc5Njg4IDQwLjIzODI4MSBaIE0gOTEuMzY3MTg4IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxNTIuOTIxODc1IDMwLjg3MTA5NCBMIDE1NS44Mzk4NDQgMjIuOTE0MDYyIEwgMTU4Ljc2OTUzMSAzMC44NzEwOTQgWiBNIDE1OC40MjE4NzUgMTcuOTk2MDk0IEwgMTU2LjMzOTg0NCAxOCBDIDE1NC4zODY3MTkgMTggMTUzLjMyODEyNSAxOC41ODk4NDQgMTUyLjU1NDY4OCAyMC41MjM0MzggTCAxNDQuNzMwNDY5IDQwLjIzODI4MSBMIDE0OS40ODQzNzUgNDAuMjM4MjgxIEwgMTUxLjQ4ODI4MSAzNC43NzczNDQgTCAxNjAuMjA3MDMxIDM0Ljc3NzM0NCBMIDE2Mi4yMjI2NTYgNDAuMjM4MjgxIEwgMTY3LjIzNDM3NSA0MC4yMzgyODEgWiBNIDE1OC40MjE4NzUgMTcuOTk2MDk0ICIvPgo8L3N2Zz4K" alt="Samaritans">
+  <h1>My Rota Wrapped</h1>
+  <p>Your own listening contribution, built from Three Rings with your own login. Nothing is stored or sent anywhere.</p>
+  <div class="fetching hidden" id="fetching"><b>Fetching your shifts from Three Rings…</b> <span id="fbTime"></span>
+    <ul class="fbList" id="fbList"></ul><p id="fbNote">This usually takes a few seconds. Keep the Three Rings tab open.</p></div>
+  <div id="notFromButton">
+    <p style="margin-top:14px">Open this page with the <b>My Rota Wrapped</b> button while you're logged in to Three Rings.</p>
+    <label class="drop">Or, if the button gave you a data file, drop it here<input type="file" id="bundleFile" accept=".json"></label>
+  </div>
+  <div id="problems"></div>
+</section>
+<div id="report"></div>
+</main>
+<script>
+"use strict";
+const THREE_RINGS = "https://www.3r.org.uk", LOGO = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjU5IiB2aWV3Qm94PSIwIDAgMjIwIDU5Ij4KPGRlZnM+CjxjbGlwUGF0aCBpZD0iY2xpcC0wIj4KPHBhdGggY2xpcC1ydWxlPSJub256ZXJvIiBkPSJNIDAgMC4wNzAzMTI1IEwgMjE5LjI0NjA5NCAwLjA3MDMxMjUgTCAyMTkuMjQ2MDk0IDU4LjUxMTcxOSBMIDAgNTguNTExNzE5IFogTSAwIDAuMDcwMzEyNSAiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8ZyBjbGlwLXBhdGg9InVybCgjY2xpcC0wKSI+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDUxLjc2NTQ0MiUsIDc0LjExODA0MiUsIDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDIxLjAzOTA2MiAwLjA3MDMxMjUgTCAyMS4wMzkwNjIgOS4xMjEwOTQgQyAyMS4wMzkwNjIgMTAuMTA5Mzc1IDIwLjIzODI4MSAxMC45MTAxNTYgMTkuMjUgMTAuOTEwMTU2IEMgMTguMjYxNzE5IDEwLjkxMDE1NiAxNy40NTcwMzEgMTAuMTA5Mzc1IDE3LjQ1NzAzMSA5LjEyMTA5NCBMIDE3LjQ1NzAzMSAwLjA3MDMxMjUgTCAtMC4wMjM0Mzc1IDAuMDcwMzEyNSBMIC0wLjAyMzQzNzUgNTguNTExNzE5IEwgMTk4LjE1NjI1IDU4LjUxMTcxOSBMIDE5OC4xNTYyNSA0OS40NDkyMTkgQyAxOTguMTU2MjUgNDguNDYwOTM4IDE5OC45NTcwMzEgNDcuNjU2MjUgMTk5Ljk0NTMxMiA0Ny42NTYyNSBDIDIwMC45MzM1OTQgNDcuNjU2MjUgMjAxLjczODI4MSA0OC40NjA5MzggMjAxLjczODI4MSA0OS40NDkyMTkgTCAyMDEuNzM4MjgxIDU4LjUxMTcxOSBMIDIxOS4yNDYwOTQgNTguNTExNzE5IEwgMjE5LjI0NjA5NCAwLjA3MDMxMjUgWiBNIDIxLjAzOTA2MiAwLjA3MDMxMjUgIi8+CjwvZz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxMTQuMTE3MTg4IDI1LjEzMjgxMiBDIDExNC4xMTcxODggMjcuNDEwMTU2IDExMi42OTE0MDYgMjguNDc2NTYyIDEwOS43NjU2MjUgMjguNDc2NTYyIEwgMTA3LjExNzE4OCAyOC40NzY1NjIgTCAxMDcuMTE3MTg4IDIxLjc5Mjk2OSBMIDEwOS43NjU2MjUgMjEuNzkyOTY5IEMgMTEyLjY5MTQwNiAyMS43OTI5NjkgMTE0LjExNzE4OCAyMi44NTkzNzUgMTE0LjExNzE4OCAyNS4xMzI4MTIgTSAxMTQuODI0MjE5IDMxLjE0ODQzOCBDIDExNi40OTIxODggMzAuNjUyMzQ0IDExNy4zMDQ2ODggMjkuNTc0MjE5IDExNy45MjE4NzUgMjguNTc0MjE5IEMgMTE4LjU2NjQwNiAyNy41MjM0MzggMTE4Ljg4MjgxMiAyNi40MTc5NjkgMTE4Ljg4MjgxMiAyNS4xMDU0NjkgQyAxMTguODgyODEyIDIyLjg5NDUzMSAxMTguMTM2NzE5IDIxLjE2NDA2MiAxMTYuNjcxODc1IDE5Ljg5ODQzOCBDIDExNS4yMDcwMzEgMTguNjM2NzE5IDExMy4xNzk2ODggMTcuOTk2MDk0IDExMC42NDA2MjUgMTcuOTk2MDk0IEwgMTA0LjE0MDYyNSAxNy45OTYwOTQgQyAxMDMuMTI4OTA2IDE3Ljk5NjA5NCAxMDIuMzc4OTA2IDE4LjczODI4MSAxMDIuMzk0NTMxIDE5Ljc1IEwgMTAyLjM5NDUzMSA0MC4yMzgyODEgTCAxMDcuMTE3MTg4IDQwLjIzODI4MSBMIDEwNy4xMTcxODggMzIuMjg5MDYyIEwgMTA5LjY2MDE1NiAzMi4yODkwNjIgQyAxMDkuODUxNTYyIDMyLjI4OTA2MiAxMTAuMjAzMTI1IDMyLjI4NTE1NiAxMTAuNDg0Mzc1IDMyLjI2MTcxOSBMIDExNS4zMzU5MzggNDAuMjM4MjgxIEwgMTIwLjU2MjUgNDAuMjM4MjgxIFogTSAxMTQuODI0MjE5IDMxLjE0ODQzOCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxMjQuNTU0Njg4IDE4IEMgMTIzLjUzOTA2MiAxOCAxMjIuNzkyOTY5IDE4LjczODI4MSAxMjIuODA4NTk0IDE5Ljc1IEwgMTIyLjgwODU5NCA0MC4yMzgyODEgTCAxMjcuNTM1MTU2IDQwLjIzODI4MSBMIDEyNy41MzUxNTYgMTcuOTk2MDk0IFogTSAxMjQuNTU0Njg4IDE4ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDE3My42NTYyNSAxNy45OTYwOTQgTCAxNzEuMDkzNzUgMTcuOTk2MDk0IEMgMTcwLjA4MjAzMSAxNy45OTYwOTQgMTY5LjMzNTkzOCAxOC43MzgyODEgMTY5LjM0NzY1NiAxOS43NSBMIDE2OS4zNDc2NTYgNDAuMjM4MjgxIEwgMTczLjg0NzY1NiA0MC4yMzgyODEgTCAxNzMuODQ3NjU2IDI1LjU4OTg0NCBMIDE4NS4xMTMyODEgNDAuMjM4MjgxIEwgMTg5LjI0MjE4OCA0MC4yMzgyODEgTCAxODkuMjQyMTg4IDE3Ljk5NjA5NCBMIDE4NC43MzgyODEgMTguMDA3ODEyIEwgMTg0LjczODI4MSAzMi40NDkyMTkgWiBNIDE3My42NTYyNSAxNy45OTYwOTQgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTQ4LjMxMjUgMTcuOTk2MDk0IEwgMTMxLjYwNTQ2OSAxOCBDIDEzMC41OTM3NSAxOCAxMjkuODQ3NjU2IDE4LjczODI4MSAxMjkuODU5Mzc1IDE5Ljc1IEwgMTI5Ljg1OTM3NSAyMS45Mzc1IEwgMTM2LjY1MjM0NCAyMS45Mzc1IEwgMTM2LjY1MjM0NCA0MC4yMzgyODEgTCAxNDEuMzc4OTA2IDQwLjIzODI4MSBMIDE0MS4zNzg5MDYgMjEuOTM3NSBMIDE0OC4zMTI1IDIxLjkzNzUgWiBNIDE0OC4zMTI1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSA2Mi4xNjQwNjIgMzMuNzI2NTYyIEMgNjIuNTc4MTI1IDM0LjM0NzY1NiA2My4xNzk2ODggMzQuOTE0MDYyIDY0LjA1ODU5NCAzNC45MTQwNjIgQyA2NC45NDE0MDYgMzQuOTE0MDYyIDY1LjU0Mjk2OSAzNC4zNTE1NjIgNjUuOTU3MDMxIDMzLjcyNjU2MiBMIDcxLjM3ODkwNiAyNS41MjczNDQgTCA3MS4zNzg5MDYgNDAuMjM4MjgxIEwgNzUuOTIxODc1IDQwLjIzODI4MSBMIDc1LjkyMTg3NSAxOCBMIDcxLjI2OTUzMSAxOCBMIDY0LjE1MjM0NCAyOC43MTg3NSBMIDU3LjA1MDc4MSAxOCBMIDUzLjk5NjA5NCAxOCBDIDUyLjk4MDQ2OSAxOCA1Mi4yMzQzNzUgMTguNzM0Mzc1IDUyLjI1IDE5Ljc1IEwgNTIuMjUgNDAuMjM4MjgxIEwgNTYuNzI2NTYyIDQwLjIzODI4MSBMIDU2LjcyNjU2MiAyNS41MjczNDQgWiBNIDYyLjE2NDA2MiAzMy43MjY1NjIgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTAuOTMzNTk0IDM4Ljg0Mzc1IEMgMTMuMTQ4NDM4IDQwLjQ4NDM3NSAxNi4wODU5MzggNDEuMTE3MTg4IDE4Ljc0NjA5NCA0MS4xMTcxODggQyAyMS40MTAxNTYgNDEuMTE3MTg4IDIzLjUwMzkwNiA0MC40Njg3NSAyNS4wNTQ2ODggMzkuMjY1NjI1IEMgMjYuNjIxMDk0IDM4LjA1MDc4MSAyNy40MjU3ODEgMzYuMzY3MTg4IDI3LjQ5MjE4OCAzNC4yNjE3MTkgQyAyNy41NTA3ODEgMzIuNTA3ODEyIDI3LjA5NzY1NiAzMC44NTE1NjIgMjUuNTI3MzQ0IDI5LjQ4NDM3NSBDIDI0LjU0Mjk2OSAyOC42Mjg5MDYgMjMuMDc0MjE5IDI4LjAzMTI1IDIxLjExNzE4OCAyNy4zMjQyMTkgQyAyMC4yNjk1MzEgMjcuMDE5NTMxIDE4LjMwODU5NCAyNi4zNTU0NjkgMTcuNzYxNzE5IDI2LjA4NTkzOCBDIDE3LjIzNDM3NSAyNS44MjQyMTkgMTYuMzUxNTYyIDI1LjEwNTQ2OSAxNi4zNjMyODEgMjMuOTg4MjgxIEMgMTYuMzc1IDIyLjU0Mjk2OSAxNy43MjI2NTYgMjEuNTI3MzQ0IDE5Ljk1MzEyNSAyMS41MjczNDQgQyAyMi4wNzgxMjUgMjEuNTI3MzQ0IDI0LjE2NDA2MiAyMi4xNDg0MzggMjUuODU5Mzc1IDIzLjQwNjI1IEwgMjYuNDY4NzUgMjEuODc1IEMgMjYuODE2NDA2IDIwLjkxNzk2OSAyNy4wMjczNDQgMjAuMTAxNTYyIDI2LjcyNjU2MiAxOS41MjM0MzggQyAyNi4zMjgxMjUgMTguNzQyMTg4IDI0LjczNDM3NSAxOC4xNzU3ODEgMjMuNTM1MTU2IDE3Ljg3ODkwNiBDIDIyLjMzNTkzOCAxNy41ODIwMzEgMjEuMjE4NzUgMTcuNDY0ODQ0IDE5Ljg1MTU2MiAxNy40NjQ4NDQgQyAxOC4yMDcwMzEgMTcuNDY0ODQ0IDE2Ljc1MzkwNiAxNy43NDIxODggMTUuNTE5NTMxIDE4LjI4OTA2MiBDIDE0LjI3MzQzOCAxOC44Mzk4NDQgMTMuMzA4NTk0IDE5LjYxNzE4OCAxMi42NDg0MzggMjAuNjAxNTYyIEMgMTEuOTg4MjgxIDIxLjU4MjAzMSAxMS42MDkzNzUgMjIuNzY1NjI1IDExLjU5Mzc1IDI0LjA1MDc4MSBDIDExLjU3ODEyNSAyNS44MzIwMzEgMTIuMTMyODEyIDI3LjI1MzkwNiAxMy4xODc1IDI4LjMzOTg0NCBDIDE0LjIyNjU2MiAyOS40MTc5NjkgMTUuODA4NTk0IDMwLjEwOTM3NSAxOC40MjE4NzUgMzEuMTIxMDk0IEMgMTkuNzM4MjgxIDMxLjYyODkwNiAyMS4yNzM0MzggMzIuMTcxODc1IDIxLjg2NzE4OCAzMi42Mjg5MDYgQyAyMi40NDE0MDYgMzMuMDc0MjE5IDIyLjc1MzkwNiAzMy42NTYyNSAyMi43NDYwOTQgMzQuMzc1IEMgMjIuNzMwNDY5IDM2LjA0Njg3NSAyMS4xNDg0MzggMzcuMDU0Njg4IDE4LjYyODkwNiAzNy4wNTQ2ODggQyAxNi4wODk4NDQgMzcuMDU0Njg4IDEzLjkyOTY4OCAzNi4wNDI5NjkgMTIuNDIxODc1IDM0LjgzNTkzOCBaIE0gMTAuOTMzNTk0IDM4Ljg0Mzc1ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDE5MS42ODM1OTQgMzguODQzNzUgQyAxOTMuODk0NTMxIDQwLjQ4NDM3NSAxOTYuODMyMDMxIDQxLjExNzE4OCAxOTkuNDkyMTg4IDQxLjExNzE4OCBDIDIwMi4xNjAxNTYgNDEuMTE3MTg4IDIwNC4yNSA0MC40Njg3NSAyMDUuODA0Njg4IDM5LjI2NTYyNSBDIDIwNy4zNjcxODggMzguMDUwNzgxIDIwOC4xNzU3ODEgMzYuMzY3MTg4IDIwOC4yNDIxODggMzQuMjYxNzE5IEMgMjA4LjI5Njg3NSAzMi41MDc4MTIgMjA3Ljg0Mzc1IDMwLjg1MTU2MiAyMDYuMjczNDM4IDI5LjQ4NDM3NSBDIDIwNS4yODkwNjIgMjguNjI4OTA2IDIwMy44MjQyMTkgMjguMDMxMjUgMjAxLjg2MzI4MSAyNy4zMjQyMTkgQyAyMDEuMDE1NjI1IDI3LjAxOTUzMSAxOTkuMDU4NTk0IDI2LjM1NTQ2OSAxOTguNTExNzE5IDI2LjA4NTkzOCBDIDE5Ny45ODA0NjkgMjUuODI0MjE5IDE5Ny4wOTc2NTYgMjUuMTA1NDY5IDE5Ny4xMDkzNzUgMjMuOTg4MjgxIEMgMTk3LjEyNSAyMi41NDI5NjkgMTk4LjQ2ODc1IDIxLjUyNzM0NCAyMDAuNjk5MjE5IDIxLjUyNzM0NCBDIDIwMi44MjgxMjUgMjEuNTI3MzQ0IDIwNC45MTAxNTYgMjIuMTQ4NDM4IDIwNi42MDU0NjkgMjMuNDA2MjUgTCAyMDcuMjE4NzUgMjEuODc1IEMgMjA3LjU2MjUgMjAuOTE3OTY5IDIwNy43NzM0MzggMjAuMTAxNTYyIDIwNy40NzY1NjIgMTkuNTIzNDM4IEMgMjA3LjA3NDIxOSAxOC43NDIxODggMjA1LjQ4MDQ2OSAxOC4xNzU3ODEgMjA0LjI4MTI1IDE3Ljg3ODkwNiBDIDIwMy4wODU5MzggMTcuNTgyMDMxIDIwMS45Njg3NSAxNy40NjQ4NDQgMjAwLjU5NzY1NiAxNy40NjQ4NDQgQyAxOTguOTU3MDMxIDE3LjQ2NDg0NCAxOTcuNSAxNy43NDIxODggMTk2LjI2NTYyNSAxOC4yODkwNjIgQyAxOTUuMDE5NTMxIDE4LjgzOTg0NCAxOTQuMDU0Njg4IDE5LjYxNzE4OCAxOTMuMzk0NTMxIDIwLjYwMTU2MiBDIDE5Mi43MzQzNzUgMjEuNTgyMDMxIDE5Mi4zNTkzNzUgMjIuNzY1NjI1IDE5Mi4zNDM3NSAyNC4wNTA3ODEgQyAxOTIuMzI0MjE5IDI1LjgzMjAzMSAxOTIuODgyODEyIDI3LjI1MzkwNiAxOTMuOTMzNTk0IDI4LjMzOTg0NCBDIDE5NC45NzY1NjIgMjkuNDE3OTY5IDE5Ni41NTQ2ODggMzAuMTA5Mzc1IDE5OS4xNjc5NjkgMzEuMTIxMDk0IEMgMjAwLjQ4NDM3NSAzMS42Mjg5MDYgMjAyLjAxOTUzMSAzMi4xNzE4NzUgMjAyLjYxMzI4MSAzMi42Mjg5MDYgQyAyMDMuMTg3NSAzMy4wNzQyMTkgMjAzLjUwMzkwNiAzMy42NTYyNSAyMDMuNDk2MDk0IDM0LjM3NSBDIDIwMy40NzY1NjIgMzYuMDQ2ODc1IDIwMS44OTg0MzggMzcuMDU0Njg4IDE5OS4zNzUgMzcuMDU0Njg4IEMgMTk2LjgzNTkzOCAzNy4wNTQ2ODggMTk0LjY3NTc4MSAzNi4wNDI5NjkgMTkzLjE2Nzk2OSAzNC44MzU5MzggWiBNIDE5MS42ODM1OTQgMzguODQzNzUgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMzYuMDc4MTI1IDMwLjg3MTA5NCBMIDM4Ljk5NjA5NCAyMi45MTQwNjIgTCA0MS45MjU3ODEgMzAuODcxMDk0IFogTSA0MS41NzgxMjUgMTcuOTk2MDk0IEwgMzkuNDk2MDk0IDE4IEMgMzcuNTQyOTY5IDE4IDM2LjQ4NDM3NSAxOC41ODk4NDQgMzUuNzEwOTM4IDIwLjUyMzQzOCBMIDI3Ljg4NjcxOSA0MC4yMzgyODEgTCAzMi42NDA2MjUgNDAuMjM4MjgxIEwgMzQuNjQ0NTMxIDM0Ljc3NzM0NCBMIDQzLjM2MzI4MSAzNC43NzczNDQgTCA0NS4zNzUgNDAuMjM4MjgxIEwgNTAuMzkwNjI1IDQwLjIzODI4MSBaIE0gNDEuNTc4MTI1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSA4NS44NjcxODggMzAuODcxMDk0IEwgODguNzg1MTU2IDIyLjkxNDA2MiBMIDkxLjcxNDg0NCAzMC44NzEwOTQgWiBNIDkxLjM2NzE4OCAxNy45OTYwOTQgTCA4OS4yODUxNTYgMTggQyA4Ny4zMzIwMzEgMTggODYuMjczNDM4IDE4LjU4OTg0NCA4NS41IDIwLjUyMzQzOCBMIDc3LjY3NTc4MSA0MC4yMzgyODEgTCA4Mi40Mjk2ODggNDAuMjM4MjgxIEwgODQuNDMzNTk0IDM0Ljc3NzM0NCBMIDkzLjE1MjM0NCAzNC43NzczNDQgTCA5NS4xNjQwNjIgNDAuMjM4MjgxIEwgMTAwLjE3OTY4OCA0MC4yMzgyODEgWiBNIDkxLjM2NzE4OCAxNy45OTYwOTQgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTUyLjkyMTg3NSAzMC44NzEwOTQgTCAxNTUuODM5ODQ0IDIyLjkxNDA2MiBMIDE1OC43Njk1MzEgMzAuODcxMDk0IFogTSAxNTguNDIxODc1IDE3Ljk5NjA5NCBMIDE1Ni4zMzk4NDQgMTggQyAxNTQuMzg2NzE5IDE4IDE1My4zMjgxMjUgMTguNTg5ODQ0IDE1Mi41NTQ2ODggMjAuNTIzNDM4IEwgMTQ0LjczMDQ2OSA0MC4yMzgyODEgTCAxNDkuNDg0Mzc1IDQwLjIzODI4MSBMIDE1MS40ODgyODEgMzQuNzc3MzQ0IEwgMTYwLjIwNzAzMSAzNC43NzczNDQgTCAxNjIuMjIyNjU2IDQwLjIzODI4MSBMIDE2Ny4yMzQzNzUgNDAuMjM4MjgxIFogTSAxNTguNDIxODc1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAzNi4wNzgxMjUgMzAuODcxMDk0IEwgMzguOTk2MDk0IDIyLjkxNDA2MiBMIDQxLjkyNTc4MSAzMC44NzEwOTQgWiBNIDQxLjU3ODEyNSAxNy45OTYwOTQgTCAzOS40OTYwOTQgMTggQyAzNy41NDI5NjkgMTggMzYuNDg0Mzc1IDE4LjU4OTg0NCAzNS43MTA5MzggMjAuNTIzNDM4IEwgMjcuODg2NzE5IDQwLjIzODI4MSBMIDMyLjY0MDYyNSA0MC4yMzgyODEgTCAzNC42NDQ1MzEgMzQuNzc3MzQ0IEwgNDMuMzYzMjgxIDM0Ljc3NzM0NCBMIDQ1LjM3NSA0MC4yMzgyODEgTCA1MC4zOTA2MjUgNDAuMjM4MjgxIFogTSA0MS41NzgxMjUgMTcuOTk2MDk0ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDg1Ljg2NzE4OCAzMC44NzEwOTQgTCA4OC43ODUxNTYgMjIuOTE0MDYyIEwgOTEuNzE0ODQ0IDMwLjg3MTA5NCBaIE0gOTEuMzY3MTg4IDE3Ljk5NjA5NCBMIDg5LjI4NTE1NiAxOCBDIDg3LjMzMjAzMSAxOCA4Ni4yNzM0MzggMTguNTg5ODQ0IDg1LjUgMjAuNTIzNDM4IEwgNzcuNjc1NzgxIDQwLjIzODI4MSBMIDgyLjQyOTY4OCA0MC4yMzgyODEgTCA4NC40MzM1OTQgMzQuNzc3MzQ0IEwgOTMuMTUyMzQ0IDM0Ljc3NzM0NCBMIDk1LjE2NDA2MiA0MC4yMzgyODEgTCAxMDAuMTc5Njg4IDQwLjIzODI4MSBaIE0gOTEuMzY3MTg4IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxNTIuOTIxODc1IDMwLjg3MTA5NCBMIDE1NS44Mzk4NDQgMjIuOTE0MDYyIEwgMTU4Ljc2OTUzMSAzMC44NzEwOTQgWiBNIDE1OC40MjE4NzUgMTcuOTk2MDk0IEwgMTU2LjMzOTg0NCAxOCBDIDE1NC4zODY3MTkgMTggMTUzLjMyODEyNSAxOC41ODk4NDQgMTUyLjU1NDY4OCAyMC41MjM0MzggTCAxNDQuNzMwNDY5IDQwLjIzODI4MSBMIDE0OS40ODQzNzUgNDAuMjM4MjgxIEwgMTUxLjQ4ODI4MSAzNC43NzczNDQgTCAxNjAuMjA3MDMxIDM0Ljc3NzM0NCBMIDE2Mi4yMjI2NTYgNDAuMjM4MjgxIEwgMTY3LjIzNDM3NSA0MC4yMzgyODEgWiBNIDE1OC40MjE4NzUgMTcuOTk2MDk0ICIvPgo8L3N2Zz4K";
+const $ = id => document.getElementById(id);
+const CFG = {branch: "", since: "", holidays: false, shifts: 1, nightEvery: 8, dayH: 3, nightH: 6, lead: 1,
+  listenWords: ["listening"], leaderWords: ["leader"], nightWords: ["night"], nightMinHours: 5};
+
+/* ---------- dates as whole-day numbers ---------- */
+const DAY = 864e5, MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const WEEKDAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const dn = (y, m, d) => Math.round(Date.UTC(y, m - 1, d) / DAY);
+const parts = n => { const d = new Date(n * DAY); return [d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate()]; };
+const short = n => { const [, m, d] = parts(n); return `${d} ${MON[m - 1]}`; };
+const long = n => { const [y, m, d] = parts(n); return `${d} ${MONTHS[m - 1]} ${y}`; };
+const weekday = n => (new Date(n * DAY).getUTCDay() + 6) % 7;
+const todayDn = () => { const t = new Date(); return dn(t.getFullYear(), t.getMonth() + 1, t.getDate()); };
+const parseDay = s => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(s || "")); return m ? dn(+m[1], +m[2], +m[3]) : null; };
+// Three Rings labels times as UTC but they are UK local time
+const parseLocal = s => new Date(String(s || "").replace(/(\.\d+)?Z$/, ""));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const plural = (n, one, many) => n === 1 ? one : many;
+const has = (name, words) => words.some(w => String(name || "").toLowerCase().includes(w));
+const fmtH = h => (Math.round(h * 10) / 10).toLocaleString("en-GB");
+
+/* ---------- Varah, unlocked with the key from the set-up link ---------- */
+const FONT_FACES = {"Regular": ["400", "normal"], "Bold": ["700", "normal"], "Italic": ["400", "italic"], "BoldItalic": ["700", "italic"]};
+async function loadLockedFonts(k) {
+  try {
+    const b64 = k.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - k.length % 4) % 4);
+    const key = await crypto.subtle.importKey("raw", Uint8Array.from(atob(b64), c => c.charCodeAt(0)), "AES-GCM", false, ["decrypt"]);
+    await Promise.all(Object.entries(FONT_FACES).map(async ([face, [weight, style]]) => {
+      const buf = new Uint8Array(await (await fetch(`fonts/varah-${face.toLowerCase()}.bin`)).arrayBuffer());
+      const data = await crypto.subtle.decrypt({name: "AES-GCM", iv: buf.slice(0, 12)}, key, buf.slice(12));
+      document.fonts.add(await new FontFace("Varah", data, {weight, style}).load());
+    }));
+  } catch { /* Calibri */ }
+}
+
+/* ---------- the sums ---------- */
+let DATA = null, EXCUSED_TICK = null;
+
+function leaveDaysIn(periods, a, b) {
+  let n = 0;
+  for (let d = a; d <= b; d++) if (periods.some(([s, e]) => d >= s && d <= e)) n++;
+  return n;
+}
+
+function analyse(d) {
+  const now = Date.now(), today = todayDn();
+  const me = String(d.me);
+  const vol = d.directory.volunteer || d.directory || {};
+  const roles = (vol.volunteer_roles || []).map(r => (r.role && r.role.name) || r.name || "").filter(Boolean);
+  const props = vol.volunteer_properties || [];
+  const prop = re => (props.find(p => re.test((p.property && (p.property.name || p.property.code)) || p.name || p.code || "")) || {}).value;
+  const join = parseDay(prop(/join.?date/i));
+  const excusedRecord = /^(yes|y|true|1|excused|x|✓)$/i.test(String(prop(/excused from night/i) ?? "").trim());
+  const excused = EXCUSED_TICK ?? excusedRecord;
+  const isProb = roles.some(r => /probationer/i.test(r));
+  const isLeader = roles.some(r => /shift leaders?\b/i.test(r));
+
+  const yearAgo = today - 365, since = parseDay(CFG.since) ?? yearAgo;
+  const ws = Math.max(since, yearAgo), own = Math.max(ws, join ?? ws);
+  const leave = ((d.availability || {}).volunteer_inactivities || [])
+    .filter(x => CFG.holidays || /leave of absence/i.test((x.inactivity_type || {}).name || ""))
+    .map(x => [parseDay(x.start_date), parseDay(x.end_date) ?? today + 3650]).filter(([s]) => s != null);
+
+  const past = [], future = [], ledPast = [], ledFuture = [], alongside = new Set();
+  let name = vol.name || "";
+  for (const s of d.shifts) {
+    const rota = (s.rota && s.rota.name) || s.rota || "";
+    const mine = (s.volunteer_shifts || []).filter(v => v.volunteer && String(v.volunteer.id) === me && !v.pulled_out_at);
+    if (!mine.length) continue;
+    if (!name) name = mine[0].volunteer.name;
+    const st = parseLocal(s.start_datetime), hrs = (s.duration || 10800) / 3600;
+    const day = dn(st.getFullYear(), st.getMonth() + 1, st.getDate());
+    if (day < own && st.getTime() < now) continue;
+    const isPast = st.getTime() < now;
+    if (has(rota, CFG.leaderWords)) { (isPast ? ledPast : ledFuture).push({day, hour: st.getHours(), rota}); continue; }
+    if (!has(rota, CFG.listenWords)) continue;
+    const night = has(rota, CFG.nightWords) || ((st.getHours() >= 21 || st.getHours() < 3) && hrs >= CFG.nightMinHours);
+    const rec = {day, hour: st.getHours(), night, rota, credit: night ? CFG.nightH : CFG.dayH};
+    if (isPast) {
+      past.push(rec);
+      for (const v of s.volunteer_shifts || []) if (v.volunteer && String(v.volunteer.id) !== me && !v.pulled_out_at) alongside.add(v.volunteer.id);
+    } else future.push(rec);
+  }
+  past.sort((a, b) => a.day - b.day); future.sort((a, b) => a.day - b.day);
+
+  const nightPart = excused || !CFG.nightEvery ? 0 : CFG.nightH / CFG.nightEvery;
+  const weekly = CFG.shifts * CFG.dayH + nightPart;
+  const days = Math.max(today - own, 0), leaveDays = days ? leaveDaysIn(leave, own, today - 1) : 0;
+  const active = Math.max(days - leaveDays, 0);
+  const hours = past.reduce((n, r) => n + r.credit, 0);
+  const expected = active / 7 * weekly;
+
+  // month by month
+  const months = [];
+  let [y, m] = parts(own);
+  while (true) {
+    const first = dn(y, m, 1), next = m === 12 ? dn(y + 1, 1, 1) : dn(y, m + 1, 1);
+    if (first > today - 1) break;
+    const a = Math.max(first, own), b = Math.min(next - 1, today - 1);
+    if (b - a >= 6) {   // leave out stubs of less than a week at either end
+      const lv = leaveDaysIn(leave, a, b), span = b - a + 1;
+      months.push({label: MON[m - 1], y, m, hours: past.filter(r => r.day >= a && r.day <= b).reduce((n, r) => n + r.credit, 0),
+        expected: (span - lv) / 7 * weekly, leaveShare: lv / span, partial: a > first || b < next - 1});
+    }
+    if (m === 12) { y++; m = 1; } else m++;
+  }
+
+  // habits: day of week x part of day
+  const bands = [[0, 6, "Night"], [6, 12, "Morning"], [12, 18, "Afternoon"], [18, 24, "Evening"]];
+  const habit = WEEKDAYS.map(() => bands.map(() => 0));
+  for (const r of past) habit[weekday(r.day)][bands.findIndex(([a, b]) => r.hour >= a && r.hour < b)]++;
+  let top = null;
+  habit.forEach((row, i) => row.forEach((n, j) => { if (n && (!top || n > top.n)) top = {n, day: WEEKDAYS[i], band: bands[j][2]}; }));
+
+  // overnights
+  const nights = past.filter(r => r.night), lastNight = nights.length ? nights[nights.length - 1].day : null;
+  const nextNightBooked = (future.find(r => r.night) || {}).day ?? null;
+  const nightDue = CFG.nightEvery ? (lastNight ?? own) + CFG.nightEvery * 7 : null;
+
+  // weeks meeting the expectation (weeks fully on leave are skipped, not counted against)
+  let longest = 0, run = 0, current = 0;
+  if (CFG.shifts > 0) {
+    let w = own - weekday(own);
+    const lastWeek = today - weekday(today) - 7;
+    for (; w <= lastWeek; w += 7) {
+      const a = Math.max(w, own), b = w + 6;
+      if (leaveDaysIn(leave, a, b) === b - a + 1) continue;
+      const n = past.filter(r => r.day >= w && r.day <= b).length;
+      if (n >= CFG.shifts) { run++; longest = Math.max(longest, run); } else run = 0;
+    }
+    current = run;
+  }
+  const busiest = months.filter(x => !x.partial || months.length < 3).reduce((p, q) => (!p || q.hours > p.hours ? q : p), null);
+  const currentLeave = leave.find(([s, e]) => s <= today && e >= today);
+
+  return {name, roles, isProb, isLeader, excused, excusedRecord, join, ws, own, today, leave, currentLeave, past, future, ledPast, ledFuture,
+    alongside: alongside.size, weekly, active, leaveDays, hours, expected, pct: expected ? hours / expected : null, months, habit, bands, top,
+    nights, lastNight, nextNightBooked, nightDue, longest, current, busiest};
+}
+
+/* ---------- the page ---------- */
+function render(r) {
+  const first = String(r.name).replace(/\s*\[[^\]]*\]/g, "").replace(/\d+.*$/, "").trim() || "You";
+  const pct = r.pct == null ? null : Math.round(r.pct * 100);
+  const maxM = Math.max(1, ...r.months.map(x => Math.max(x.hours, x.expected)));
+  const monthsHtml = r.months.map(x => `<div class="mo" title="${MONTHS[x.m - 1]} ${x.y}: ${fmtH(x.hours)} hours, about ${fmtH(x.expected)} expected${x.leaveShare ? `, ${Math.round(x.leaveShare * 100)}% on leave` : ""}">
+      <b>${fmtH(x.hours)}</b><div class="plot">
+      ${x.leaveShare ? `<div class="leave" style="opacity:${0.3 + 0.7 * x.leaveShare}"></div>` : ""}
+      <div class="bar" style="height:${x.hours / maxM * 100}%"></div>
+      <div class="exp" style="bottom:${x.expected / maxM * 100}%"></div></div>
+      <em>${x.label}</em></div>`).join("");
+  const maxH = Math.max(1, ...r.habit.flat());
+  const habitHtml = `<table class="habit"><tr><th></th>${r.bands.map(b => `<th>${b[2]}</th>`).join("")}</tr>${
+    WEEKDAYS.map((d, i) => `<tr><th>${d.slice(0, 3)}</th>${r.habit[i].map(n => `<td style="background:${n ? `rgba(132,189,0,${0.25 + 0.75 * n / maxH})` : ""}">${n || ""}</td>`).join("")}</tr>`).join("")}</table>`;
+  let verdict;
+  if (pct == null) verdict = "There isn't enough time in this period to work out a contribution yet.";
+  else if (pct >= 100) verdict = "You're meeting your full contribution. Thank you.";
+  else if (pct >= 75) verdict = "You're close to your full contribution.";
+  else verdict = "You're below your expected contribution at the moment. Life gets busy. If anything is getting in the way, your rota manager or a director will be glad to talk it through.";
+  const nightCard = !CFG.nightEvery ? "" : r.excused
+    ? `<section class="card nights"><p class="kicker">Overnights</p><h2>You're excused from overnights</h2><p class="sub">So they're not part of your expected contribution.</p><div class="moon"></div></section>`
+    : `<section class="card nights"><p class="kicker">Overnights</p>
+      <div class="big">${r.nights.length}</div><p class="lead">${plural(r.nights.length, "overnight", "overnights")} since ${short(r.own)}</p>
+      <p class="sub">${r.lastNight != null ? `Your last overnight was on ${long(r.lastNight)}.` : "You haven't done an overnight in this period yet."}
+      ${r.nextNightBooked != null ? ` Your next one is booked for ${long(r.nextNightBooked)}.` : r.nightDue != null ? ` One every ${CFG.nightEvery} weeks means your next is due by ${long(r.nightDue)}${r.nightDue < r.today ? ", which has passed" : ""}.` : ""}</p>
+      <div class="moon"></div></section>`;
+  const upcoming = r.future.slice(0, 6);
+  const leadCard = !(r.isLeader || r.ledPast.length) ? "" : `<section class="card contribution"><p class="kicker">Leading</p>
+      <div class="big">${r.ledPast.length}</div><p class="lead">shift leader ${plural(r.ledPast.length, "slot", "slots")} led since ${short(r.own)}</p>
+      <p class="sub">That's about ${(r.ledPast.length / Math.max(r.active / 7, 1)).toFixed(1)} a week${CFG.lead ? `, against an informal expectation of ${CFG.lead}` : ""}. Leading is in addition to your listening contribution.${r.ledFuture.length ? ` Your next leader slot is on ${long(r.ledFuture[0].day)}.` : ""}</p></section>`;
+  const leaveText = r.leave.filter(([s, e]) => e >= r.own && s <= r.today).map(([s, e]) => `${short(Math.max(s, r.own))} to ${e > r.today + 3000 ? "no end date" : short(e)}`).join(", ");
+
+  $("report").innerHTML = `
+<section class="card cover">
+  <img class="logo" src="${LOGO}" alt="Samaritans">
+  <p class="kicker">${CFG.branch ? esc(CFG.branch) + " branch · " : ""}just for you</p>
+  <h1>${esc(first)},<br><span class="hl">your rota, wrapped.</span></h1>
+  <p class="sub">${long(r.own)} to ${long(r.today)}${r.isProb ? " · probationer" : ""}</p>
+  <div class="blob b-a"></div><div class="blob b-b"></div>
+  <p class="scroll">Scroll ↓</p>
+</section>
+
+<section class="card numbers">
+  <p class="kicker">What you've given</p>
+  <div class="big">${fmtH(r.hours)}</div>
+  <p class="lead">hours listening</p>
+  <div class="trio">
+    <div><b>${r.past.length}</b><span>listening ${plural(r.past.length, "shift", "shifts")}</span></div>
+    <div><b>${r.nights.length}</b><span>${plural(r.nights.length, "overnight", "overnights")}</span></div>
+    <div><b>${r.alongside}</b><span>volunteers you've listened alongside</span></div>
+  </div>
+</section>
+
+<section class="card contribution">
+  <p class="kicker">Your contribution</p>
+  ${pct == null ? "" : `<h2><span class="hl">${pct}%</span> of your expected contribution</h2><div class="gauge"><span style="width:${Math.min(pct, 100)}%"></span></div>`}
+  <p class="sub">You've given ${fmtH(r.hours)} hours. ${r.leaveDays ? `With ${r.leaveDays} ${plural(r.leaveDays, "day", "days")} of leave taken out, the` : "The"} expectation for this period is about ${fmtH(r.expected)} hours (${fmtH(r.weekly)} a week). ${verdict}</p>
+  ${r.months.length ? `<div class="months">${monthsHtml}</div>
+  <div class="key"><span><i style="background:var(--primary)"></i>Hours given</span><span><i style="background:var(--white)"></i>Expected</span>${r.leave.length ? '<span><i style="background:repeating-linear-gradient(45deg,rgba(255,255,255,.5) 0 3px,transparent 3px 6px)"></i>Leave</span>' : ""}</div>` : ""}
+</section>
+
+<section class="card heat-card">
+  <p class="kicker">When you listen</p>
+  <h2>${r.top ? `You're often our ${r.top.day} ${r.top.band.toLowerCase()} listener` : "No shifts in this period yet"}</h2>
+  <div class="habitwrap">${habitHtml}</div>
+</section>
+
+${nightCard}
+
+<section class="card watch-card">
+  <p class="kicker">Coming up</p>
+  <h2>${upcoming.length ? `${r.future.length} listening ${plural(r.future.length, "shift", "shifts")} booked` : "Nothing booked yet"}</h2>
+  ${upcoming.length ? `<ul class="list">${upcoming.map(x => `<li>${WEEKDAYS[weekday(x.day)]} ${long(x.day)}<span>${esc(x.rota)}</span></li>`).join("")}</ul>` : `<p class="sub">You can sign up for shifts in Three Rings.</p>`}
+</section>
+
+${leadCard}
+
+<section class="card load-card">
+  <p class="kicker">Milestones</p>
+  <div class="mile">
+    <div><b>${r.longest}</b><span>${plural(r.longest, "week", "weeks")} in a row meeting the weekly expectation, your longest run</span></div>
+    <div><b>${r.current}</b><span>${plural(r.current, "week", "weeks")} in your current run</span></div>
+    ${r.busiest && r.busiest.hours ? `<div><b>${MONTHS[r.busiest.m - 1]}</b><span>your busiest month, with ${fmtH(r.busiest.hours)} hours</span></div>` : ""}
+    ${r.past.length ? `<div><b>${short(r.past[0].day)}</b><span>your first listening shift in this period</span></div>` : ""}
+  </div>
+</section>
+
+<section class="card method">
+  <h3>How this is worked out</h3>
+  <p>The expectation is ${CFG.shifts} listening ${plural(CFG.shifts, "shift", "shifts")} a week${CFG.nightEvery && !r.excused ? ` and an overnight every ${CFG.nightEvery} weeks` : ""}, counted in hours: ${CFG.dayH} hours for a day shift${CFG.nightEvery ? ` and ${CFG.nightH} for an overnight` : ""}. It runs from ${long(r.own)}${r.join && r.join === r.own ? ", your join date," : ""} and only counts shifts that have already happened.${leaveText ? ` Leave taken out: ${leaveText}.` : ""}</p>
+  ${CFG.nightEvery ? `<label class="toggle"><input type="checkbox" id="excused" ${r.excused ? "checked" : ""}> I'm excused from night shifts${r.excusedRecord ? " (as recorded in Three Rings)" : ""}</label>` : ""}
+  <p style="margin-top:10px">This page is just for you. It was built from Three Rings with your own login, and nothing is stored or sent anywhere.</p>
+</section>`;
+  const ex = $("excused");
+  if (ex) ex.addEventListener("change", () => { EXCUSED_TICK = ex.checked; render(analyse(DATA)); });
+  $("waiting").classList.add("hidden"); $("toolbar").classList.remove("hidden");
+}
+
+async function loadFromButton(d) {
+  const s = d.settings || {}, e = s.expect || {};
+  const n = (v, def) => (typeof v === "number" && isFinite(v) && v >= 0 ? v : def);
+  Object.assign(CFG, {branch: s.branch || "", since: s.since || "", holidays: !!s.holidays,
+    shifts: n(e.shifts, CFG.shifts), nightEvery: n(e.nightEvery, CFG.nightEvery), dayH: n(e.dayH, CFG.dayH) || CFG.dayH,
+    nightH: n(e.nightH, CFG.nightH) || CFG.nightH, lead: n(e.lead, CFG.lead)});
+  if (s.fontKey) await loadLockedFonts(s.fontKey);
+  const rep = d.reports || {}, problems = [];
+  const parse = (k, label) => { try { if (typeof rep[k] !== "string" || /^\s*</.test(rep[k])) throw 0; return JSON.parse(rep[k]); }
+    catch { problems.push(`${label}: ${rep[k] && rep[k].error ? rep[k].error : "Three Rings didn't return it."}`); return null; } };
+  const shifts = parse("shifts", "Your shifts"), directory = parse("directory", "Your Directory record"), availability = parse("availability", "Your leave");
+  if (!d.me) problems.unshift("The button couldn't tell who you are. Click your name at the top right of Three Rings, then click My Rota Wrapped again from that page.");
+  $("fetching").classList.add("hidden");
+  if (!d.me || !shifts) {
+    $("problems").innerHTML = `<div class="err"><b>Your report couldn't be built.</b><ul>${problems.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`;
+    return;
+  }
+  DATA = {me: d.me, shifts: shifts.shifts || [], directory: directory || {}, availability: availability || {}};
+  render(analyse(DATA));
+  if (problems.length) $("report").insertAdjacentHTML("afterbegin", `<div class="err">${problems.map(esc).join("<br>")} The rest of your report is shown.</div>`);
+  window.scrollTo(0, 0);
+}
+
+/* ---------- receiving data from the button ---------- */
+const FB_LABELS = {shifts: "Your shifts", directory: "Your Directory record", availability: "Your leave"};
+if (/from-three-rings/.test(location.hash) && window.opener) {
+  $("fetching").classList.remove("hidden"); $("notFromButton").classList.add("hidden");
+  let got = false, secs = 0, heard = false;
+  const tick = setInterval(() => {
+    if (got) { clearInterval(tick); return; }
+    secs++; $("fbTime").textContent = `${secs} seconds so far.`;
+    if (secs === 15) $("fbNote").textContent = "Still working. Please keep both tabs open.";
+    if (secs === 25 && !heard) $("fbNote").textContent = "The Three Rings tab hasn't replied yet. Check it for a message, and make sure you're still logged in.";
+  }, 1000);
+  window.addEventListener("message", e => {
+    if (got || e.origin !== THREE_RINGS || !e.data) return;
+    if (e.data.type === "rota-wrapped-progress") {
+      heard = true;
+      $("fbList").innerHTML = Object.entries(e.data.status || {}).map(([k, v]) =>
+        `<li class="fb-${v}"><i>${v === "done" ? "✓" : v === "failed" ? "✗" : "…"}</i>${FB_LABELS[k] || esc(k)}</li>`).join("");
+      return;
+    }
+    if (e.data.type !== "rota-wrapped-me") return;
+    got = true; loadFromButton(e.data);
+  });
+  let tries = 0;
+  const hello = () => { if (got || tries++ > 30) return; try { window.opener.postMessage({type: "rota-wrapped-ready"}, THREE_RINGS); } catch {} setTimeout(hello, 1000); };
+  hello();
+  history.replaceState(null, "", location.pathname);
+}
+$("bundleFile").addEventListener("change", async e => {
+  try { const d = JSON.parse(await e.target.files[0].text()); if (d.type === "rota-wrapped-me-bundle") loadFromButton(d); else throw 0; }
+  catch { $("problems").innerHTML = '<div class="err">That isn\'t a My Rota Wrapped data file.</div>'; }
+});
+$("printBtn").addEventListener("click", () => window.print());
+</script>
+</body></html>

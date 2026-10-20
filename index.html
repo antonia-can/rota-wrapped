@@ -59,42 +59,42 @@ footer a{color:var(--pale)}
 
 <!-- shown when the page is opened with a set-up link -->
 <section class="card hidden" id="install">
-  <h2>Add the button<span id="forBranch"></span></h2>
+  <h2>Add <span id="btnWord">the buttons</span><span id="forBranch"></span></h2>
   <div class="tabs"><button class="on" data-t="laptop">Laptop or desktop</button><button data-t="phone">iPhone or iPad</button><button data-t="android">Android</button></div>
 
   <div data-p="laptop">
     <ol>
       <li>Show your bookmarks bar: press <b>Ctrl+Shift+B</b> (on a Mac, <b>Cmd+Shift+B</b>).</li>
-      <li>Drag this button onto the bookmarks bar:</li>
+      <li>Drag a button onto the bookmarks bar. Clicking it here does nothing.</li>
     </ol>
-    <div class="btnwrap"><a class="bm" id="bm" href="#">Rota Wrapped</a><span class="hint">Drag it. Clicking it here does nothing.</span></div>
+    <div class="btnwrap" id="wrapMe"><a class="bm" id="bmMe" href="#">My Rota Wrapped</a><span class="hint">Your own contribution. Works for every volunteer.</span></div>
+    <div class="btnwrap" id="wrapMain"><a class="bm" id="bm" href="#">Rota Wrapped</a><span class="hint">The branch dashboard, for directors and the rota team. Needs permission to view stats.</span></div>
     <h3>Using it</h3>
     <ol>
       <li>Log in to Three Rings as normal.</li>
-      <li>Click <b>Rota Wrapped</b> on your bookmarks bar. A new tab opens and the dashboard appears after a few seconds.</li>
+      <li>Click the button on your bookmarks bar. A new tab opens and your report appears after a few seconds.</li>
       <li>If your browser says it blocked a pop-up, allow pop-ups for www.3r.org.uk and click the button again.</li>
     </ol>
   </div>
 
   <div data-p="phone" class="hidden">
     <ol>
-      <li>Copy the button code: <button class="action secondary copy" type="button">Copy button code</button></li>
-      <li>In Safari, bookmark any page (tap the share icon, then <b>Add Bookmark</b>) and save it with the name <b>Rota Wrapped</b>.</li>
-      <li>Open your bookmarks, tap <b>Edit</b>, tap the Rota Wrapped bookmark, delete its address and paste the code in its place. Tap <b>Done</b>.</li>
-      <li>To use it: log in to Three Rings in Safari, then open your bookmarks and tap <b>Rota Wrapped</b>.</li>
+      <li>Copy a button's code: <button class="action secondary copy" data-b="me" type="button">Copy My Rota Wrapped</button> <button class="action secondary copy mainOnly" data-b="main" type="button">Copy Rota Wrapped</button></li>
+      <li>In Safari, bookmark any page (tap the share icon, then <b>Add Bookmark</b>) and give it the button's name.</li>
+      <li>Open your bookmarks, tap <b>Edit</b>, tap that bookmark, delete its address and paste the code in its place. Tap <b>Done</b>.</li>
+      <li>To use it: log in to Three Rings in Safari, then open your bookmarks and tap it.</li>
     </ol>
   </div>
 
   <div data-p="android" class="hidden">
     <ol>
-      <li>Copy the button code: <button class="action secondary copy" type="button">Copy button code</button></li>
-      <li>In Chrome, bookmark any page (tap the star) and then edit the bookmark: name it <b>Rota Wrapped</b>, delete its address and paste the code in its place.</li>
-      <li>To use it: log in to Three Rings in Chrome, then type <b>Rota Wrapped</b> in the address bar and tap the bookmark in the suggestions. (Tapping it from the bookmarks list doesn't work on Android.)</li>
+      <li>Copy a button's code: <button class="action secondary copy" data-b="me" type="button">Copy My Rota Wrapped</button> <button class="action secondary copy mainOnly" data-b="main" type="button">Copy Rota Wrapped</button></li>
+      <li>In Chrome, bookmark any page (tap the star), then edit the bookmark: give it the button's name, delete its address and paste the code in its place.</li>
+      <li>To use it: log in to Three Rings in Chrome, then type the button's name in the address bar and tap the bookmark in the suggestions. (Tapping it from the bookmarks list doesn't work on Android.)</li>
     </ol>
   </div>
   <p class="ok hidden" id="copied">Copied.</p>
-  <h3>Can't use the button?</h3>
-  <p>Open the <a href="dashboard.html">dashboard</a> directly and load the reports by hand.</p>
+  <p class="mainOnly" style="margin-top:14px"><b>Can't use the Rota Wrapped button?</b> Open the <a href="dashboard.html">dashboard</a> directly and load the reports by hand.</p>
 </section>
 
 <!-- set-up form for a rota manager -->
@@ -115,6 +115,7 @@ footer a{color:var(--pale)}
     <label>Shift leader slots a week<small>Your informal expectation for leaders; 0 if there isn't one</small><input type="number" id="e_lead" min="0" step="0.5"></label>
   </div>
 
+  <label style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-top:18px"><input type="checkbox" id="meOnly" style="margin-top:5px"> Personal button only<small>Tick this when making a link for all volunteers. It offers My Rota Wrapped without the branch dashboard.</small></label>
   <label style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-top:18px"><input type="checkbox" id="holidays" style="margin-top:5px"> Count holidays as leave<small>Leave of absence always removes someone's expected contribution and keeps them off the check-in lists. Tick this if holidays should too.</small></label>
 
   <details><summary class="hint" style="margin-top:18px;cursor:pointer">Report links (already filled in; only change them if Three Rings changes)</summary>
@@ -195,6 +196,56 @@ a.href = URL.createObjectURL(blob); a.download = "rota-wrapped-data-" + ymd(toda
 document.body.appendChild(a); a.click(); a.remove();
 }, 20000);
 })();</script>
+<script type="text/plain" id="buttonMeSrc">(() => {
+const SITE = "__SITE__";
+const C = __CONFIG__;
+if (location.hostname !== "www.3r.org.uk") {
+alert("My Rota Wrapped: open Three Rings and log in, then click the button again.");
+return;
+}
+const idOf = h => { const m = /\/directory\/(\d+)(?:[/?#]|$)/.exec(h || ""); return m && m[1]; };
+const links = [...document.querySelectorAll("a[href]")];
+const fromMenu = links.map(a => /future_shifts\?volunteer=(\d+)/.exec(a.getAttribute("href")) || null).find(Boolean);
+const nearTop = links.map(a => ({id: idOf(a.getAttribute("href")), r: a.getBoundingClientRect()}))
+.filter(x => x.id && x.r.width && x.r.top + scrollY < 160).sort((a, b) => b.r.right - a.r.right)[0];
+const me = (fromMenu && fromMenu[1]) || (nearTop && nearTop.id) || idOf(location.pathname);
+const win = window.open(SITE + "me.html#from-three-rings", "myrotawrapped");
+if (!win) { alert("My Rota Wrapped: your browser blocked the new tab. Allow pop-ups for www.3r.org.uk and try again."); return; }
+const pad = n => String(n).padStart(2, "0");
+const ymd = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const end = new Date(), yearAgo = new Date();
+end.setDate(end.getDate() + 56); yearAgo.setDate(yearAgo.getDate() - 365);
+const since = C.since ? new Date(C.since + "T00:00:00") : yearAgo;
+const start = since > yearAgo ? since : yearAgo;
+const get = u => fetch(u, {credentials: "same-origin"})
+.then(r => r.ok ? r.text() : Promise.reject(new Error("Three Rings said " + r.status)))
+.catch(e => ({error: e.message}));
+const origin = new URL(SITE).origin, status = {};
+let ready = false, sent = false;
+const tell = () => { if (ready) win.postMessage({type: "rota-wrapped-progress", status}, origin); };
+const todo = me ? [["shifts", "/shift.json?start_date=" + ymd(start) + "&end_date=" + ymd(end)],
+["directory", "/directory/" + me + "?format=json"], ["availability", "/directory/" + me + "/availability.json"]] : [];
+todo.forEach(([k]) => status[k] = "waiting");
+const reports = Promise.all(todo.map(([k, u]) => get(u).then(v => { status[k] = v && v.error ? "failed" : "done"; tell(); return [k, v]; })));
+const settings = {branch: C.branch, since: C.since, holidays: C.holidays, fontKey: C.fontKey, expect: C.expect};
+const listener = async e => {
+if (sent || e.origin !== origin || e.source !== win || !e.data || e.data.type !== "rota-wrapped-ready") return;
+sent = true; ready = true;
+removeEventListener("message", listener);
+tell();
+win.postMessage({type: "rota-wrapped-me", me, settings, reports: Object.fromEntries(await reports)}, origin);
+};
+addEventListener("message", listener);
+setTimeout(async () => {
+if (sent) return;
+removeEventListener("message", listener);
+if (!confirm("My Rota Wrapped: the report tab didn't respond. Download your data as one file instead? You can then drop it into the report page.")) return;
+const blob = new Blob([JSON.stringify({type: "rota-wrapped-me-bundle", me, settings, reports: Object.fromEntries(await reports)})], {type: "application/json"});
+const a = document.createElement("a");
+a.href = URL.createObjectURL(blob); a.download = "my-rota-wrapped-" + ymd(new Date()) + ".json";
+document.body.appendChild(a); a.click(); a.remove();
+}, 20000);
+})();</script>
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
@@ -216,8 +267,8 @@ function toPattern(u) {
   return u.replace(/\d{4}-\d{2}-\d{2}/g, () => (n++ === 0 ? "{start}" : "{end}"));
 }
 
-function buttonCode(cfg) {
-  const src = $("buttonSrc").textContent.replace("__SITE__", SITE).replace("__CONFIG__", JSON.stringify(cfg));
+function buttonCode(cfg, id = "buttonSrc") {
+  const src = $(id).textContent.replace("__SITE__", SITE).replace("__CONFIG__", JSON.stringify(cfg));
   return "javascript:" + encodeURIComponent(src);
 }
 
@@ -229,6 +280,7 @@ function shortLink(cfg) {
   if (cfg.since) q.set("d", cfg.since);
   if (cfg.fontKey) q.set("k", cfg.fontKey);
   if (cfg.holidays) q.set("h", "1");
+  if (cfg.meOnly) q.set("o", "me");
   const e = [cfg.expect.shifts, cfg.expect.nightEvery, cfg.expect.dayH, cfg.expect.nightH, cfg.expect.lead];
   if (e.join() !== EXPECT_DEFAULT.join()) q.set("e", e.join(","));
   for (const k of REPORTS) if (cfg.reports[k] && cfg.reports[k] !== DEFAULTS[k]) q.set("r." + k, cfg.reports[k]);
@@ -240,7 +292,7 @@ function readLink(h) {
   const q = new URLSearchParams(h);
   if (!q.has("b") && !q.has("d") && !q.has("k")) return null;
   const e = (q.get("e") || EXPECT_DEFAULT.join()).split(",").map(Number);
-  const cfg = {branch: q.get("b") || "", since: q.get("d") || "", holidays: q.get("h") === "1", fonts: [], reports: {},
+  const cfg = {branch: q.get("b") || "", since: q.get("d") || "", holidays: q.get("h") === "1", meOnly: q.get("o") === "me", fonts: [], reports: {},
     expect: {shifts: e[0], nightEvery: e[1], dayH: e[2], nightH: e[3], lead: e[4]}};
   if (q.get("k")) cfg.fontKey = q.get("k");
   for (const k of REPORTS) cfg.reports[k] = q.get("r." + k) || DEFAULTS[k];
@@ -250,7 +302,7 @@ function readLink(h) {
 
 function readForm() {
   const num = (id, d) => { const v = parseFloat($(id).value); return isFinite(v) && v >= 0 ? v : d; };
-  const cfg = {branch: $("branch").value.trim(), since: $("since").value, holidays: $("holidays").checked, reports: {}, fonts: [],
+  const cfg = {branch: $("branch").value.trim(), since: $("since").value, holidays: $("holidays").checked, meOnly: $("meOnly").checked, reports: {}, fonts: [],
     expect: {shifts: num("e_shifts", 1), nightEvery: num("e_nightEvery", 8), dayH: num("e_dayH", 3), nightH: num("e_nightH", 6), lead: num("e_lead", 1)}};
   for (const k of REPORTS) { const v = toPattern($("r_" + k).value) || DEFAULTS[k] || ""; if (v) cfg.reports[k] = v; }
   for (const f of FACES) { const v = $("f_" + f).value.trim(); if (v) cfg.fonts.push([f, toPattern(v)]); }
@@ -258,7 +310,7 @@ function readForm() {
   return cfg;
 }
 function fillForm(cfg) {
-  $("branch").value = cfg.branch || ""; $("since").value = cfg.since || ""; $("holidays").checked = !!cfg.holidays;
+  $("branch").value = cfg.branch || ""; $("since").value = cfg.since || ""; $("holidays").checked = !!cfg.holidays; $("meOnly").checked = !!cfg.meOnly;
   fillExpect(cfg.expect || {});
   for (const k of REPORTS) $("r_" + k).value = (cfg.reports || {})[k] || DEFAULTS[k] || "";
   for (const [f, u] of cfg.fonts || []) if ($("f_" + f)) $("f_" + f).value = u;
@@ -291,11 +343,12 @@ if (m) {
     const cfg = readLink(location.hash.slice(1));
     if (!cfg) throw new Error("no settings");
     fillForm(cfg);
-    const code = buttonCode(cfg);
-    $("bm").href = code;
-    $("bm").addEventListener("click", e => { e.preventDefault(); alert("Drag this button onto your bookmarks bar, then use it while you're logged in to Three Rings."); });
+    const code = {main: buttonCode(cfg), me: buttonCode(cfg, "buttonMeSrc")};
+    $("bm").href = code.main; $("bmMe").href = code.me;
+    for (const id of ["bm", "bmMe"]) $(id).addEventListener("click", e => { e.preventDefault(); alert("Drag this button onto your bookmarks bar, then use it while you're logged in to Three Rings."); });
     document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", () =>
-      navigator.clipboard.writeText(code).then(() => $("copied").classList.remove("hidden"))));
+      navigator.clipboard.writeText(code[b.dataset.b]).then(() => $("copied").classList.remove("hidden"))));
+    if (cfg.meOnly) { $("wrapMain").classList.add("hidden"); document.querySelectorAll(".mainOnly").forEach(x => x.classList.add("hidden")); $("btnWord").textContent = "your button"; }
     $("forBranch").textContent = cfg.branch ? ` for ${cfg.branch}` : "";
     $("install").classList.remove("hidden");
     $("setupIntro").textContent = "These are the settings in your set-up link. Only change them if you manage the rota and want to make a new link.";
