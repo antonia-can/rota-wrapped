@@ -221,6 +221,33 @@ function buttonCode(cfg) {
   return "javascript:" + encodeURIComponent(src);
 }
 
+// Short set-up links: only what differs from the defaults goes in the link
+const EXPECT_DEFAULT = [1, 8, 3, 6, 1];
+function shortLink(cfg) {
+  const q = new URLSearchParams();
+  if (cfg.branch) q.set("b", cfg.branch);
+  if (cfg.since) q.set("d", cfg.since);
+  if (cfg.fontKey) q.set("k", cfg.fontKey);
+  if (cfg.holidays) q.set("h", "1");
+  const e = [cfg.expect.shifts, cfg.expect.nightEvery, cfg.expect.dayH, cfg.expect.nightH, cfg.expect.lead];
+  if (e.join() !== EXPECT_DEFAULT.join()) q.set("e", e.join(","));
+  for (const k of REPORTS) if (cfg.reports[k] && cfg.reports[k] !== DEFAULTS[k]) q.set("r." + k, cfg.reports[k]);
+  for (const [f, u] of cfg.fonts) q.set("f." + f, u);
+  return q.toString();
+}
+function readLink(h) {
+  if (/^setup=/.test(h)) return dec(h.slice(6));          // older, longer links still work
+  const q = new URLSearchParams(h);
+  if (!q.has("b") && !q.has("d") && !q.has("k")) return null;
+  const e = (q.get("e") || EXPECT_DEFAULT.join()).split(",").map(Number);
+  const cfg = {branch: q.get("b") || "", since: q.get("d") || "", holidays: q.get("h") === "1", fonts: [], reports: {},
+    expect: {shifts: e[0], nightEvery: e[1], dayH: e[2], nightH: e[3], lead: e[4]}};
+  if (q.get("k")) cfg.fontKey = q.get("k");
+  for (const k of REPORTS) cfg.reports[k] = q.get("r." + k) || DEFAULTS[k];
+  for (const f of FACES) if (q.get("f." + f)) cfg.fonts.push([f, q.get("f." + f)]);
+  return cfg;
+}
+
 function readForm() {
   const num = (id, d) => { const v = parseFloat($(id).value); return isFinite(v) && v >= 0 ? v : d; };
   const cfg = {branch: $("branch").value.trim(), since: $("since").value, holidays: $("holidays").checked, reports: {}, fonts: [],
@@ -248,7 +275,7 @@ fillExpect({});
 
 $("make").addEventListener("click", () => {
   const cfg = readForm();
-  $("link").value = SITE + "#setup=" + enc(cfg);
+  $("link").value = SITE + "#" + shortLink(cfg);
   $("out").classList.remove("hidden");
   $("patterns").innerHTML = "<h3>What the button will fetch</h3><ul>" +
     `<li><b>expectations</b>: ${cfg.expect.shifts} listening ${cfg.expect.shifts === 1 ? "shift" : "shifts"} a week (${cfg.expect.dayH} hours each), ${cfg.expect.nightEvery ? `an overnight every ${cfg.expect.nightEvery} weeks (${cfg.expect.nightH} hours)` : "no overnight expectation"}, ${cfg.expect.lead} leader ${cfg.expect.lead === 1 ? "slot" : "slots"} a week</li>` +
@@ -258,10 +285,11 @@ $("make").addEventListener("click", () => {
 $("copyLink").addEventListener("click", () => navigator.clipboard.writeText($("link").value).then(() => $("copyLink").textContent = "Copied"));
 
 // opened with a set-up link: show the button
-const m = /setup=([^&]+)/.exec(location.hash);
+const m = location.hash.length > 1;
 if (m) {
   try {
-    const cfg = dec(m[1]);
+    const cfg = readLink(location.hash.slice(1));
+    if (!cfg) throw new Error("no settings");
     fillForm(cfg);
     const code = buttonCode(cfg);
     $("bm").href = code;
