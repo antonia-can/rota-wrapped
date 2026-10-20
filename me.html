@@ -129,34 +129,86 @@ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .err{background:#fff4d6;border-left:6px solid var(--yellow);padding:12px 16px;margin-top:14px;font-size:16px}
 .gauge{height:26px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden;max-width:640px;margin:6px 0 10px}
 .gauge span{display:block;height:100%;background:var(--primary);border-radius:999px}
-.months{display:flex;gap:10px;margin-top:22px}
-.mo{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0}
+/* hero */
+.hero{position:relative;overflow:hidden;background:var(--navy);color:var(--white);border-radius:6px;padding:34px 36px 30px;margin-bottom:14px}
+.hero .logo{height:52px;display:block;margin-bottom:22px;position:relative;z-index:2}
+.hero .kicker{background:var(--primary);color:var(--navy);position:relative;z-index:2}
+.hero h1{font-size:clamp(44px,8vw,86px);line-height:1;letter-spacing:-.02em;margin:6px 0 14px;position:relative;z-index:2}
+.hero .dates{font-size:18px;color:var(--pale);position:relative;z-index:2}
+.blob{position:absolute;z-index:1}
+.b1{width:210px;height:150px;background:var(--pale);right:-30px;top:-20px}
+.b2{width:130px;height:110px;background:var(--teal);right:150px;top:90px}
+.b3{width:170px;height:80px;background:var(--primary);right:-20px;bottom:-10px}
+/* tiles */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.tile{position:relative;overflow:hidden;border-radius:6px;padding:24px 26px}
+.tile .kicker{margin-bottom:14px}
+.tile h2{font-size:clamp(24px,3.2vw,32px);line-height:1.12;margin-bottom:12px}
+.num{font-size:clamp(64px,10vw,104px);font-weight:700;line-height:.9;letter-spacing:-.04em}
+.cap{font-size:20px;margin:4px 0 14px}
+.small{font-size:15px;line-height:1.45}
+.t-hours{grid-column:span 3;background:var(--primary);color:var(--navy)}
+.t-hours .kicker{background:var(--navy);color:var(--white)}
+.minis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.minis div{background:rgba(255,255,255,.55);border-radius:4px;padding:10px 12px}
+.minis b{display:block;font-size:28px;line-height:1}
+.minis span{font-size:13px}
+.t-contrib{grid-column:span 3;background:var(--petrol);color:var(--white)}
+.ringrow{display:flex;gap:20px;align-items:center;margin-bottom:12px}
+.ring{flex:0 0 150px;height:150px;border-radius:50%;display:grid;place-items:center}
+.ring div{width:108px;height:108px;border-radius:50%;background:var(--petrol);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring b{font-size:34px;line-height:1}
+.ring span{font-size:12px;opacity:.85}
+.say{font-size:18px;line-height:1.35}
+.t-months{grid-column:span 6;background:var(--white);color:var(--navy)}
+.t-months .kicker{background:var(--navy);color:var(--white)}
+.months{display:flex;gap:14px;align-items:flex-end}
+.mo{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0;max-width:90px}
 .mo b{font-size:15px;margin-bottom:4px;height:20px}
-.plot{position:relative;width:100%;height:160px}
+.plot{position:relative;width:100%;height:130px}
 .plot .bar{position:absolute;bottom:0;left:0;right:0;background:var(--primary);border-radius:3px 3px 0 0;min-height:3px}
-.plot .exp{position:absolute;left:-3px;right:-3px;height:3px;background:var(--white)}
-.plot .leave{position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 6px,transparent 6px 12px)}
+.plot .exp{position:absolute;left:-3px;right:-3px;height:3px;background:var(--navy)}
+.plot .leave{position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(0,68,85,.18) 0 6px,transparent 6px 12px)}
 .mo em{font-style:normal;font-size:13px;margin-top:6px}
-.key{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;font-weight:700;margin-top:12px}
-.key i{display:inline-block;width:14px;height:14px;margin-right:6px;vertical-align:-2px}
-.habit{border-collapse:separate;border-spacing:4px;margin-top:14px}
-.habit th{font-size:13px;font-weight:700;padding:2px 4px;text-align:center}
-.habit tr th:first-child{text-align:left}
-.habit td{width:54px;height:34px;border-radius:4px;text-align:center;font-weight:700;font-size:14px;background:rgba(0,68,85,.07)}
+.key{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;font-weight:700;margin-top:12px}
+.key i{display:inline-block;width:13px;height:13px;margin-right:6px;vertical-align:-2px}
+.key i.hatch{background:repeating-linear-gradient(45deg,rgba(0,68,85,.45) 0 3px,transparent 3px 6px)}
+.t-habit{grid-column:span 3;background:var(--white);color:var(--navy)}
+.t-habit .kicker{background:var(--petrol);color:var(--white)}
+.t-habit h2 span{color:var(--teal)}
 .habitwrap{overflow-x:auto}
-.list{list-style:none;display:grid;gap:8px;margin-top:10px;max-width:640px}
-.list li{background:rgba(255,255,255,.65);border-radius:4px;padding:10px 14px;font-size:17px}
-.list li span{float:right;font-size:14px;opacity:.8}
-.mile{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:10px}
-.mile div{background:var(--white);border-radius:4px;padding:16px;border-bottom:6px solid var(--primary)}
-.mile b{display:block;font-size:30px;line-height:1.1}
-.mile span{font-size:15px}
-.toggle{display:flex;gap:10px;align-items:center;font-size:16px;margin-top:10px}
-.heat-card{background:var(--white);color:var(--navy)}
-.heat-card .kicker{background:var(--petrol);color:var(--white)}
-.load-card{background:var(--paper);color:var(--navy)}
-.load-card .kicker{background:var(--teal);color:var(--white)}
-@media print{.toolbar{display:none}.card{min-height:auto;break-inside:avoid}}
+.habit{border-collapse:separate;border-spacing:3px}
+.habit th{font-size:12px;font-weight:700;padding:1px 3px;text-align:center}
+.habit tr th:first-child{text-align:left}
+.habit td{width:62px;height:24px;border-radius:3px;text-align:center;font-weight:700;font-size:13px;background:rgba(0,68,85,.07)}
+.t-nights{grid-column:span 3;color:var(--white);background:radial-gradient(circle at 85% 15%,#23407a,var(--navy) 70%)}
+.t-nights .num{color:var(--primary)}
+.moon{position:absolute;right:30px;top:26px;width:70px;height:70px;border-radius:50%;box-shadow:-16px 9px 0 0 var(--yellow);transform:rotate(-10deg)}
+.t-next{grid-column:span 3;background:var(--yellow);color:var(--navy)}
+.t-next .kicker{background:var(--navy);color:var(--white)}
+.list{list-style:none;display:grid;gap:6px}
+.list li{background:rgba(255,255,255,.65);border-radius:4px;padding:8px 12px;font-size:15px;display:flex;justify-content:space-between;gap:10px}
+.list li span{font-size:13px;opacity:.8;text-align:right}
+.t-lead{grid-column:span 3;background:var(--teal);color:var(--white)}
+.t-lead .kicker{background:var(--navy);color:var(--white)}
+.t-miles{grid-column:span 6;background:var(--paper);color:var(--navy)}
+.t-next.wide{grid-column:span 6}
+.t-miles .kicker{background:var(--teal);color:var(--white)}
+.mile{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.mile div{background:var(--white);border-radius:4px;padding:12px 14px;border-bottom:5px solid var(--primary)}
+.mile b{display:block;font-size:26px;line-height:1.1}
+.mile span{font-size:13px}
+.foot{background:var(--paper);color:var(--navy);border-radius:6px;padding:18px 24px;margin-top:14px;font-size:14px;line-height:1.5}
+.foot p+p{margin-top:8px}
+.toggle{display:flex;gap:10px;align-items:center;font-size:15px;margin-top:8px;font-weight:700}
+@media (max-width:760px){
+  .bento{grid-template-columns:1fr}
+  .tile,.t-next.wide{grid-column:auto}
+  .hero{padding:26px 22px}.tile{padding:20px}
+  .b1{width:110px;height:80px;top:-30px;right:-40px}.b2,.b3{display:none}
+  .ring{flex-basis:120px;height:120px}.ring div{width:86px;height:86px}.ring b{font-size:28px}
+}
+@media print{.toolbar{display:none}.tile,.hero{break-inside:avoid}}
 </style></head>
 <body>
 <div class="toolbar hidden" id="toolbar"><button class="btn" id="printBtn">Print or save as PDF</button></div>
@@ -332,85 +384,96 @@ function render(r) {
       <em>${x.label}</em></div>`).join("");
   const maxH = Math.max(1, ...r.habit.flat());
   const habitHtml = `<table class="habit"><tr><th></th>${r.bands.map(b => `<th>${b[2]}</th>`).join("")}</tr>${
-    WEEKDAYS.map((d, i) => `<tr><th>${d.slice(0, 3)}</th>${r.habit[i].map(n => `<td style="background:${n ? `rgba(132,189,0,${0.25 + 0.75 * n / maxH})` : ""}">${n || ""}</td>`).join("")}</tr>`).join("")}</table>`;
+    WEEKDAYS.map((d, i) => `<tr><th>${d.slice(0, 3)}</th>${r.habit[i].map(n => `<td style="${n ? `background:rgba(132,189,0,${0.3 + 0.7 * n / maxH})` : ""}">${n || ""}</td>`).join("")}</tr>`).join("")}</table>`;
   let verdict;
   if (pct == null) verdict = "There isn't enough time in this period to work out a contribution yet.";
   else if (pct >= 100) verdict = "You're meeting your full contribution. Thank you.";
   else if (pct >= 75) verdict = "You're close to your full contribution.";
-  else verdict = "You're below your expected contribution at the moment. Life gets busy. If anything is getting in the way, your rota manager or a director will be glad to talk it through.";
-  const nightCard = !CFG.nightEvery ? "" : r.excused
-    ? `<section class="card nights"><p class="kicker">Overnights</p><h2>You're excused from overnights</h2><p class="sub">So they're not part of your expected contribution.</p><div class="moon"></div></section>`
-    : `<section class="card nights"><p class="kicker">Overnights</p>
-      <div class="big">${r.nights.length}</div><p class="lead">${plural(r.nights.length, "overnight", "overnights")} since ${short(r.own)}</p>
-      <p class="sub">${r.lastNight != null ? `Your last overnight was on ${long(r.lastNight)}.` : "You haven't done an overnight in this period yet."}
-      ${r.nextNightBooked != null ? ` Your next one is booked for ${long(r.nextNightBooked)}.` : r.nightDue != null ? ` One every ${CFG.nightEvery} weeks means your next is due by ${long(r.nightDue)}${r.nightDue < r.today ? ", which has passed" : ""}.` : ""}</p>
-      <div class="moon"></div></section>`;
-  const upcoming = r.future.slice(0, 6);
-  const leadCard = !(r.isLeader || r.ledPast.length) ? "" : `<section class="card contribution"><p class="kicker">Leading</p>
-      <div class="big">${r.ledPast.length}</div><p class="lead">shift leader ${plural(r.ledPast.length, "slot", "slots")} led since ${short(r.own)}</p>
-      <p class="sub">That's about ${(r.ledPast.length / Math.max(r.active / 7, 1)).toFixed(1)} a week${CFG.lead ? `, against an informal expectation of ${CFG.lead}` : ""}. Leading is in addition to your listening contribution.${r.ledFuture.length ? ` Your next leader slot is on ${long(r.ledFuture[0].day)}.` : ""}</p></section>`;
+  else verdict = "You're below your expected contribution at the moment. Life gets busy: if anything is getting in the way, your rota manager or a director will be glad to talk it through.";
+  const ring = pct == null ? 0 : Math.min(pct, 100);
+  const showNights = !!CFG.nightEvery;
+  const upcoming = r.future.slice(0, 4);
+  const leading = r.isLeader || r.ledPast.length;
   const leaveText = r.leave.filter(([s, e]) => e >= r.own && s <= r.today).map(([s, e]) => `${short(Math.max(s, r.own))} to ${e > r.today + 3000 ? "no end date" : short(e)}`).join(", ");
 
   $("report").innerHTML = `
-<section class="card cover">
+<section class="hero">
   <img class="logo" src="${LOGO}" alt="Samaritans">
   <p class="kicker">${CFG.branch ? esc(CFG.branch) + " branch · " : ""}just for you</p>
   <h1>${esc(first)},<br><span class="hl">your rota, wrapped.</span></h1>
-  <p class="sub">${long(r.own)} to ${long(r.today)}${r.isProb ? " · probationer" : ""}</p>
-  <div class="blob b-a"></div><div class="blob b-b"></div>
-  <p class="scroll">Scroll ↓</p>
+  <p class="dates">${long(r.own)} to ${long(r.today)}${r.isProb ? " · probationer" : ""}</p>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
 </section>
 
-<section class="card numbers">
-  <p class="kicker">What you've given</p>
-  <div class="big">${fmtH(r.hours)}</div>
-  <p class="lead">hours listening</p>
-  <div class="trio">
-    <div><b>${r.past.length}</b><span>listening ${plural(r.past.length, "shift", "shifts")}</span></div>
-    <div><b>${r.nights.length}</b><span>${plural(r.nights.length, "overnight", "overnights")}</span></div>
-    <div><b>${r.alongside}</b><span>volunteers you've listened alongside</span></div>
-  </div>
-</section>
+<div class="bento">
+  <section class="tile t-hours">
+    <p class="kicker">What you've given</p>
+    <div class="num">${fmtH(r.hours)}</div>
+    <p class="cap">hours listening</p>
+    <div class="minis">
+      <div><b>${r.past.length}</b><span>${plural(r.past.length, "shift", "shifts")}</span></div>
+      <div><b>${r.nights.length}</b><span>${plural(r.nights.length, "overnight", "overnights")}</span></div>
+      <div><b>${r.alongside}</b><span>listened alongside</span></div>
+    </div>
+  </section>
 
-<section class="card contribution">
-  <p class="kicker">Your contribution</p>
-  ${pct == null ? "" : `<h2><span class="hl">${pct}%</span> of your expected contribution</h2><div class="gauge"><span style="width:${Math.min(pct, 100)}%"></span></div>`}
-  <p class="sub">You've given ${fmtH(r.hours)} hours. ${r.leaveDays ? `With ${r.leaveDays} ${plural(r.leaveDays, "day", "days")} of leave taken out, the` : "The"} expectation for this period is about ${fmtH(r.expected)} hours (${fmtH(r.weekly)} a week). ${verdict}</p>
-  ${r.months.length ? `<div class="months">${monthsHtml}</div>
-  <div class="key"><span><i style="background:var(--primary)"></i>Hours given</span><span><i style="background:var(--white)"></i>Expected</span>${r.leave.length ? '<span><i style="background:repeating-linear-gradient(45deg,rgba(255,255,255,.5) 0 3px,transparent 3px 6px)"></i>Leave</span>' : ""}</div>` : ""}
-</section>
+  <section class="tile t-contrib">
+    <p class="kicker">Your contribution</p>
+    <div class="ringrow">
+      <div class="ring" style="background:conic-gradient(var(--primary) 0 ${ring}%, rgba(255,255,255,.15) ${ring}% 100%)"><div><b>${pct == null ? "–" : pct + "%"}</b><span>of expected</span></div></div>
+      <p class="say">${verdict}</p>
+    </div>
+    <p class="small">${fmtH(r.hours)} hours given against about ${fmtH(r.expected)} expected (${fmtH(r.weekly)} a week)${r.leaveDays ? `, with ${r.leaveDays} ${plural(r.leaveDays, "day", "days")} of leave taken out` : ""}.</p>
+  </section>
 
-<section class="card heat-card">
-  <p class="kicker">When you listen</p>
-  <h2>${r.top ? `You're often our ${r.top.day} ${r.top.band.toLowerCase()} listener` : "No shifts in this period yet"}</h2>
-  <div class="habitwrap">${habitHtml}</div>
-</section>
+  ${r.months.length ? `<section class="tile t-months">
+    <p class="kicker">Month by month</p>
+    <div class="months">${monthsHtml}</div>
+    <div class="key"><span><i style="background:var(--primary)"></i>Hours given</span><span><i style="background:var(--navy)"></i>Expected</span>${r.leave.length ? '<span><i class="hatch"></i>Leave</span>' : ""}</div>
+  </section>` : ""}
 
-${nightCard}
+  <section class="tile t-habit">
+    <p class="kicker">When you listen</p>
+    <h2>${r.top ? `You're often our <span>${r.top.day} ${r.top.band.toLowerCase()}</span> listener` : "No shifts in this period yet"}</h2>
+    <div class="habitwrap">${habitHtml}</div>
+  </section>
 
-<section class="card watch-card">
-  <p class="kicker">Coming up</p>
-  <h2>${upcoming.length ? `${r.future.length} listening ${plural(r.future.length, "shift", "shifts")} booked` : "Nothing booked yet"}</h2>
-  ${upcoming.length ? `<ul class="list">${upcoming.map(x => `<li>${WEEKDAYS[weekday(x.day)]} ${long(x.day)}<span>${esc(x.rota)}</span></li>`).join("")}</ul>` : `<p class="sub">You can sign up for shifts in Three Rings.</p>`}
-</section>
+  ${showNights ? `<section class="tile t-nights">
+    <div class="moon"></div>
+    <p class="kicker">Overnights</p>
+    ${r.excused ? `<h2>You're excused from overnights</h2><p class="small">So they're not part of your expected contribution.</p>`
+      : `<div class="num">${r.nights.length}</div><p class="cap">${plural(r.nights.length, "overnight", "overnights")} since ${short(r.own)}</p>
+      <p class="small">${r.nextNightBooked != null ? `Next one booked: <b>${long(r.nextNightBooked)}</b>` : r.nightDue != null ? `Next due by <b>${long(r.nightDue)}</b>${r.nightDue < r.today ? " (now overdue)" : ""}` : ""}${r.lastNight != null ? `<br>Last one: ${long(r.lastNight)}` : ""}</p>`}
+  </section>` : ""}
 
-${leadCard}
+  <section class="tile t-next${leading ? "" : " wide"}">
+    <p class="kicker">Coming up</p>
+    <h2>${r.future.length ? `${r.future.length} ${plural(r.future.length, "shift", "shifts")} booked` : "Nothing booked yet"}</h2>
+    ${upcoming.length ? `<ul class="list">${upcoming.map(x => `<li><b>${WEEKDAYS[weekday(x.day)].slice(0, 3)} ${short(x.day)}</b><span>${esc(x.rota)}</span></li>`).join("")}</ul>` : `<p class="small">You can sign up for shifts in Three Rings.</p>`}
+  </section>
 
-<section class="card load-card">
-  <p class="kicker">Milestones</p>
-  <div class="mile">
-    <div><b>${r.longest}</b><span>${plural(r.longest, "week", "weeks")} in a row meeting the weekly expectation, your longest run</span></div>
-    <div><b>${r.current}</b><span>${plural(r.current, "week", "weeks")} in your current run</span></div>
-    ${r.busiest && r.busiest.hours ? `<div><b>${MONTHS[r.busiest.m - 1]}</b><span>your busiest month, with ${fmtH(r.busiest.hours)} hours</span></div>` : ""}
-    ${r.past.length ? `<div><b>${short(r.past[0].day)}</b><span>your first listening shift in this period</span></div>` : ""}
-  </div>
-</section>
+  ${leading ? `<section class="tile t-lead">
+    <p class="kicker">Leading</p>
+    <div class="num">${r.ledPast.length}</div>
+    <p class="cap">leader ${plural(r.ledPast.length, "slot", "slots")} led</p>
+    <p class="small">About ${(r.ledPast.length / Math.max(r.active / 7, 1)).toFixed(1)} a week${CFG.lead ? ` (expectation ${CFG.lead})` : ""}, on top of your listening.${r.ledFuture.length ? ` Next: <b>${short(r.ledFuture[0].day)}</b>.` : ""}</p>
+  </section>` : ""}
 
-<section class="card method">
-  <h3>How this is worked out</h3>
-  <p>The expectation is ${CFG.shifts} listening ${plural(CFG.shifts, "shift", "shifts")} a week${CFG.nightEvery && !r.excused ? ` and an overnight every ${CFG.nightEvery} weeks` : ""}, counted in hours: ${CFG.dayH} hours for a day shift${CFG.nightEvery ? ` and ${CFG.nightH} for an overnight` : ""}. It runs from ${long(r.own)}${r.join && r.join === r.own ? ", your join date," : ""} and only counts shifts that have already happened.${leaveText ? ` Leave taken out: ${leaveText}.` : ""}</p>
+  <section class="tile t-miles">
+    <p class="kicker">Milestones</p>
+    <div class="mile">
+      <div><b>${r.longest}</b><span>${plural(r.longest, "week", "weeks")} in a row meeting the expectation (your best)</span></div>
+      <div><b>${r.current}</b><span>${plural(r.current, "week", "weeks")} in your current run</span></div>
+      ${r.busiest && r.busiest.hours ? `<div><b>${MONTHS[r.busiest.m - 1].slice(0, 3)}</b><span>busiest month, ${fmtH(r.busiest.hours)} hours</span></div>` : ""}
+      ${r.past.length ? `<div><b>${short(r.past[0].day)}</b><span>first shift this period</span></div>` : ""}
+    </div>
+  </section>
+</div>
+
+<section class="foot">
+  <p><b>How this is worked out.</b> The expectation is ${CFG.shifts} listening ${plural(CFG.shifts, "shift", "shifts")} a week${CFG.nightEvery && !r.excused ? ` and an overnight every ${CFG.nightEvery} weeks` : ""}, counted as ${CFG.dayH} hours a day shift${CFG.nightEvery ? ` and ${CFG.nightH} an overnight` : ""}, from ${long(r.own)}. Only shifts that have happened count.${leaveText ? ` Leave taken out: ${leaveText}.` : ""}</p>
   ${CFG.nightEvery ? `<label class="toggle"><input type="checkbox" id="excused" ${r.excused ? "checked" : ""}> I'm excused from night shifts${r.excusedRecord ? " (as recorded in Three Rings)" : ""}</label>` : ""}
-  <p style="margin-top:10px">This page is just for you. It was built from Three Rings with your own login, and nothing is stored or sent anywhere.</p>
+  <p>This page is just for you. It was built from Three Rings with your own login, and nothing is stored or sent anywhere.</p>
 </section>`;
   const ex = $("excused");
   if (ex) ex.addEventListener("change", () => { EXCUSED_TICK = ex.checked; render(analyse(DATA)); });
