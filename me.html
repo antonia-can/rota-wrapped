@@ -208,7 +208,36 @@ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .b1{width:110px;height:80px;top:-30px;right:-40px}.b2,.b3{display:none}
   .ring{flex-basis:120px;height:120px}.ring div{width:86px;height:86px}.ring b{font-size:28px}
 }
-@media print{.toolbar{display:none}.tile,.hero{break-inside:avoid}}
+@page{size:A4 portrait;margin:9mm}
+@media print{
+  html,body{background:#fff!important}
+  main{max-width:none;padding:0;zoom:.84}
+  .t-months,.t-habit,.t-miles,.foot{box-shadow:inset 0 0 0 1.5px #c9d6cf}
+  .toolbar,.toggle,.waiting{display:none!important}
+  .tile,.hero,.foot{break-inside:avoid}
+  .hero{padding:16px 20px 14px;margin-bottom:8px}
+  .hero .logo{height:30px;margin-bottom:10px}
+  .hero h1{font-size:38px;margin:4px 0 6px}
+  .hero .dates{font-size:13px}
+  .b1{width:120px;height:80px}.b2{width:80px;height:60px;right:100px;top:50px}.b3{width:110px;height:44px}
+  .bento{gap:8px}
+  .tile{padding:12px 14px}
+  .tile .kicker{margin-bottom:8px;font-size:11px;padding:4px 9px 5px}
+  .tile h2{font-size:18px;margin-bottom:6px}
+  .num{font-size:52px}
+  .cap{font-size:14px;margin:2px 0 8px}
+  .small,.say{font-size:12px}
+  .minis b{font-size:20px}.minis span{font-size:11px}.minis div{padding:6px 8px}
+  .ring{flex-basis:96px;height:96px}.ring div{width:70px;height:70px}.ring b{font-size:21px}.ring span{font-size:9px}
+  .ringrow{gap:12px;margin-bottom:6px}
+  .plot{height:70px}.mo b{font-size:11px;height:14px}.mo em{font-size:10px;margin-top:3px}
+  .key{font-size:10px;margin-top:6px}
+  .habit td{width:44px;height:15px;font-size:10px}.habit th{font-size:9px}
+  .moon{width:44px;height:44px;top:14px;right:18px}
+  .list li{padding:4px 8px;font-size:11px}.list li span{font-size:10px}
+  .mile b{font-size:18px}.mile span{font-size:10px}.mile div{padding:7px 9px}
+  .foot{padding:8px 12px;margin-top:8px;font-size:10px}
+}
 </style></head>
 <body>
 <div class="toolbar hidden" id="toolbar"><button class="btn" id="printBtn">Print or save as PDF</button></div>
