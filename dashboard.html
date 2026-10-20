@@ -1338,11 +1338,25 @@ $("namesBtn").addEventListener("click", () => {
 const THREE_RINGS = "https://www.3r.org.uk";
 const FONT_FACES = {"Regular": ["400", "normal"], "Bold": ["700", "normal"], "Italic": ["400", "italic"], "BoldItalic": ["700", "italic"]};
 
+// The Varah files on this site are encrypted. The key travels only in the private set-up link.
+async function loadLockedFonts(k) {
+  try {
+    const b64 = k.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - k.length % 4) % 4);
+    const key = await crypto.subtle.importKey("raw", Uint8Array.from(atob(b64), c => c.charCodeAt(0)), "AES-GCM", false, ["decrypt"]);
+    await Promise.all(Object.entries(FONT_FACES).map(async ([face, [weight, style]]) => {
+      const buf = new Uint8Array(await (await fetch(`fonts/varah-${face.toLowerCase()}.bin`)).arrayBuffer());
+      const data = await crypto.subtle.decrypt({name: "AES-GCM", iv: buf.slice(0, 12)}, key, buf.slice(12));
+      document.fonts.add(await new FontFace("Varah", data, {weight, style}).load());
+    }));
+  } catch { /* no key or wrong key: the page uses Calibri */ }
+}
+
 async function loadFromButton(d) {
   const problems = [];
   const s = d.settings || {};
   if (s.branch) { CFG.branch = s.branch; $("setBranch").value = s.branch; }
   if (s.since) { CFG.periodStart = s.since; $("setStart").value = s.since; setUrl(); }
+  if (s.fontKey) await loadLockedFonts(s.fontKey);
   for (const f of d.fonts || []) {
     try {
       const [weight, style] = FONT_FACES[f.face] || ["400", "normal"];

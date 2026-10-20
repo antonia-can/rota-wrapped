@@ -21,9 +21,10 @@ The button follows the Three Rings guidance for bookmarklets: it uses the person
 
 ## Fonts and logo
 
-The Samaritans Varah font is licensed for Samaritans use and is not included here. Branches can put the four Varah files in a Three Rings Filestore folder called `Rota Wrapped`, visible to volunteers only, and the button will fetch them with the user's login. Otherwise the dashboard uses Calibri, as the Samaritans brand guide allows.
+The Samaritans Varah font is licensed for Samaritans use. The `fonts` folder holds it only in encrypted form (AES-GCM), which is unusable without the key. The key is never stored in this repository: it travels in the private set-up link that a rota manager shares with their volunteers, and the dashboard uses it to unlock the font in the browser. Without the key, the dashboard uses Calibri, as the Samaritans brand guide allows. Branches can also point the button at Varah files in their own Three Rings Filestore instead.
 
 ## Files
 
 - `index.html`: the set-up form and install instructions
 - `dashboard.html`: the dashboard
+- `fonts/`: the Varah font, encrypted
