@@ -1358,7 +1358,11 @@ async function loadFromButton(d) {
   if (ok("closures")) loadClosed(r.closures);
   if (ok("directory")) loadPeople(r.directory);
   if (ok("roles")) loadRoles(r.roles);
-  if (ok("inactivity")) loadLeave(r.inactivity);
+  if (ok("inactivity")) {
+    loadLeave(r.inactivity);
+    // count leave of absence only, unless the set-up link says holidays count too
+    if (!s.holidays && $("leaveType")) { $("leaveType").value = "leave of absence"; applyLeaveReport(); drawReview(); }
+  }
   $("fromButton").classList.add("hidden");
   if (problems.length) $("buttonProblems").innerHTML = `<div class="warn"><b>Some reports couldn't be fetched.</b> The dashboard has been built from the rest.<ul>${problems.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`;
   if (SHIFTS.length && PEOPLE.length) {
