@@ -152,14 +152,20 @@ const fill = u => u.replace(/\{start\}/g, ymd(start)).replace(/\{end\}/g, ymd(en
 const get = (u, binary) => fetch(fill(u), {credentials: "same-origin"})
 .then(r => r.ok ? (binary ? r.arrayBuffer() : r.text()) : Promise.reject(new Error("Three Rings said " + r.status)))
 .catch(e => ({error: e.message}));
-const reports = Promise.all(Object.entries(C.reports).filter(([, u]) => u).map(([k, u]) => get(u).then(v => [k, v])));
-const fonts = Promise.all((C.fonts || []).map(([face, u]) => get(u, true).then(data => ({face, data}))));
+const status = {};
+let ready = false;
 const origin = new URL(SITE).origin;
+const tell = () => { if (ready) win.postMessage({type: "rota-wrapped-progress", status}, origin); };
+const todo = Object.entries(C.reports).filter(([, u]) => u);
+todo.forEach(([k]) => status[k] = "waiting");
+const reports = Promise.all(todo.map(([k, u]) => get(u).then(v => { status[k] = v && v.error ? "failed" : "done"; tell(); return [k, v]; })));
+const fonts = Promise.all((C.fonts || []).map(([face, u]) => get(u, true).then(data => ({face, data}))));
 let sent = false;
 const listener = async e => {
 if (sent || e.origin !== origin || e.source !== win || !e.data || e.data.type !== "rota-wrapped-ready") return;
-sent = true;
+sent = true; ready = true;
 removeEventListener("message", listener);
+tell();
 const r = Object.fromEntries(await reports), f = (await fonts).filter(x => x.data instanceof ArrayBuffer);
 win.postMessage({type: "rota-wrapped-data", settings: {branch: C.branch, since: C.since, holidays: C.holidays, fontKey: C.fontKey}, reports: r, fonts: f}, origin, f.map(x => x.data));
 };
