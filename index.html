@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rota Wrapped</title>
+<style>
+:root{--primary:#84BD00;--green:#00A862;--teal:#00A589;--petrol:#115E67;--pale:#B6D8A3;--navy:#004455;--yellow:#FECB4E;--orange:#EC6D36;--paper:#f3f7ee;--white:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Varah,Calibri,"Segoe UI",Arial,sans-serif;background:var(--navy);color:var(--navy);line-height:1.5;-webkit-font-smoothing:antialiased}
+main{max-width:860px;margin:0 auto;padding:16px}
+.card{background:var(--white);border-radius:6px;padding:36px 40px;margin-bottom:16px}
+.hero{background:var(--primary)}
+.hero img{height:56px;display:block;margin-bottom:28px}
+h1{font-size:clamp(40px,8vw,72px);line-height:1;letter-spacing:-.02em;margin-bottom:14px}
+h2{font-size:28px;line-height:1.15;margin-bottom:12px}
+h3{font-size:19px;margin:18px 0 6px}
+p,li{font-size:17px;max-width:680px}
+p+p{margin-top:10px}
+ol,ul{margin:8px 0 0 22px}
+li{margin:4px 0}
+.privacy{background:var(--paper);border-left:6px solid var(--green)}
+.privacy p{font-size:16px}
+.btnwrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:18px 0}
+a.bm{display:inline-block;background:var(--navy);color:var(--white);font-weight:700;font-size:20px;text-decoration:none;padding:14px 26px;border-radius:999px;cursor:grab}
+a.bm:active{cursor:grabbing}
+.hint{font-size:15px;opacity:.85}
+.tabs{display:flex;gap:8px;margin:18px 0 6px;flex-wrap:wrap}
+.tabs button{font:inherit;font-weight:700;font-size:15px;border:2px solid var(--navy);background:var(--white);color:var(--navy);padding:8px 16px;border-radius:999px;cursor:pointer}
+.tabs button.on{background:var(--navy);color:var(--white)}
+textarea,input[type=text],input[type=date]{width:100%;font:inherit;font-size:14px;padding:8px;border:1px solid #9bb;border-radius:4px;color:var(--navy);background:var(--white)}
+textarea{height:90px;font-family:Consolas,monospace;font-size:12px;word-break:break-all}
+label{display:block;font-weight:700;font-size:15px;margin-top:14px}
+label small{display:block;font-weight:400;opacity:.8}
+.action{font:inherit;font-weight:700;font-size:17px;border:0;border-radius:4px;padding:12px 22px;cursor:pointer;background:var(--primary);color:var(--navy);margin-top:16px}
+.secondary{background:var(--paper);border:1px solid var(--pale)}
+.out{margin-top:16px;background:var(--paper);padding:16px;border-radius:4px}
+.warn{background:#fff4d6;border-left:6px solid var(--yellow);padding:12px 16px;margin-top:14px;font-size:15px}
+.ok{font-weight:700;color:var(--green);margin-top:8px}
+.hidden{display:none!important}
+footer{color:var(--pale);font-size:13px;text-align:center;padding:16px}
+footer a{color:var(--pale)}
+@media(max-width:600px){.card{padding:26px 20px}}
+</style></head>
+<body><main>
+
+<section class="card hero">
+  <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjU5IiB2aWV3Qm94PSIwIDAgMjIwIDU5Ij4KPGRlZnM+CjxjbGlwUGF0aCBpZD0iY2xpcC0wIj4KPHBhdGggY2xpcC1ydWxlPSJub256ZXJvIiBkPSJNIDAgMC4wNzAzMTI1IEwgMjE5LjI0NjA5NCAwLjA3MDMxMjUgTCAyMTkuMjQ2MDk0IDU4LjUxMTcxOSBMIDAgNTguNTExNzE5IFogTSAwIDAuMDcwMzEyNSAiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8ZyBjbGlwLXBhdGg9InVybCgjY2xpcC0wKSI+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDUxLjc2NTQ0MiUsIDc0LjExODA0MiUsIDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDIxLjAzOTA2MiAwLjA3MDMxMjUgTCAyMS4wMzkwNjIgOS4xMjEwOTQgQyAyMS4wMzkwNjIgMTAuMTA5Mzc1IDIwLjIzODI4MSAxMC45MTAxNTYgMTkuMjUgMTAuOTEwMTU2IEMgMTguMjYxNzE5IDEwLjkxMDE1NiAxNy40NTcwMzEgMTAuMTA5Mzc1IDE3LjQ1NzAzMSA5LjEyMTA5NCBMIDE3LjQ1NzAzMSAwLjA3MDMxMjUgTCAtMC4wMjM0Mzc1IDAuMDcwMzEyNSBMIC0wLjAyMzQzNzUgNTguNTExNzE5IEwgMTk4LjE1NjI1IDU4LjUxMTcxOSBMIDE5OC4xNTYyNSA0OS40NDkyMTkgQyAxOTguMTU2MjUgNDguNDYwOTM4IDE5OC45NTcwMzEgNDcuNjU2MjUgMTk5Ljk0NTMxMiA0Ny42NTYyNSBDIDIwMC45MzM1OTQgNDcuNjU2MjUgMjAxLjczODI4MSA0OC40NjA5MzggMjAxLjczODI4MSA0OS40NDkyMTkgTCAyMDEuNzM4MjgxIDU4LjUxMTcxOSBMIDIxOS4yNDYwOTQgNTguNTExNzE5IEwgMjE5LjI0NjA5NCAwLjA3MDMxMjUgWiBNIDIxLjAzOTA2MiAwLjA3MDMxMjUgIi8+CjwvZz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxMTQuMTE3MTg4IDI1LjEzMjgxMiBDIDExNC4xMTcxODggMjcuNDEwMTU2IDExMi42OTE0MDYgMjguNDc2NTYyIDEwOS43NjU2MjUgMjguNDc2NTYyIEwgMTA3LjExNzE4OCAyOC40NzY1NjIgTCAxMDcuMTE3MTg4IDIxLjc5Mjk2OSBMIDEwOS43NjU2MjUgMjEuNzkyOTY5IEMgMTEyLjY5MTQwNiAyMS43OTI5NjkgMTE0LjExNzE4OCAyMi44NTkzNzUgMTE0LjExNzE4OCAyNS4xMzI4MTIgTSAxMTQuODI0MjE5IDMxLjE0ODQzOCBDIDExNi40OTIxODggMzAuNjUyMzQ0IDExNy4zMDQ2ODggMjkuNTc0MjE5IDExNy45MjE4NzUgMjguNTc0MjE5IEMgMTE4LjU2NjQwNiAyNy41MjM0MzggMTE4Ljg4MjgxMiAyNi40MTc5NjkgMTE4Ljg4MjgxMiAyNS4xMDU0NjkgQyAxMTguODgyODEyIDIyLjg5NDUzMSAxMTguMTM2NzE5IDIxLjE2NDA2MiAxMTYuNjcxODc1IDE5Ljg5ODQzOCBDIDExNS4yMDcwMzEgMTguNjM2NzE5IDExMy4xNzk2ODggMTcuOTk2MDk0IDExMC42NDA2MjUgMTcuOTk2MDk0IEwgMTA0LjE0MDYyNSAxNy45OTYwOTQgQyAxMDMuMTI4OTA2IDE3Ljk5NjA5NCAxMDIuMzc4OTA2IDE4LjczODI4MSAxMDIuMzk0NTMxIDE5Ljc1IEwgMTAyLjM5NDUzMSA0MC4yMzgyODEgTCAxMDcuMTE3MTg4IDQwLjIzODI4MSBMIDEwNy4xMTcxODggMzIuMjg5MDYyIEwgMTA5LjY2MDE1NiAzMi4yODkwNjIgQyAxMDkuODUxNTYyIDMyLjI4OTA2MiAxMTAuMjAzMTI1IDMyLjI4NTE1NiAxMTAuNDg0Mzc1IDMyLjI2MTcxOSBMIDExNS4zMzU5MzggNDAuMjM4MjgxIEwgMTIwLjU2MjUgNDAuMjM4MjgxIFogTSAxMTQuODI0MjE5IDMxLjE0ODQzOCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxMjQuNTU0Njg4IDE4IEMgMTIzLjUzOTA2MiAxOCAxMjIuNzkyOTY5IDE4LjczODI4MSAxMjIuODA4NTk0IDE5Ljc1IEwgMTIyLjgwODU5NCA0MC4yMzgyODEgTCAxMjcuNTM1MTU2IDQwLjIzODI4MSBMIDEyNy41MzUxNTYgMTcuOTk2MDk0IFogTSAxMjQuNTU0Njg4IDE4ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDE3My42NTYyNSAxNy45OTYwOTQgTCAxNzEuMDkzNzUgMTcuOTk2MDk0IEMgMTcwLjA4MjAzMSAxNy45OTYwOTQgMTY5LjMzNTkzOCAxOC43MzgyODEgMTY5LjM0NzY1NiAxOS43NSBMIDE2OS4zNDc2NTYgNDAuMjM4MjgxIEwgMTczLjg0NzY1NiA0MC4yMzgyODEgTCAxNzMuODQ3NjU2IDI1LjU4OTg0NCBMIDE4NS4xMTMyODEgNDAuMjM4MjgxIEwgMTg5LjI0MjE4OCA0MC4yMzgyODEgTCAxODkuMjQyMTg4IDE3Ljk5NjA5NCBMIDE4NC43MzgyODEgMTguMDA3ODEyIEwgMTg0LjczODI4MSAzMi40NDkyMTkgWiBNIDE3My42NTYyNSAxNy45OTYwOTQgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTQ4LjMxMjUgMTcuOTk2MDk0IEwgMTMxLjYwNTQ2OSAxOCBDIDEzMC41OTM3NSAxOCAxMjkuODQ3NjU2IDE4LjczODI4MSAxMjkuODU5Mzc1IDE5Ljc1IEwgMTI5Ljg1OTM3NSAyMS45Mzc1IEwgMTM2LjY1MjM0NCAyMS45Mzc1IEwgMTM2LjY1MjM0NCA0MC4yMzgyODEgTCAxNDEuMzc4OTA2IDQwLjIzODI4MSBMIDE0MS4zNzg5MDYgMjEuOTM3NSBMIDE0OC4zMTI1IDIxLjkzNzUgWiBNIDE0OC4zMTI1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSA2Mi4xNjQwNjIgMzMuNzI2NTYyIEMgNjIuNTc4MTI1IDM0LjM0NzY1NiA2My4xNzk2ODggMzQuOTE0MDYyIDY0LjA1ODU5NCAzNC45MTQwNjIgQyA2NC45NDE0MDYgMzQuOTE0MDYyIDY1LjU0Mjk2OSAzNC4zNTE1NjIgNjUuOTU3MDMxIDMzLjcyNjU2MiBMIDcxLjM3ODkwNiAyNS41MjczNDQgTCA3MS4zNzg5MDYgNDAuMjM4MjgxIEwgNzUuOTIxODc1IDQwLjIzODI4MSBMIDc1LjkyMTg3NSAxOCBMIDcxLjI2OTUzMSAxOCBMIDY0LjE1MjM0NCAyOC43MTg3NSBMIDU3LjA1MDc4MSAxOCBMIDUzLjk5NjA5NCAxOCBDIDUyLjk4MDQ2OSAxOCA1Mi4yMzQzNzUgMTguNzM0Mzc1IDUyLjI1IDE5Ljc1IEwgNTIuMjUgNDAuMjM4MjgxIEwgNTYuNzI2NTYyIDQwLjIzODI4MSBMIDU2LjcyNjU2MiAyNS41MjczNDQgWiBNIDYyLjE2NDA2MiAzMy43MjY1NjIgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTAuOTMzNTk0IDM4Ljg0Mzc1IEMgMTMuMTQ4NDM4IDQwLjQ4NDM3NSAxNi4wODU5MzggNDEuMTE3MTg4IDE4Ljc0NjA5NCA0MS4xMTcxODggQyAyMS40MTAxNTYgNDEuMTE3MTg4IDIzLjUwMzkwNiA0MC40Njg3NSAyNS4wNTQ2ODggMzkuMjY1NjI1IEMgMjYuNjIxMDk0IDM4LjA1MDc4MSAyNy40MjU3ODEgMzYuMzY3MTg4IDI3LjQ5MjE4OCAzNC4yNjE3MTkgQyAyNy41NTA3ODEgMzIuNTA3ODEyIDI3LjA5NzY1NiAzMC44NTE1NjIgMjUuNTI3MzQ0IDI5LjQ4NDM3NSBDIDI0LjU0Mjk2OSAyOC42Mjg5MDYgMjMuMDc0MjE5IDI4LjAzMTI1IDIxLjExNzE4OCAyNy4zMjQyMTkgQyAyMC4yNjk1MzEgMjcuMDE5NTMxIDE4LjMwODU5NCAyNi4zNTU0NjkgMTcuNzYxNzE5IDI2LjA4NTkzOCBDIDE3LjIzNDM3NSAyNS44MjQyMTkgMTYuMzUxNTYyIDI1LjEwNTQ2OSAxNi4zNjMyODEgMjMuOTg4MjgxIEMgMTYuMzc1IDIyLjU0Mjk2OSAxNy43MjI2NTYgMjEuNTI3MzQ0IDE5Ljk1MzEyNSAyMS41MjczNDQgQyAyMi4wNzgxMjUgMjEuNTI3MzQ0IDI0LjE2NDA2MiAyMi4xNDg0MzggMjUuODU5Mzc1IDIzLjQwNjI1IEwgMjYuNDY4NzUgMjEuODc1IEMgMjYuODE2NDA2IDIwLjkxNzk2OSAyNy4wMjczNDQgMjAuMTAxNTYyIDI2LjcyNjU2MiAxOS41MjM0MzggQyAyNi4zMjgxMjUgMTguNzQyMTg4IDI0LjczNDM3NSAxOC4xNzU3ODEgMjMuNTM1MTU2IDE3Ljg3ODkwNiBDIDIyLjMzNTkzOCAxNy41ODIwMzEgMjEuMjE4NzUgMTcuNDY0ODQ0IDE5Ljg1MTU2MiAxNy40NjQ4NDQgQyAxOC4yMDcwMzEgMTcuNDY0ODQ0IDE2Ljc1MzkwNiAxNy43NDIxODggMTUuNTE5NTMxIDE4LjI4OTA2MiBDIDE0LjI3MzQzOCAxOC44Mzk4NDQgMTMuMzA4NTk0IDE5LjYxNzE4OCAxMi42NDg0MzggMjAuNjAxNTYyIEMgMTEuOTg4MjgxIDIxLjU4MjAzMSAxMS42MDkzNzUgMjIuNzY1NjI1IDExLjU5Mzc1IDI0LjA1MDc4MSBDIDExLjU3ODEyNSAyNS44MzIwMzEgMTIuMTMyODEyIDI3LjI1MzkwNiAxMy4xODc1IDI4LjMzOTg0NCBDIDE0LjIyNjU2MiAyOS40MTc5NjkgMTUuODA4NTk0IDMwLjEwOTM3NSAxOC40MjE4NzUgMzEuMTIxMDk0IEMgMTkuNzM4MjgxIDMxLjYyODkwNiAyMS4yNzM0MzggMzIuMTcxODc1IDIxLjg2NzE4OCAzMi42Mjg5MDYgQyAyMi40NDE0MDYgMzMuMDc0MjE5IDIyLjc1MzkwNiAzMy42NTYyNSAyMi43NDYwOTQgMzQuMzc1IEMgMjIuNzMwNDY5IDM2LjA0Njg3NSAyMS4xNDg0MzggMzcuMDU0Njg4IDE4LjYyODkwNiAzNy4wNTQ2ODggQyAxNi4wODk4NDQgMzcuMDU0Njg4IDEzLjkyOTY4OCAzNi4wNDI5NjkgMTIuNDIxODc1IDM0LjgzNTkzOCBaIE0gMTAuOTMzNTk0IDM4Ljg0Mzc1ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDE5MS42ODM1OTQgMzguODQzNzUgQyAxOTMuODk0NTMxIDQwLjQ4NDM3NSAxOTYuODMyMDMxIDQxLjExNzE4OCAxOTkuNDkyMTg4IDQxLjExNzE4OCBDIDIwMi4xNjAxNTYgNDEuMTE3MTg4IDIwNC4yNSA0MC40Njg3NSAyMDUuODA0Njg4IDM5LjI2NTYyNSBDIDIwNy4zNjcxODggMzguMDUwNzgxIDIwOC4xNzU3ODEgMzYuMzY3MTg4IDIwOC4yNDIxODggMzQuMjYxNzE5IEMgMjA4LjI5Njg3NSAzMi41MDc4MTIgMjA3Ljg0Mzc1IDMwLjg1MTU2MiAyMDYuMjczNDM4IDI5LjQ4NDM3NSBDIDIwNS4yODkwNjIgMjguNjI4OTA2IDIwMy44MjQyMTkgMjguMDMxMjUgMjAxLjg2MzI4MSAyNy4zMjQyMTkgQyAyMDEuMDE1NjI1IDI3LjAxOTUzMSAxOTkuMDU4NTk0IDI2LjM1NTQ2OSAxOTguNTExNzE5IDI2LjA4NTkzOCBDIDE5Ny45ODA0NjkgMjUuODI0MjE5IDE5Ny4wOTc2NTYgMjUuMTA1NDY5IDE5Ny4xMDkzNzUgMjMuOTg4MjgxIEMgMTk3LjEyNSAyMi41NDI5NjkgMTk4LjQ2ODc1IDIxLjUyNzM0NCAyMDAuNjk5MjE5IDIxLjUyNzM0NCBDIDIwMi44MjgxMjUgMjEuNTI3MzQ0IDIwNC45MTAxNTYgMjIuMTQ4NDM4IDIwNi42MDU0NjkgMjMuNDA2MjUgTCAyMDcuMjE4NzUgMjEuODc1IEMgMjA3LjU2MjUgMjAuOTE3OTY5IDIwNy43NzM0MzggMjAuMTAxNTYyIDIwNy40NzY1NjIgMTkuNTIzNDM4IEMgMjA3LjA3NDIxOSAxOC43NDIxODggMjA1LjQ4MDQ2OSAxOC4xNzU3ODEgMjA0LjI4MTI1IDE3Ljg3ODkwNiBDIDIwMy4wODU5MzggMTcuNTgyMDMxIDIwMS45Njg3NSAxNy40NjQ4NDQgMjAwLjU5NzY1NiAxNy40NjQ4NDQgQyAxOTguOTU3MDMxIDE3LjQ2NDg0NCAxOTcuNSAxNy43NDIxODggMTk2LjI2NTYyNSAxOC4yODkwNjIgQyAxOTUuMDE5NTMxIDE4LjgzOTg0NCAxOTQuMDU0Njg4IDE5LjYxNzE4OCAxOTMuMzk0NTMxIDIwLjYwMTU2MiBDIDE5Mi43MzQzNzUgMjEuNTgyMDMxIDE5Mi4zNTkzNzUgMjIuNzY1NjI1IDE5Mi4zNDM3NSAyNC4wNTA3ODEgQyAxOTIuMzI0MjE5IDI1LjgzMjAzMSAxOTIuODgyODEyIDI3LjI1MzkwNiAxOTMuOTMzNTk0IDI4LjMzOTg0NCBDIDE5NC45NzY1NjIgMjkuNDE3OTY5IDE5Ni41NTQ2ODggMzAuMTA5Mzc1IDE5OS4xNjc5NjkgMzEuMTIxMDk0IEMgMjAwLjQ4NDM3NSAzMS42Mjg5MDYgMjAyLjAxOTUzMSAzMi4xNzE4NzUgMjAyLjYxMzI4MSAzMi42Mjg5MDYgQyAyMDMuMTg3NSAzMy4wNzQyMTkgMjAzLjUwMzkwNiAzMy42NTYyNSAyMDMuNDk2MDk0IDM0LjM3NSBDIDIwMy40NzY1NjIgMzYuMDQ2ODc1IDIwMS44OTg0MzggMzcuMDU0Njg4IDE5OS4zNzUgMzcuMDU0Njg4IEMgMTk2LjgzNTkzOCAzNy4wNTQ2ODggMTk0LjY3NTc4MSAzNi4wNDI5NjkgMTkzLjE2Nzk2OSAzNC44MzU5MzggWiBNIDE5MS42ODM1OTQgMzguODQzNzUgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMzYuMDc4MTI1IDMwLjg3MTA5NCBMIDM4Ljk5NjA5NCAyMi45MTQwNjIgTCA0MS45MjU3ODEgMzAuODcxMDk0IFogTSA0MS41NzgxMjUgMTcuOTk2MDk0IEwgMzkuNDk2MDk0IDE4IEMgMzcuNTQyOTY5IDE4IDM2LjQ4NDM3NSAxOC41ODk4NDQgMzUuNzEwOTM4IDIwLjUyMzQzOCBMIDI3Ljg4NjcxOSA0MC4yMzgyODEgTCAzMi42NDA2MjUgNDAuMjM4MjgxIEwgMzQuNjQ0NTMxIDM0Ljc3NzM0NCBMIDQzLjM2MzI4MSAzNC43NzczNDQgTCA0NS4zNzUgNDAuMjM4MjgxIEwgNTAuMzkwNjI1IDQwLjIzODI4MSBaIE0gNDEuNTc4MTI1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSA4NS44NjcxODggMzAuODcxMDk0IEwgODguNzg1MTU2IDIyLjkxNDA2MiBMIDkxLjcxNDg0NCAzMC44NzEwOTQgWiBNIDkxLjM2NzE4OCAxNy45OTYwOTQgTCA4OS4yODUxNTYgMTggQyA4Ny4zMzIwMzEgMTggODYuMjczNDM4IDE4LjU4OTg0NCA4NS41IDIwLjUyMzQzOCBMIDc3LjY3NTc4MSA0MC4yMzgyODEgTCA4Mi40Mjk2ODggNDAuMjM4MjgxIEwgODQuNDMzNTk0IDM0Ljc3NzM0NCBMIDkzLjE1MjM0NCAzNC43NzczNDQgTCA5NS4xNjQwNjIgNDAuMjM4MjgxIEwgMTAwLjE3OTY4OCA0MC4yMzgyODEgWiBNIDkxLjM2NzE4OCAxNy45OTYwOTQgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTUyLjkyMTg3NSAzMC44NzEwOTQgTCAxNTUuODM5ODQ0IDIyLjkxNDA2MiBMIDE1OC43Njk1MzEgMzAuODcxMDk0IFogTSAxNTguNDIxODc1IDE3Ljk5NjA5NCBMIDE1Ni4zMzk4NDQgMTggQyAxNTQuMzg2NzE5IDE4IDE1My4zMjgxMjUgMTguNTg5ODQ0IDE1Mi41NTQ2ODggMjAuNTIzNDM4IEwgMTQ0LjczMDQ2OSA0MC4yMzgyODEgTCAxNDkuNDg0Mzc1IDQwLjIzODI4MSBMIDE1MS40ODgyODEgMzQuNzc3MzQ0IEwgMTYwLjIwNzAzMSAzNC43NzczNDQgTCAxNjIuMjIyNjU2IDQwLjIzODI4MSBMIDE2Ny4yMzQzNzUgNDAuMjM4MjgxIFogTSAxNTguNDIxODc1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAzNi4wNzgxMjUgMzAuODcxMDk0IEwgMzguOTk2MDk0IDIyLjkxNDA2MiBMIDQxLjkyNTc4MSAzMC44NzEwOTQgWiBNIDQxLjU3ODEyNSAxNy45OTYwOTQgTCAzOS40OTYwOTQgMTggQyAzNy41NDI5NjkgMTggMzYuNDg0Mzc1IDE4LjU4OTg0NCAzNS43MTA5MzggMjAuNTIzNDM4IEwgMjcuODg2NzE5IDQwLjIzODI4MSBMIDMyLjY0MDYyNSA0MC4yMzgyODEgTCAzNC42NDQ1MzEgMzQuNzc3MzQ0IEwgNDMuMzYzMjgxIDM0Ljc3NzM0NCBMIDQ1LjM3NSA0MC4yMzgyODEgTCA1MC4zOTA2MjUgNDAuMjM4MjgxIFogTSA0MS41NzgxMjUgMTcuOTk2MDk0ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDg1Ljg2NzE4OCAzMC44NzEwOTQgTCA4OC43ODUxNTYgMjIuOTE0MDYyIEwgOTEuNzE0ODQ0IDMwLjg3MTA5NCBaIE0gOTEuMzY3MTg4IDE3Ljk5NjA5NCBMIDg5LjI4NTE1NiAxOCBDIDg3LjMzMjAzMSAxOCA4Ni4yNzM0MzggMTguNTg5ODQ0IDg1LjUgMjAuNTIzNDM4IEwgNzcuNjc1NzgxIDQwLjIzODI4MSBMIDgyLjQyOTY4OCA0MC4yMzgyODEgTCA4NC40MzM1OTQgMzQuNzc3MzQ0IEwgOTMuMTUyMzQ0IDM0Ljc3NzM0NCBMIDk1LjE2NDA2MiA0MC4yMzgyODEgTCAxMDAuMTc5Njg4IDQwLjIzODI4MSBaIE0gOTEuMzY3MTg4IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxNTIuOTIxODc1IDMwLjg3MTA5NCBMIDE1NS44Mzk4NDQgMjIuOTE0MDYyIEwgMTU4Ljc2OTUzMSAzMC44NzEwOTQgWiBNIDE1OC40MjE4NzUgMTcuOTk2MDk0IEwgMTU2LjMzOTg0NCAxOCBDIDE1NC4zODY3MTkgMTggMTUzLjMyODEyNSAxOC41ODk4NDQgMTUyLjU1NDY4OCAyMC41MjM0MzggTCAxNDQuNzMwNDY5IDQwLjIzODI4MSBMIDE0OS40ODQzNzUgNDAuMjM4MjgxIEwgMTUxLjQ4ODI4MSAzNC43NzczNDQgTCAxNjAuMjA3MDMxIDM0Ljc3NzM0NCBMIDE2Mi4yMjI2NTYgNDAuMjM4MjgxIEwgMTY3LjIzNDM3NSA0MC4yMzgyODEgWiBNIDE1OC40MjE4NzUgMTcuOTk2MDk0ICIvPgo8L3N2Zz4K" alt="Samaritans">
+  <h1>Rota Wrapped</h1>
+  <p>A dashboard of rota cover, listener contribution and leader cover, built from your branch's Three Rings data at the click of a button.</p>
+</section>
+
+<section class="card privacy">
+  <h2>Your data stays with you</h2>
+  <p>This website holds code only. When you click the button inside Three Rings, your own browser fetches the reports using your own login, so you only ever see what your Three Rings permissions allow. The figures are drawn on your screen and disappear when you close the tab. Nothing is stored, uploaded or sent to this website or anyone else.</p>
+</section>
+
+<!-- shown when the page is opened with a set-up link -->
+<section class="card hidden" id="install">
+  <h2>Add the button<span id="forBranch"></span></h2>
+  <div class="tabs"><button class="on" data-t="laptop">Laptop or desktop</button><button data-t="phone">iPhone or iPad</button><button data-t="android">Android</button></div>
+
+  <div data-p="laptop">
+    <ol>
+      <li>Show your bookmarks bar: press <b>Ctrl+Shift+B</b> (on a Mac, <b>Cmd+Shift+B</b>).</li>
+      <li>Drag this button onto the bookmarks bar:</li>
+    </ol>
+    <div class="btnwrap"><a class="bm" id="bm" href="#">Rota Wrapped</a><span class="hint">Drag it. Clicking it here does nothing.</span></div>
+    <h3>Using it</h3>
+    <ol>
+      <li>Log in to Three Rings as normal.</li>
+      <li>Click <b>Rota Wrapped</b> on your bookmarks bar. A new tab opens and the dashboard appears after a few seconds.</li>
+      <li>If your browser says it blocked a pop-up, allow pop-ups for www.3r.org.uk and click the button again.</li>
+    </ol>
+  </div>
+
+  <div data-p="phone" class="hidden">
+    <ol>
+      <li>Copy the button code: <button class="action secondary copy" type="button">Copy button code</button></li>
+      <li>In Safari, bookmark any page (tap the share icon, then <b>Add Bookmark</b>) and save it with the name <b>Rota Wrapped</b>.</li>
+      <li>Open your bookmarks, tap <b>Edit</b>, tap the Rota Wrapped bookmark, delete its address and paste the code in its place. Tap <b>Done</b>.</li>
+      <li>To use it: log in to Three Rings in Safari, then open your bookmarks and tap <b>Rota Wrapped</b>.</li>
+    </ol>
+  </div>
+
+  <div data-p="android" class="hidden">
+    <ol>
+      <li>Copy the button code: <button class="action secondary copy" type="button">Copy button code</button></li>
+      <li>In Chrome, bookmark any page (tap the star) and then edit the bookmark: name it <b>Rota Wrapped</b>, delete its address and paste the code in its place.</li>
+      <li>To use it: log in to Three Rings in Chrome, then type <b>Rota Wrapped</b> in the address bar and tap the bookmark in the suggestions. (Tapping it from the bookmarks list doesn't work on Android.)</li>
+    </ol>
+  </div>
+  <p class="ok hidden" id="copied">Copied.</p>
+  <h3>Can't use the button?</h3>
+  <p>Open the <a href="dashboard.html">dashboard</a> directly and load the reports by hand.</p>
+</section>
+
+<!-- set-up form for a rota manager -->
+<section class="card" id="setupCard">
+  <h2>Set up for your branch</h2>
+  <p id="setupIntro">For rota managers. Fill this in once to make a set-up link, then email that link to the people who should have the button. Their browser reads the settings from the link; this website never sees them.</p>
+
+  <label>Branch name<input type="text" id="branch" placeholder="e.g. Anytown"></label>
+  <label>Measure from<small>Your Three Rings go-live date. The dashboard looks back at most a year.</small><input type="date" id="since"></label>
+
+  <h3>Report links</h3>
+  <p class="hint">In Three Rings, run each report, right-click its CSV download and choose Copy link address, then paste it here. Dates in the link are replaced automatically.</p>
+  <label>Rota export<input type="text" id="r_rota"></label>
+  <label>Directory<input type="text" id="r_directory"></label>
+  <label>Roles report<input type="text" id="r_roles"></label>
+  <label>Shift Closures report<input type="text" id="r_closures"></label>
+  <label>Volunteer Inactivity report<input type="text" id="r_inactivity"></label>
+
+  <h3>Varah font in Three Rings Files (optional)</h3>
+  <p class="hint">Links to the four font files uploaded to your branch's Three Rings Files, visible to volunteers only. Without them the dashboard uses Calibri.</p>
+  <label>Varah Regular<input type="text" id="f_Regular"></label>
+  <label>Varah Bold<input type="text" id="f_Bold"></label>
+  <label>Varah Italic<input type="text" id="f_Italic"></label>
+  <label>Varah Bold Italic<input type="text" id="f_BoldItalic"></label>
+
+  <button class="action" id="make" type="button">Make the set-up link</button>
+  <div class="out hidden" id="out">
+    <b>Your set-up link</b>
+    <textarea id="link" readonly></textarea>
+    <button class="action secondary" id="copyLink" type="button">Copy link</button>
+    <div class="warn">Share this link only with people who should have the button, for example by email. It contains your settings but no volunteer data.</div>
+    <div id="patterns"></div>
+  </div>
+</section>
+
+<footer>Not an official Samaritans or Three Rings product. Open source: <a href="https://github.com/antonia-can/rota-wrapped">view the code</a>.</footer>
+</main>
+
+<script type="text/plain" id="buttonSrc">(() => {
+const SITE = "__SITE__";
+const C = __CONFIG__;
+if (location.hostname !== "www.3r.org.uk") {
+alert("Rota Wrapped: open Three Rings and log in, then click the button again.");
+return;
+}
+const win = window.open(SITE + "dashboard.html#from-three-rings", "rotawrapped");
+if (!win) { alert("Rota Wrapped: your browser blocked the new tab. Allow pop-ups for www.3r.org.uk and try again."); return; }
+const pad = n => String(n).padStart(2, "0");
+const ymd = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const today = new Date(), end = new Date(), yearAgo = new Date();
+end.setDate(end.getDate() + 28); yearAgo.setDate(yearAgo.getDate() - 365);
+const since = C.since ? new Date(C.since + "T00:00:00") : yearAgo;
+const start = since > yearAgo ? since : yearAgo;
+const fill = u => u.replace(/\{start\}/g, ymd(start)).replace(/\{end\}/g, ymd(end)).replace(/\{today\}/g, ymd(today));
+const get = (u, binary) => fetch(fill(u), {credentials: "same-origin"})
+.then(r => r.ok ? (binary ? r.arrayBuffer() : r.text()) : Promise.reject(new Error("Three Rings said " + r.status)))
+.catch(e => ({error: e.message}));
+const reports = Promise.all(Object.entries(C.reports).filter(([, u]) => u).map(([k, u]) => get(u).then(v => [k, v])));
+const fonts = Promise.all((C.fonts || []).map(([face, u]) => get(u, true).then(data => ({face, data}))));
+const origin = new URL(SITE).origin;
+let sent = false;
+const listener = async e => {
+if (sent || e.origin !== origin || e.source !== win || !e.data || e.data.type !== "rota-wrapped-ready") return;
+sent = true;
+removeEventListener("message", listener);
+const r = Object.fromEntries(await reports), f = (await fonts).filter(x => x.data instanceof ArrayBuffer);
+win.postMessage({type: "rota-wrapped-data", settings: {branch: C.branch, since: C.since}, reports: r, fonts: f}, origin, f.map(x => x.data));
+};
+addEventListener("message", listener);
+setTimeout(async () => {
+if (sent) return;
+removeEventListener("message", listener);
+if (!confirm("Rota Wrapped: the dashboard tab didn't respond. Download the data as one file instead? You can then drop it into the dashboard page.")) return;
+const r = Object.fromEntries(await reports);
+const blob = new Blob([JSON.stringify({type: "rota-wrapped-bundle", settings: {branch: C.branch, since: C.since}, reports: r})], {type: "application/json"});
+const a = document.createElement("a");
+a.href = URL.createObjectURL(blob); a.download = "rota-wrapped-data-" + ymd(today) + ".json";
+document.body.appendChild(a); a.click(); a.remove();
+}, 20000);
+})();</script>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const SITE = location.origin + location.pathname.replace(/[^/]*$/, "");
+const DEFAULTS = {rota: "/stats/export_rotas.json?start_date={start}&end_date={end}", directory: "/directory.csv"};
+const REPORTS = ["rota", "directory", "roles", "closures", "inactivity"], FACES = ["Regular", "Bold", "Italic", "BoldItalic"];
+
+const enc = o => btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(o)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const dec = s => JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0))));
+
+// keep only the part of a Three Rings link after the domain, and turn its dates into placeholders
+function toPattern(u) {
+  u = String(u || "").trim(); if (!u) return "";
+  try { const x = new URL(u, "https://www.3r.org.uk"); if (x.hostname.endsWith("3r.org.uk")) u = x.pathname + x.search; } catch {}
+  let n = 0;
+  return u.replace(/\d{4}-\d{2}-\d{2}/g, () => (n++ === 0 ? "{start}" : "{end}"));
+}
+
+function buttonCode(cfg) {
+  const src = $("buttonSrc").textContent.replace("__SITE__", SITE).replace("__CONFIG__", JSON.stringify(cfg));
+  return "javascript:" + encodeURIComponent(src);
+}
+
+function readForm() {
+  const cfg = {branch: $("branch").value.trim(), since: $("since").value, reports: {}, fonts: []};
+  for (const k of REPORTS) { const v = toPattern($("r_" + k).value) || DEFAULTS[k] || ""; if (v) cfg.reports[k] = v; }
+  for (const f of FACES) { const v = $("f_" + f).value.trim(); if (v) cfg.fonts.push([f, toPattern(v)]); }
+  return cfg;
+}
+function fillForm(cfg) {
+  $("branch").value = cfg.branch || ""; $("since").value = cfg.since || "";
+  for (const k of REPORTS) $("r_" + k).value = (cfg.reports || {})[k] || DEFAULTS[k] || "";
+  for (const [f, u] of cfg.fonts || []) if ($("f_" + f)) $("f_" + f).value = u;
+}
+
+$("make").addEventListener("click", () => {
+  const cfg = readForm();
+  $("link").value = SITE + "#setup=" + enc(cfg);
+  $("out").classList.remove("hidden");
+  $("patterns").innerHTML = "<h3>What the button will fetch</h3><ul>" +
+    Object.entries(cfg.reports).map(([k, u]) => `<li><b>${k}</b>: ${u.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</li>`).join("") +
+    (cfg.fonts.length ? `<li><b>font</b>: ${cfg.fonts.length} files</li>` : "") + "</ul>";
+});
+$("copyLink").addEventListener("click", () => navigator.clipboard.writeText($("link").value).then(() => $("copyLink").textContent = "Copied"));
+
+// opened with a set-up link: show the button
+const m = /setup=([^&]+)/.exec(location.hash);
+if (m) {
+  try {
+    const cfg = dec(m[1]);
+    fillForm(cfg);
+    const code = buttonCode(cfg);
+    $("bm").href = code;
+    $("bm").addEventListener("click", e => { e.preventDefault(); alert("Drag this button onto your bookmarks bar, then use it while you're logged in to Three Rings."); });
+    document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", () =>
+      navigator.clipboard.writeText(code).then(() => $("copied").classList.remove("hidden"))));
+    $("forBranch").textContent = cfg.branch ? ` for ${cfg.branch}` : "";
+    $("install").classList.remove("hidden");
+    $("setupIntro").textContent = "These are the settings in your set-up link. Only change them if you manage the rota and want to make a new link.";
+    $("setupCard").querySelector("h2").textContent = "Settings";
+  } catch { alert("This set-up link looks incomplete. Ask whoever sent it for a fresh copy."); }
+}
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b));
+  document.querySelectorAll("[data-p]").forEach(p => p.classList.toggle("hidden", p.dataset.p !== b.dataset.t));
+}));
+</script>
+</body></html>

@@ -1,0 +1,1387 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rota Wrapped</title>
+<style>
+
+
+:root{--primary:#84BD00;--green:#00A862;--teal:#00A589;--petrol:#115E67;--pale:#B6D8A3;--navy:#004455;--yellow:#FECB4E;--orange:#EC6D36;--paper:#f3f7ee;--white:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-snap-type:y proximity;scroll-behavior:smooth}
+body{font-family:Varah,Calibri,"Segoe UI",Arial,sans-serif;background:var(--navy);color:var(--white);-webkit-font-smoothing:antialiased}
+main{max-width:980px;margin:0 auto;padding:16px}
+.demo{position:sticky;top:0;z-index:5;background:var(--yellow);color:var(--navy);text-align:center;font-weight:700;padding:8px 16px;font-size:14px}
+.card{position:relative;overflow:hidden;min-height:88vh;border-radius:6px;padding:48px 40px;margin:0 0 16px;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center}
+
+/* Section labels echo the notched title bars in the brand guide */
+.kicker{position:relative;align-self:flex-start;display:inline-block;font-weight:700;font-size:15px;padding:7px 14px 8px;margin-bottom:22px;background:var(--primary);color:var(--navy)}
+.kicker::after{content:"";position:absolute;right:6px;bottom:-9px;width:4px;height:12px;background:inherit}
+.kicker::before{content:"";position:absolute;left:10px;top:-7px;width:4px;height:10px;background:inherit}
+
+h1{font-size:clamp(56px,11vw,124px);line-height:.95;font-weight:700;letter-spacing:-.02em}
+h2{font-size:clamp(30px,5vw,50px);line-height:1.08;font-weight:700;letter-spacing:-.01em;margin-bottom:18px}
+h3{font-size:22px;font-weight:700;margin-bottom:12px}
+.sub{font-size:19px;max-width:580px;margin-bottom:18px}
+.lead{font-size:clamp(20px,3vw,28px);margin-bottom:26px}
+.big{font-size:clamp(96px,20vw,200px);font-weight:700;line-height:.9;letter-spacing:-.04em}
+.caveat{margin-top:26px;font-size:16px;background:rgba(0,0,0,.2);padding:12px 16px;border-radius:4px;max-width:620px}
+
+.cover{background:var(--navy);color:var(--white)}
+.cover .logo{height:72px;width:auto;align-self:flex-start;margin-bottom:44px;position:relative;z-index:2}
+.logo-slot{position:relative;z-index:2;align-self:flex-start;margin-bottom:40px;border:2px dashed var(--white);padding:10px 16px;font-weight:700;font-size:22px;line-height:1}
+.logo-slot small{display:block;font-weight:400;font-size:12px;margin-top:4px}
+.cover h1{line-height:1.02;margin-bottom:28px}
+.cover h1,.cover .kicker,.cover .sub{position:relative;z-index:2}
+.cover .sub{font-size:21px}
+.blob{position:absolute;z-index:1}
+.b-a{width:300px;height:230px;background:var(--pale);right:-40px;top:-30px}
+.b-a::after{content:"";position:absolute;width:190px;height:170px;background:var(--teal);left:-110px;top:140px}
+.b-b{width:230px;height:130px;background:var(--primary);right:-30px;bottom:-20px}
+.scroll{position:absolute;bottom:22px;left:40px;font-weight:700;z-index:2;color:var(--pale)}
+
+.numbers{background:var(--pale);color:var(--navy)}
+.numbers .kicker{background:var(--petrol);color:var(--white)}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:34px}
+.trio div{background:var(--white);border-radius:4px;padding:18px;border-bottom:6px solid var(--green)}
+.trio b{display:block;font-size:clamp(28px,5vw,46px);font-weight:700}
+.trio span{font-size:15px}
+.weekly{display:flex;align-items:flex-end;gap:6px;height:140px}
+.wk{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.wk span{width:100%;background:var(--petrol);border-radius:3px 3px 0 0;min-height:4px}
+.wk em{font-style:normal;font-size:12px;margin-top:6px}
+.axis{font-size:14px;margin-top:8px}
+
+.contribution{background:var(--petrol)}
+.hl{color:var(--primary)}
+.split{display:flex;align-items:center;gap:36px;flex-wrap:wrap;margin-bottom:34px}
+.donut{width:220px;height:220px;border-radius:50%;display:grid;place-items:center}
+.donut div{width:130px;height:130px;border-radius:50%;background:var(--petrol);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut b{font-size:46px;font-weight:700;line-height:1}
+.donut span{font-size:14px}
+.legend{list-style:none;font-size:19px}
+.legend li{margin:10px 0;display:flex;align-items:center;gap:12px}
+.legend i{width:18px;height:18px;display:inline-block}
+.dist{display:flex;gap:12px;height:200px;align-items:flex-end}
+.col{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.count{font-weight:700;font-size:24px;margin-bottom:6px}
+.pillar{width:100%;border-radius:3px 3px 0 0}
+.b0{background:var(--orange)}.b1{background:var(--yellow)}.b2{background:var(--pale)}.b3{background:var(--green)}.b4{background:var(--primary)}
+.lab{font-size:14px;font-weight:700;margin-top:8px;text-align:center}
+
+.watch-card{background:var(--yellow);color:var(--navy)}
+.watch-card .kicker{background:var(--navy);color:var(--white)}
+.inactive-card{background:var(--white);color:var(--navy)}
+.inactive-card .kicker{background:var(--orange);color:var(--white)}
+.people{list-style:none;display:grid;gap:10px;max-height:58vh;overflow:auto;padding-right:4px}
+.people li{background:rgba(255,255,255,.6);border-radius:4px;padding:14px 18px;display:grid;grid-template-columns:1fr 160px 60px;gap:4px 14px;align-items:center}
+.inactive-card .people li{background:var(--paper);grid-template-columns:1fr auto;border-left:5px solid var(--orange)}
+.who{font-weight:700;font-size:19px}
+.tag{font-size:12px;font-weight:700;background:var(--navy);color:var(--white);padding:3px 8px;margin-left:10px;vertical-align:middle}
+.bar{height:12px;background:rgba(0,68,85,.15);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--navy)}
+.pct{font-weight:700;font-size:21px;text-align:right}
+.days{font-weight:700;font-size:23px;color:var(--orange);text-align:right}
+.meta{grid-column:1/-1;font-size:15px}
+.next{display:inline-block;margin-left:10px;font-weight:700;background:var(--primary);color:var(--navy);padding:2px 9px;font-size:13px}
+.next.none{background:rgba(0,68,85,.12)}
+.empty{font-size:22px;font-weight:700}
+
+.leave-card{background:var(--paper);color:var(--navy)}
+.leave-card .kicker{background:var(--teal);color:var(--white)}
+.leave-card .people li{background:var(--white);grid-template-columns:1fr auto;border-left:5px solid var(--teal)}
+.leave-card .days{color:var(--petrol);font-size:19px}
+.returned{margin-top:18px;font-size:16px;background:var(--pale);padding:12px 16px;border-radius:4px;max-width:720px}
+.nights{background:linear-gradient(160deg,var(--petrol),var(--navy) 70%)}
+.nights .big{color:var(--primary)}
+.moon{position:absolute;right:60px;top:60px;width:120px;height:120px;border-radius:50%;box-shadow:-26px 14px 0 0 var(--yellow);transform:rotate(-10deg)}
+
+.method{background:var(--paper);color:var(--navy);min-height:auto;font-size:16px;line-height:1.55}
+.method p{margin-bottom:10px;max-width:760px}
+
+@media (max-width:640px){
+  .card{padding:34px 22px;min-height:auto}
+  .trio{grid-template-columns:1fr}
+  .people li{grid-template-columns:1fr 60px}
+  .people li .bar{grid-column:1/-1;order:3}
+  .moon{width:70px;height:70px;right:24px;top:24px}
+  .b-a{width:150px;height:110px}.b-a::after{display:none}.b-b{width:140px;height:70px}
+  .cover .logo{height:52px}
+  .scroll{position:static;margin-top:8px}
+  .b-a{top:-50px;right:-70px}
+}
+@media print{html{scroll-snap-type:none}.card{min-height:auto;break-inside:avoid}.people{max-height:none}}
+
+body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+/* ---------- setup screen ---------- */
+.setup{background:var(--white);color:var(--navy);border-radius:6px;padding:40px;margin-bottom:16px}
+.setup h1{font-size:clamp(40px,7vw,72px);margin-bottom:10px}
+.setup .intro{font-size:18px;max-width:640px;margin-bottom:10px}
+.setup .privacy{font-size:15px;background:var(--pale);padding:10px 14px;border-radius:4px;max-width:640px;margin-bottom:26px}
+.setup .logo{height:56px;margin-bottom:28px;display:block}
+.step{border-top:2px solid var(--pale);padding:26px 0}
+.step h3{font-size:24px;margin-bottom:8px}
+.step p,.step li{font-size:16px;margin-bottom:8px;max-width:720px}
+.step ol{margin-left:22px}
+.step a.url{display:inline-block;max-width:100%;background:var(--paper);padding:6px 10px;border-radius:3px;font-size:14px;word-break:break-all;color:var(--petrol);font-weight:700}
+.drop{display:block;border:2px dashed var(--teal);border-radius:6px;padding:22px;text-align:center;font-size:17px;background:var(--paper);cursor:pointer;margin-top:10px}
+.drop.ok{border-style:solid;border-color:var(--green);background:#eef7e6}
+.drop input{display:none}
+.status{font-size:15px;margin-top:8px;font-weight:700}
+.status.err{color:#b3261e}
+.maps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:12px}
+.maps label{font-size:14px;font-weight:700;display:block}
+.maps select,.settings input{width:100%;font:inherit;font-size:15px;padding:7px;border:1px solid #9bb;border-radius:4px;margin-top:4px;background:#fff;color:var(--navy)}
+.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.settings label{font-size:14px;font-weight:700}
+.tablewrap{max-height:60vh;overflow:auto;border:1px solid var(--pale);border-radius:4px;margin-top:12px}
+table.review{border-collapse:collapse;width:100%;font-size:14px}
+table.review th{position:sticky;top:0;background:var(--navy);color:#fff;text-align:left;padding:8px;font-weight:700;z-index:1}
+table.review td{padding:5px 8px;border-bottom:1px solid #e3ebe0;vertical-align:middle}
+table.review tr.off td{opacity:.45}
+table.review input[type=text]{font:inherit;font-size:14px;padding:4px;border:1px solid #cdd;border-radius:3px;width:100%;min-width:120px}
+table.review td.found{text-align:center;font-weight:700}
+table.review input[type=date]{font:inherit;font-size:13px;padding:3px;border:1px solid #cdd;border-radius:3px}
+.okbox{background:#eef7e6;border-left:5px solid var(--green);padding:10px 14px;font-size:15px;margin-top:12px;font-weight:700}
+.matchwrap{max-height:45vh;overflow:auto;margin-top:10px;background:#fff;border-radius:4px}
+.matchtab{border-collapse:collapse;width:100%;font-size:15px}
+.matchtab td{padding:6px 10px;border-bottom:1px solid #f0e6c8}
+.matchtab select{font:inherit;font-size:14px;padding:5px;border:1px solid #cba;border-radius:4px;min-width:220px}
+.warn{background:#fff4d6;border-left:5px solid var(--yellow);padding:10px 14px;font-size:15px;margin-top:12px;max-width:760px}
+.btn{font:inherit;font-weight:700;font-size:18px;border:0;border-radius:4px;padding:14px 26px;cursor:pointer;background:var(--primary);color:var(--navy)}
+.btn.secondary{background:var(--paper);color:var(--navy);border:1px solid var(--pale);font-size:15px;padding:10px 16px}
+.toolbar{position:sticky;top:0;z-index:6;display:flex;gap:10px;justify-content:flex-end;padding:10px 16px;background:var(--navy)}
+.hidden{display:none!important}
+.fetching{background:var(--primary);color:var(--navy);padding:14px 18px;border-radius:4px;font-size:17px;margin-bottom:20px}
+.warn ul{margin:8px 0 0 20px}
+.toolbar .tab.on{background:var(--primary);border-color:var(--primary)}
+.toolbar{flex-wrap:wrap}
+body.hide-names .named{display:none}
+.anon-only{display:none}
+body.hide-names .anon-only{display:block}
+.numbers h3{margin-top:10px}
+.slotlist{list-style:none;display:flex;flex-wrap:wrap;gap:8px;max-height:40vh;overflow:auto}
+.slotlist li{background:var(--white);border-radius:4px;padding:8px 12px;font-size:15px;border-left:5px solid var(--orange)}
+.watch-card .slotlist li{border-left-color:var(--navy)}
+.slotlist span{display:block;font-size:13px;opacity:.8}
+.heat-card{background:var(--white);color:var(--navy)}
+.heat-card .kicker{background:var(--petrol);color:var(--white)}
+.heatwrap{overflow-x:auto;margin:6px 0 14px}
+.heat{border-collapse:separate;border-spacing:5px;width:100%;min-width:560px}
+.heat th{font-size:14px;font-weight:700;text-align:center;padding:2px}
+.heat th small{font-weight:400;opacity:.7}
+.heat tr th:first-child{text-align:left;width:46px}
+.heat td{text-align:center;border-radius:4px;padding:8px 4px;height:62px}
+.heat td b{display:block;font-size:24px;line-height:1}
+.heat td span{display:block;font-size:12px;margin-top:3px}
+.heat td.thin{box-shadow:inset 0 0 0 3px var(--navy)}
+.hm4{background:var(--primary);color:var(--navy)}.hm3{background:var(--pale);color:var(--navy)}
+.hm2{background:var(--yellow);color:var(--navy)}.hm1{background:var(--orange);color:var(--white)}
+.hm-none{background:var(--paper);color:#9aa}
+.need{display:grid;gap:12px;margin:10px 0 6px;max-width:720px}
+.need>div{display:grid;grid-template-columns:200px 1fr 50px;gap:12px;align-items:center;font-size:16px}
+.need b{font-size:22px;text-align:right}
+.nbar{height:20px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden}
+.nbar i{display:block;height:100%;background:var(--pale)}
+.nbar.full i{background:var(--primary)}
+.load-card{background:var(--paper);color:var(--navy)}
+.load-card .kicker{background:var(--teal);color:var(--white)}
+.hl2{color:var(--teal)}
+.lb0{background:var(--orange)}.lb1{background:var(--yellow)}.lb2{background:var(--pale)}.lb3{background:var(--green)}.lb4{background:var(--primary)}
+.load-card .named{margin-top:22px}
+.leaders li{background:var(--white)!important;grid-template-columns:1fr 200px 130px!important}
+.lbar{position:relative;height:12px;background:rgba(0,68,85,.12)}
+.lbar span{display:block;height:100%;background:var(--teal)}
+.lbar i{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--navy)}
+.leaders .pct{font-size:17px}
+@media (max-width:640px){.need>div{grid-template-columns:1fr 50px}.need .nbar{grid-column:1/-1;order:3}.leaders li{grid-template-columns:1fr 110px!important}.leaders .lbar{grid-column:1/-1;order:3}}
+.rotas{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px 18px;font-size:15px}
+.rotas p{flex:0 0 100%;width:100%;margin:0}
+.rotas label{display:flex;align-items:center;gap:6px;background:var(--paper);padding:5px 10px;border-radius:4px}
+.trio .t-open{border-bottom-color:var(--primary)}
+.trio .t-closed{border-bottom-color:var(--orange)}
+.sbar{margin:0 0 18px}
+.sbar-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:17px;margin-bottom:6px}
+.sbar-head em{font-style:normal;opacity:.75;font-size:15px}
+.sbar-track{display:flex;height:34px;border-radius:4px;overflow:hidden;background:var(--white)}
+.sbar-track span{display:flex;align-items:center;padding:0 10px;font-weight:700;font-size:15px;white-space:nowrap}
+.s-open{background:var(--primary);color:var(--navy)}
+.s-closed{background:var(--orange);color:var(--white);justify-content:flex-end}
+.key{display:flex;gap:18px;font-size:14px;font-weight:700;margin:4px 0 12px}
+.key i{display:inline-block;width:14px;height:14px;margin-right:6px;vertical-align:-2px}
+.k-open{background:var(--primary)}.k-closed{background:var(--orange)}
+.weekly.stacked .wk span{background:var(--primary);border-radius:0}
+.weekly.stacked .wk span.c{background:var(--orange);border-radius:3px 3px 0 0}
+@media print{.setup,.toolbar,.demo{display:none!important}body{background:#fff}.card{margin-bottom:8px}}
+@page{size:A4 portrait;margin:8mm}
+</style></head>
+<body>
+
+<div class="toolbar hidden" id="toolbar">
+  <button class="btn secondary" id="backBtn">Back to setup</button>
+  <button class="btn secondary tab on" id="tabListen">Listeners</button>
+  <button class="btn secondary tab" id="tabLead">Leaders</button>
+  <button class="btn secondary" id="namesBtn">Hide leader names</button>
+  <button class="btn secondary" id="printBtn">Print or save as PDF</button>
+</div>
+
+<main>
+<section class="setup" id="setup">
+  <div class="fetching hidden" id="fromButton"><b>Fetching your reports from Three Rings…</b> This usually takes a few seconds. Keep the Three Rings tab open until the dashboard appears.</div>
+  <div id="buttonProblems"></div>
+  <img class="logo" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjU5IiB2aWV3Qm94PSIwIDAgMjIwIDU5Ij4KPGRlZnM+CjxjbGlwUGF0aCBpZD0iY2xpcC0wIj4KPHBhdGggY2xpcC1ydWxlPSJub256ZXJvIiBkPSJNIDAgMC4wNzAzMTI1IEwgMjE5LjI0NjA5NCAwLjA3MDMxMjUgTCAyMTkuMjQ2MDk0IDU4LjUxMTcxOSBMIDAgNTguNTExNzE5IFogTSAwIDAuMDcwMzEyNSAiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8ZyBjbGlwLXBhdGg9InVybCgjY2xpcC0wKSI+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDUxLjc2NTQ0MiUsIDc0LjExODA0MiUsIDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDIxLjAzOTA2MiAwLjA3MDMxMjUgTCAyMS4wMzkwNjIgOS4xMjEwOTQgQyAyMS4wMzkwNjIgMTAuMTA5Mzc1IDIwLjIzODI4MSAxMC45MTAxNTYgMTkuMjUgMTAuOTEwMTU2IEMgMTguMjYxNzE5IDEwLjkxMDE1NiAxNy40NTcwMzEgMTAuMTA5Mzc1IDE3LjQ1NzAzMSA5LjEyMTA5NCBMIDE3LjQ1NzAzMSAwLjA3MDMxMjUgTCAtMC4wMjM0Mzc1IDAuMDcwMzEyNSBMIC0wLjAyMzQzNzUgNTguNTExNzE5IEwgMTk4LjE1NjI1IDU4LjUxMTcxOSBMIDE5OC4xNTYyNSA0OS40NDkyMTkgQyAxOTguMTU2MjUgNDguNDYwOTM4IDE5OC45NTcwMzEgNDcuNjU2MjUgMTk5Ljk0NTMxMiA0Ny42NTYyNSBDIDIwMC45MzM1OTQgNDcuNjU2MjUgMjAxLjczODI4MSA0OC40NjA5MzggMjAxLjczODI4MSA0OS40NDkyMTkgTCAyMDEuNzM4MjgxIDU4LjUxMTcxOSBMIDIxOS4yNDYwOTQgNTguNTExNzE5IEwgMjE5LjI0NjA5NCAwLjA3MDMxMjUgWiBNIDIxLjAzOTA2MiAwLjA3MDMxMjUgIi8+CjwvZz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxMTQuMTE3MTg4IDI1LjEzMjgxMiBDIDExNC4xMTcxODggMjcuNDEwMTU2IDExMi42OTE0MDYgMjguNDc2NTYyIDEwOS43NjU2MjUgMjguNDc2NTYyIEwgMTA3LjExNzE4OCAyOC40NzY1NjIgTCAxMDcuMTE3MTg4IDIxLjc5Mjk2OSBMIDEwOS43NjU2MjUgMjEuNzkyOTY5IEMgMTEyLjY5MTQwNiAyMS43OTI5NjkgMTE0LjExNzE4OCAyMi44NTkzNzUgMTE0LjExNzE4OCAyNS4xMzI4MTIgTSAxMTQuODI0MjE5IDMxLjE0ODQzOCBDIDExNi40OTIxODggMzAuNjUyMzQ0IDExNy4zMDQ2ODggMjkuNTc0MjE5IDExNy45MjE4NzUgMjguNTc0MjE5IEMgMTE4LjU2NjQwNiAyNy41MjM0MzggMTE4Ljg4MjgxMiAyNi40MTc5NjkgMTE4Ljg4MjgxMiAyNS4xMDU0NjkgQyAxMTguODgyODEyIDIyLjg5NDUzMSAxMTguMTM2NzE5IDIxLjE2NDA2MiAxMTYuNjcxODc1IDE5Ljg5ODQzOCBDIDExNS4yMDcwMzEgMTguNjM2NzE5IDExMy4xNzk2ODggMTcuOTk2MDk0IDExMC42NDA2MjUgMTcuOTk2MDk0IEwgMTA0LjE0MDYyNSAxNy45OTYwOTQgQyAxMDMuMTI4OTA2IDE3Ljk5NjA5NCAxMDIuMzc4OTA2IDE4LjczODI4MSAxMDIuMzk0NTMxIDE5Ljc1IEwgMTAyLjM5NDUzMSA0MC4yMzgyODEgTCAxMDcuMTE3MTg4IDQwLjIzODI4MSBMIDEwNy4xMTcxODggMzIuMjg5MDYyIEwgMTA5LjY2MDE1NiAzMi4yODkwNjIgQyAxMDkuODUxNTYyIDMyLjI4OTA2MiAxMTAuMjAzMTI1IDMyLjI4NTE1NiAxMTAuNDg0Mzc1IDMyLjI2MTcxOSBMIDExNS4zMzU5MzggNDAuMjM4MjgxIEwgMTIwLjU2MjUgNDAuMjM4MjgxIFogTSAxMTQuODI0MjE5IDMxLjE0ODQzOCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxMjQuNTU0Njg4IDE4IEMgMTIzLjUzOTA2MiAxOCAxMjIuNzkyOTY5IDE4LjczODI4MSAxMjIuODA4NTk0IDE5Ljc1IEwgMTIyLjgwODU5NCA0MC4yMzgyODEgTCAxMjcuNTM1MTU2IDQwLjIzODI4MSBMIDEyNy41MzUxNTYgMTcuOTk2MDk0IFogTSAxMjQuNTU0Njg4IDE4ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDE3My42NTYyNSAxNy45OTYwOTQgTCAxNzEuMDkzNzUgMTcuOTk2MDk0IEMgMTcwLjA4MjAzMSAxNy45OTYwOTQgMTY5LjMzNTkzOCAxOC43MzgyODEgMTY5LjM0NzY1NiAxOS43NSBMIDE2OS4zNDc2NTYgNDAuMjM4MjgxIEwgMTczLjg0NzY1NiA0MC4yMzgyODEgTCAxNzMuODQ3NjU2IDI1LjU4OTg0NCBMIDE4NS4xMTMyODEgNDAuMjM4MjgxIEwgMTg5LjI0MjE4OCA0MC4yMzgyODEgTCAxODkuMjQyMTg4IDE3Ljk5NjA5NCBMIDE4NC43MzgyODEgMTguMDA3ODEyIEwgMTg0LjczODI4MSAzMi40NDkyMTkgWiBNIDE3My42NTYyNSAxNy45OTYwOTQgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTQ4LjMxMjUgMTcuOTk2MDk0IEwgMTMxLjYwNTQ2OSAxOCBDIDEzMC41OTM3NSAxOCAxMjkuODQ3NjU2IDE4LjczODI4MSAxMjkuODU5Mzc1IDE5Ljc1IEwgMTI5Ljg1OTM3NSAyMS45Mzc1IEwgMTM2LjY1MjM0NCAyMS45Mzc1IEwgMTM2LjY1MjM0NCA0MC4yMzgyODEgTCAxNDEuMzc4OTA2IDQwLjIzODI4MSBMIDE0MS4zNzg5MDYgMjEuOTM3NSBMIDE0OC4zMTI1IDIxLjkzNzUgWiBNIDE0OC4zMTI1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSA2Mi4xNjQwNjIgMzMuNzI2NTYyIEMgNjIuNTc4MTI1IDM0LjM0NzY1NiA2My4xNzk2ODggMzQuOTE0MDYyIDY0LjA1ODU5NCAzNC45MTQwNjIgQyA2NC45NDE0MDYgMzQuOTE0MDYyIDY1LjU0Mjk2OSAzNC4zNTE1NjIgNjUuOTU3MDMxIDMzLjcyNjU2MiBMIDcxLjM3ODkwNiAyNS41MjczNDQgTCA3MS4zNzg5MDYgNDAuMjM4MjgxIEwgNzUuOTIxODc1IDQwLjIzODI4MSBMIDc1LjkyMTg3NSAxOCBMIDcxLjI2OTUzMSAxOCBMIDY0LjE1MjM0NCAyOC43MTg3NSBMIDU3LjA1MDc4MSAxOCBMIDUzLjk5NjA5NCAxOCBDIDUyLjk4MDQ2OSAxOCA1Mi4yMzQzNzUgMTguNzM0Mzc1IDUyLjI1IDE5Ljc1IEwgNTIuMjUgNDAuMjM4MjgxIEwgNTYuNzI2NTYyIDQwLjIzODI4MSBMIDU2LjcyNjU2MiAyNS41MjczNDQgWiBNIDYyLjE2NDA2MiAzMy43MjY1NjIgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTAuOTMzNTk0IDM4Ljg0Mzc1IEMgMTMuMTQ4NDM4IDQwLjQ4NDM3NSAxNi4wODU5MzggNDEuMTE3MTg4IDE4Ljc0NjA5NCA0MS4xMTcxODggQyAyMS40MTAxNTYgNDEuMTE3MTg4IDIzLjUwMzkwNiA0MC40Njg3NSAyNS4wNTQ2ODggMzkuMjY1NjI1IEMgMjYuNjIxMDk0IDM4LjA1MDc4MSAyNy40MjU3ODEgMzYuMzY3MTg4IDI3LjQ5MjE4OCAzNC4yNjE3MTkgQyAyNy41NTA3ODEgMzIuNTA3ODEyIDI3LjA5NzY1NiAzMC44NTE1NjIgMjUuNTI3MzQ0IDI5LjQ4NDM3NSBDIDI0LjU0Mjk2OSAyOC42Mjg5MDYgMjMuMDc0MjE5IDI4LjAzMTI1IDIxLjExNzE4OCAyNy4zMjQyMTkgQyAyMC4yNjk1MzEgMjcuMDE5NTMxIDE4LjMwODU5NCAyNi4zNTU0NjkgMTcuNzYxNzE5IDI2LjA4NTkzOCBDIDE3LjIzNDM3NSAyNS44MjQyMTkgMTYuMzUxNTYyIDI1LjEwNTQ2OSAxNi4zNjMyODEgMjMuOTg4MjgxIEMgMTYuMzc1IDIyLjU0Mjk2OSAxNy43MjI2NTYgMjEuNTI3MzQ0IDE5Ljk1MzEyNSAyMS41MjczNDQgQyAyMi4wNzgxMjUgMjEuNTI3MzQ0IDI0LjE2NDA2MiAyMi4xNDg0MzggMjUuODU5Mzc1IDIzLjQwNjI1IEwgMjYuNDY4NzUgMjEuODc1IEMgMjYuODE2NDA2IDIwLjkxNzk2OSAyNy4wMjczNDQgMjAuMTAxNTYyIDI2LjcyNjU2MiAxOS41MjM0MzggQyAyNi4zMjgxMjUgMTguNzQyMTg4IDI0LjczNDM3NSAxOC4xNzU3ODEgMjMuNTM1MTU2IDE3Ljg3ODkwNiBDIDIyLjMzNTkzOCAxNy41ODIwMzEgMjEuMjE4NzUgMTcuNDY0ODQ0IDE5Ljg1MTU2MiAxNy40NjQ4NDQgQyAxOC4yMDcwMzEgMTcuNDY0ODQ0IDE2Ljc1MzkwNiAxNy43NDIxODggMTUuNTE5NTMxIDE4LjI4OTA2MiBDIDE0LjI3MzQzOCAxOC44Mzk4NDQgMTMuMzA4NTk0IDE5LjYxNzE4OCAxMi42NDg0MzggMjAuNjAxNTYyIEMgMTEuOTg4MjgxIDIxLjU4MjAzMSAxMS42MDkzNzUgMjIuNzY1NjI1IDExLjU5Mzc1IDI0LjA1MDc4MSBDIDExLjU3ODEyNSAyNS44MzIwMzEgMTIuMTMyODEyIDI3LjI1MzkwNiAxMy4xODc1IDI4LjMzOTg0NCBDIDE0LjIyNjU2MiAyOS40MTc5NjkgMTUuODA4NTk0IDMwLjEwOTM3NSAxOC40MjE4NzUgMzEuMTIxMDk0IEMgMTkuNzM4MjgxIDMxLjYyODkwNiAyMS4yNzM0MzggMzIuMTcxODc1IDIxLjg2NzE4OCAzMi42Mjg5MDYgQyAyMi40NDE0MDYgMzMuMDc0MjE5IDIyLjc1MzkwNiAzMy42NTYyNSAyMi43NDYwOTQgMzQuMzc1IEMgMjIuNzMwNDY5IDM2LjA0Njg3NSAyMS4xNDg0MzggMzcuMDU0Njg4IDE4LjYyODkwNiAzNy4wNTQ2ODggQyAxNi4wODk4NDQgMzcuMDU0Njg4IDEzLjkyOTY4OCAzNi4wNDI5NjkgMTIuNDIxODc1IDM0LjgzNTkzOCBaIE0gMTAuOTMzNTk0IDM4Ljg0Mzc1ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDE5MS42ODM1OTQgMzguODQzNzUgQyAxOTMuODk0NTMxIDQwLjQ4NDM3NSAxOTYuODMyMDMxIDQxLjExNzE4OCAxOTkuNDkyMTg4IDQxLjExNzE4OCBDIDIwMi4xNjAxNTYgNDEuMTE3MTg4IDIwNC4yNSA0MC40Njg3NSAyMDUuODA0Njg4IDM5LjI2NTYyNSBDIDIwNy4zNjcxODggMzguMDUwNzgxIDIwOC4xNzU3ODEgMzYuMzY3MTg4IDIwOC4yNDIxODggMzQuMjYxNzE5IEMgMjA4LjI5Njg3NSAzMi41MDc4MTIgMjA3Ljg0Mzc1IDMwLjg1MTU2MiAyMDYuMjczNDM4IDI5LjQ4NDM3NSBDIDIwNS4yODkwNjIgMjguNjI4OTA2IDIwMy44MjQyMTkgMjguMDMxMjUgMjAxLjg2MzI4MSAyNy4zMjQyMTkgQyAyMDEuMDE1NjI1IDI3LjAxOTUzMSAxOTkuMDU4NTk0IDI2LjM1NTQ2OSAxOTguNTExNzE5IDI2LjA4NTkzOCBDIDE5Ny45ODA0NjkgMjUuODI0MjE5IDE5Ny4wOTc2NTYgMjUuMTA1NDY5IDE5Ny4xMDkzNzUgMjMuOTg4MjgxIEMgMTk3LjEyNSAyMi41NDI5NjkgMTk4LjQ2ODc1IDIxLjUyNzM0NCAyMDAuNjk5MjE5IDIxLjUyNzM0NCBDIDIwMi44MjgxMjUgMjEuNTI3MzQ0IDIwNC45MTAxNTYgMjIuMTQ4NDM4IDIwNi42MDU0NjkgMjMuNDA2MjUgTCAyMDcuMjE4NzUgMjEuODc1IEMgMjA3LjU2MjUgMjAuOTE3OTY5IDIwNy43NzM0MzggMjAuMTAxNTYyIDIwNy40NzY1NjIgMTkuNTIzNDM4IEMgMjA3LjA3NDIxOSAxOC43NDIxODggMjA1LjQ4MDQ2OSAxOC4xNzU3ODEgMjA0LjI4MTI1IDE3Ljg3ODkwNiBDIDIwMy4wODU5MzggMTcuNTgyMDMxIDIwMS45Njg3NSAxNy40NjQ4NDQgMjAwLjU5NzY1NiAxNy40NjQ4NDQgQyAxOTguOTU3MDMxIDE3LjQ2NDg0NCAxOTcuNSAxNy43NDIxODggMTk2LjI2NTYyNSAxOC4yODkwNjIgQyAxOTUuMDE5NTMxIDE4LjgzOTg0NCAxOTQuMDU0Njg4IDE5LjYxNzE4OCAxOTMuMzk0NTMxIDIwLjYwMTU2MiBDIDE5Mi43MzQzNzUgMjEuNTgyMDMxIDE5Mi4zNTkzNzUgMjIuNzY1NjI1IDE5Mi4zNDM3NSAyNC4wNTA3ODEgQyAxOTIuMzI0MjE5IDI1LjgzMjAzMSAxOTIuODgyODEyIDI3LjI1MzkwNiAxOTMuOTMzNTk0IDI4LjMzOTg0NCBDIDE5NC45NzY1NjIgMjkuNDE3OTY5IDE5Ni41NTQ2ODggMzAuMTA5Mzc1IDE5OS4xNjc5NjkgMzEuMTIxMDk0IEMgMjAwLjQ4NDM3NSAzMS42Mjg5MDYgMjAyLjAxOTUzMSAzMi4xNzE4NzUgMjAyLjYxMzI4MSAzMi42Mjg5MDYgQyAyMDMuMTg3NSAzMy4wNzQyMTkgMjAzLjUwMzkwNiAzMy42NTYyNSAyMDMuNDk2MDk0IDM0LjM3NSBDIDIwMy40NzY1NjIgMzYuMDQ2ODc1IDIwMS44OTg0MzggMzcuMDU0Njg4IDE5OS4zNzUgMzcuMDU0Njg4IEMgMTk2LjgzNTkzOCAzNy4wNTQ2ODggMTk0LjY3NTc4MSAzNi4wNDI5NjkgMTkzLjE2Nzk2OSAzNC44MzU5MzggWiBNIDE5MS42ODM1OTQgMzguODQzNzUgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMzYuMDc4MTI1IDMwLjg3MTA5NCBMIDM4Ljk5NjA5NCAyMi45MTQwNjIgTCA0MS45MjU3ODEgMzAuODcxMDk0IFogTSA0MS41NzgxMjUgMTcuOTk2MDk0IEwgMzkuNDk2MDk0IDE4IEMgMzcuNTQyOTY5IDE4IDM2LjQ4NDM3NSAxOC41ODk4NDQgMzUuNzEwOTM4IDIwLjUyMzQzOCBMIDI3Ljg4NjcxOSA0MC4yMzgyODEgTCAzMi42NDA2MjUgNDAuMjM4MjgxIEwgMzQuNjQ0NTMxIDM0Ljc3NzM0NCBMIDQzLjM2MzI4MSAzNC43NzczNDQgTCA0NS4zNzUgNDAuMjM4MjgxIEwgNTAuMzkwNjI1IDQwLjIzODI4MSBaIE0gNDEuNTc4MTI1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSA4NS44NjcxODggMzAuODcxMDk0IEwgODguNzg1MTU2IDIyLjkxNDA2MiBMIDkxLjcxNDg0NCAzMC44NzEwOTQgWiBNIDkxLjM2NzE4OCAxNy45OTYwOTQgTCA4OS4yODUxNTYgMTggQyA4Ny4zMzIwMzEgMTggODYuMjczNDM4IDE4LjU4OTg0NCA4NS41IDIwLjUyMzQzOCBMIDc3LjY3NTc4MSA0MC4yMzgyODEgTCA4Mi40Mjk2ODggNDAuMjM4MjgxIEwgODQuNDMzNTk0IDM0Ljc3NzM0NCBMIDkzLjE1MjM0NCAzNC43NzczNDQgTCA5NS4xNjQwNjIgNDAuMjM4MjgxIEwgMTAwLjE3OTY4OCA0MC4yMzgyODEgWiBNIDkxLjM2NzE4OCAxNy45OTYwOTQgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTUyLjkyMTg3NSAzMC44NzEwOTQgTCAxNTUuODM5ODQ0IDIyLjkxNDA2MiBMIDE1OC43Njk1MzEgMzAuODcxMDk0IFogTSAxNTguNDIxODc1IDE3Ljk5NjA5NCBMIDE1Ni4zMzk4NDQgMTggQyAxNTQuMzg2NzE5IDE4IDE1My4zMjgxMjUgMTguNTg5ODQ0IDE1Mi41NTQ2ODggMjAuNTIzNDM4IEwgMTQ0LjczMDQ2OSA0MC4yMzgyODEgTCAxNDkuNDg0Mzc1IDQwLjIzODI4MSBMIDE1MS40ODgyODEgMzQuNzc3MzQ0IEwgMTYwLjIwNzAzMSAzNC43NzczNDQgTCAxNjIuMjIyNjU2IDQwLjIzODI4MSBMIDE2Ny4yMzQzNzUgNDAuMjM4MjgxIFogTSAxNTguNDIxODc1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAzNi4wNzgxMjUgMzAuODcxMDk0IEwgMzguOTk2MDk0IDIyLjkxNDA2MiBMIDQxLjkyNTc4MSAzMC44NzEwOTQgWiBNIDQxLjU3ODEyNSAxNy45OTYwOTQgTCAzOS40OTYwOTQgMTggQyAzNy41NDI5NjkgMTggMzYuNDg0Mzc1IDE4LjU4OTg0NCAzNS43MTA5MzggMjAuNTIzNDM4IEwgMjcuODg2NzE5IDQwLjIzODI4MSBMIDMyLjY0MDYyNSA0MC4yMzgyODEgTCAzNC42NDQ1MzEgMzQuNzc3MzQ0IEwgNDMuMzYzMjgxIDM0Ljc3NzM0NCBMIDQ1LjM3NSA0MC4yMzgyODEgTCA1MC4zOTA2MjUgNDAuMjM4MjgxIFogTSA0MS41NzgxMjUgMTcuOTk2MDk0ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDg1Ljg2NzE4OCAzMC44NzEwOTQgTCA4OC43ODUxNTYgMjIuOTE0MDYyIEwgOTEuNzE0ODQ0IDMwLjg3MTA5NCBaIE0gOTEuMzY3MTg4IDE3Ljk5NjA5NCBMIDg5LjI4NTE1NiAxOCBDIDg3LjMzMjAzMSAxOCA4Ni4yNzM0MzggMTguNTg5ODQ0IDg1LjUgMjAuNTIzNDM4IEwgNzcuNjc1NzgxIDQwLjIzODI4MSBMIDgyLjQyOTY4OCA0MC4yMzgyODEgTCA4NC40MzM1OTQgMzQuNzc3MzQ0IEwgOTMuMTUyMzQ0IDM0Ljc3NzM0NCBMIDk1LjE2NDA2MiA0MC4yMzgyODEgTCAxMDAuMTc5Njg4IDQwLjIzODI4MSBaIE0gOTEuMzY3MTg4IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxNTIuOTIxODc1IDMwLjg3MTA5NCBMIDE1NS44Mzk4NDQgMjIuOTE0MDYyIEwgMTU4Ljc2OTUzMSAzMC44NzEwOTQgWiBNIDE1OC40MjE4NzUgMTcuOTk2MDk0IEwgMTU2LjMzOTg0NCAxOCBDIDE1NC4zODY3MTkgMTggMTUzLjMyODEyNSAxOC41ODk4NDQgMTUyLjU1NDY4OCAyMC41MjM0MzggTCAxNDQuNzMwNDY5IDQwLjIzODI4MSBMIDE0OS40ODQzNzUgNDAuMjM4MjgxIEwgMTUxLjQ4ODI4MSAzNC43NzczNDQgTCAxNjAuMjA3MDMxIDM0Ljc3NzM0NCBMIDE2Mi4yMjI2NTYgNDAuMjM4MjgxIEwgMTY3LjIzNDM3NSA0MC4yMzgyODEgWiBNIDE1OC40MjE4NzUgMTcuOTk2MDk0ICIvPgo8L3N2Zz4K" alt="Samaritans">
+  <h1>Rota wrapped</h1>
+  <p class="intro">Builds the director group dashboard from two files saved from Three Rings. Everything happens inside this browser window.</p>
+  <p class="privacy">Nothing is uploaded or sent anywhere. Close the tab and the data is gone.</p>
+
+  <div class="step">
+    <h3>1. Shifts</h3>
+    <p>Log in to Three Rings first, then click this link. It opens a page of text. Save it with Ctrl+S (on a Mac, Cmd+S).</p>
+    <p><a class="url" id="rotaUrl" target="_blank" rel="noopener"></a></p>
+    <label class="drop" id="shiftDrop"><input type="file" id="shiftFile" accept=".json,application/json,.txt" multiple>Click to choose the saved file, or drop it here</label>
+    <div class="status" id="shiftStatus"></div>
+    <div class="rotas hidden" id="rotaPick"></div>
+    <p style="margin-top:18px"><b>Closed shifts report (recommended).</b> Export the closed shifts report from Three Rings for the same dates and drop it here. Without it, a shift counts as closed when it has fewer than two people on it.</p>
+    <label class="drop" id="closedDrop"><input type="file" id="closedFile" accept=".csv,text/csv">Click to choose the closed shifts report, or drop it here</label>
+    <div class="status" id="closedStatus"></div>
+  </div>
+
+  <div class="step">
+    <h3>2. Volunteers</h3>
+    <p>Click this link. It downloads the Directory as a spreadsheet file (.csv).</p>
+    <p><a class="url" href="https://www.3r.org.uk/directory.csv" target="_blank" rel="noopener">https://www.3r.org.uk/directory.csv</a></p>
+    <p>If your branch exports the Directory another way, any CSV with one row per volunteer works.</p>
+    <label class="drop" id="peopleDrop"><input type="file" id="peopleFile" accept=".csv,text/csv">Click to choose the .csv file, or drop it here</label>
+    <div class="status" id="peopleStatus"></div>
+    <div class="maps hidden" id="maps"></div>
+    <p style="margin-top:18px"><b>Roles report (recommended).</b> Export the Roles report from Stats in Three Rings as a .csv and drop it here. It decides who is a listening volunteer, probationer or shift leader, and matches people to the rota by their Three Rings ID. You can use it on its own, without the Directory file, but then start dates and the overnight exemption have to be added in the list.</p>
+    <label class="drop" id="rolesDrop"><input type="file" id="rolesFile" accept=".csv,text/csv">Click to choose the roles report, or drop it here</label>
+    <div class="status" id="rolesStatus"></div>
+  </div>
+
+  <div class="step">
+    <h3>3. Leave of absence</h3>
+    <p>Export the volunteer activity report from Stats in Three Rings as a .csv and drop it here. Then check the drop-downs below have found the volunteer's name and the leave start and end dates.</p>
+    <label class="drop" id="leaveDrop"><input type="file" id="leaveFile" accept=".csv,text/csv">Click to choose the leave report, or drop it here</label>
+    <div class="status" id="leaveStatus"></div>
+    <div class="maps hidden" id="leaveMaps"></div>
+  </div>
+
+  <div class="step hidden" id="reviewStep">
+    <h3>4. Check the list</h3>
+    <p>Untick anyone who isn't a listening volunteer or probationer, and check the Leader ticks match who leads. Tick anyone exempt from overnights, and add dates for anyone on leave of absence (leave "Back" empty if there is no return date). If someone's name doesn't match how it appears on the rota, edit it here.</p>
+    <p class="status" id="leaderCount"></p>
+    <div id="unmatched"></div>
+    <div class="tablewrap"><table class="review" id="reviewTable"></table></div>
+  </div>
+
+  <div class="step">
+    <h3>5. Settings</h3>
+    <div class="settings">
+      <label>Branch<input id="setBranch" type="text"></label>
+      <label>Measure from<input id="setStart" type="date"></label>
+      <label>Day shift counts as (hours)<input id="setDayH" type="number" min="0" step="0.5"></label>
+      <label>Overnight counts as (hours)<input id="setNightH" type="number" min="0" step="0.5"></label>
+      <label>Shift is open with at least (people)<input id="setMinPeople" type="number" min="1" step="1"></label>
+      <label class="hidden">Rotas that count<input id="setInclude" type="text"></label>
+      <label class="hidden">Rotas to ignore<input id="setExclude" type="text"></label>
+      <label>Overnight rota words<input id="setNightWords" type="text"></label>
+      <label>Leader role name<input id="setLeaderRole" type="text"></label>
+    </div>
+  </div>
+
+  <div class="step">
+    <button class="btn" id="buildBtn">Build the dashboard</button>
+    <button class="btn secondary" id="sampleBtn">Try it with made-up data</button>
+    <div class="status" id="buildStatus"></div>
+  </div>
+</section>
+
+<div id="dashboard"></div>
+<div id="leaderDash" class="hidden"></div>
+</main>
+
+<script>
+"use strict";
+const LOGO = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjU5IiB2aWV3Qm94PSIwIDAgMjIwIDU5Ij4KPGRlZnM+CjxjbGlwUGF0aCBpZD0iY2xpcC0wIj4KPHBhdGggY2xpcC1ydWxlPSJub256ZXJvIiBkPSJNIDAgMC4wNzAzMTI1IEwgMjE5LjI0NjA5NCAwLjA3MDMxMjUgTCAyMTkuMjQ2MDk0IDU4LjUxMTcxOSBMIDAgNTguNTExNzE5IFogTSAwIDAuMDcwMzEyNSAiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8ZyBjbGlwLXBhdGg9InVybCgjY2xpcC0wKSI+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDUxLjc2NTQ0MiUsIDc0LjExODA0MiUsIDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDIxLjAzOTA2MiAwLjA3MDMxMjUgTCAyMS4wMzkwNjIgOS4xMjEwOTQgQyAyMS4wMzkwNjIgMTAuMTA5Mzc1IDIwLjIzODI4MSAxMC45MTAxNTYgMTkuMjUgMTAuOTEwMTU2IEMgMTguMjYxNzE5IDEwLjkxMDE1NiAxNy40NTcwMzEgMTAuMTA5Mzc1IDE3LjQ1NzAzMSA5LjEyMTA5NCBMIDE3LjQ1NzAzMSAwLjA3MDMxMjUgTCAtMC4wMjM0Mzc1IDAuMDcwMzEyNSBMIC0wLjAyMzQzNzUgNTguNTExNzE5IEwgMTk4LjE1NjI1IDU4LjUxMTcxOSBMIDE5OC4xNTYyNSA0OS40NDkyMTkgQyAxOTguMTU2MjUgNDguNDYwOTM4IDE5OC45NTcwMzEgNDcuNjU2MjUgMTk5Ljk0NTMxMiA0Ny42NTYyNSBDIDIwMC45MzM1OTQgNDcuNjU2MjUgMjAxLjczODI4MSA0OC40NjA5MzggMjAxLjczODI4MSA0OS40NDkyMTkgTCAyMDEuNzM4MjgxIDU4LjUxMTcxOSBMIDIxOS4yNDYwOTQgNTguNTExNzE5IEwgMjE5LjI0NjA5NCAwLjA3MDMxMjUgWiBNIDIxLjAzOTA2MiAwLjA3MDMxMjUgIi8+CjwvZz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxMTQuMTE3MTg4IDI1LjEzMjgxMiBDIDExNC4xMTcxODggMjcuNDEwMTU2IDExMi42OTE0MDYgMjguNDc2NTYyIDEwOS43NjU2MjUgMjguNDc2NTYyIEwgMTA3LjExNzE4OCAyOC40NzY1NjIgTCAxMDcuMTE3MTg4IDIxLjc5Mjk2OSBMIDEwOS43NjU2MjUgMjEuNzkyOTY5IEMgMTEyLjY5MTQwNiAyMS43OTI5NjkgMTE0LjExNzE4OCAyMi44NTkzNzUgMTE0LjExNzE4OCAyNS4xMzI4MTIgTSAxMTQuODI0MjE5IDMxLjE0ODQzOCBDIDExNi40OTIxODggMzAuNjUyMzQ0IDExNy4zMDQ2ODggMjkuNTc0MjE5IDExNy45MjE4NzUgMjguNTc0MjE5IEMgMTE4LjU2NjQwNiAyNy41MjM0MzggMTE4Ljg4MjgxMiAyNi40MTc5NjkgMTE4Ljg4MjgxMiAyNS4xMDU0NjkgQyAxMTguODgyODEyIDIyLjg5NDUzMSAxMTguMTM2NzE5IDIxLjE2NDA2MiAxMTYuNjcxODc1IDE5Ljg5ODQzOCBDIDExNS4yMDcwMzEgMTguNjM2NzE5IDExMy4xNzk2ODggMTcuOTk2MDk0IDExMC42NDA2MjUgMTcuOTk2MDk0IEwgMTA0LjE0MDYyNSAxNy45OTYwOTQgQyAxMDMuMTI4OTA2IDE3Ljk5NjA5NCAxMDIuMzc4OTA2IDE4LjczODI4MSAxMDIuMzk0NTMxIDE5Ljc1IEwgMTAyLjM5NDUzMSA0MC4yMzgyODEgTCAxMDcuMTE3MTg4IDQwLjIzODI4MSBMIDEwNy4xMTcxODggMzIuMjg5MDYyIEwgMTA5LjY2MDE1NiAzMi4yODkwNjIgQyAxMDkuODUxNTYyIDMyLjI4OTA2MiAxMTAuMjAzMTI1IDMyLjI4NTE1NiAxMTAuNDg0Mzc1IDMyLjI2MTcxOSBMIDExNS4zMzU5MzggNDAuMjM4MjgxIEwgMTIwLjU2MjUgNDAuMjM4MjgxIFogTSAxMTQuODI0MjE5IDMxLjE0ODQzOCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxMjQuNTU0Njg4IDE4IEMgMTIzLjUzOTA2MiAxOCAxMjIuNzkyOTY5IDE4LjczODI4MSAxMjIuODA4NTk0IDE5Ljc1IEwgMTIyLjgwODU5NCA0MC4yMzgyODEgTCAxMjcuNTM1MTU2IDQwLjIzODI4MSBMIDEyNy41MzUxNTYgMTcuOTk2MDk0IFogTSAxMjQuNTU0Njg4IDE4ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDE3My42NTYyNSAxNy45OTYwOTQgTCAxNzEuMDkzNzUgMTcuOTk2MDk0IEMgMTcwLjA4MjAzMSAxNy45OTYwOTQgMTY5LjMzNTkzOCAxOC43MzgyODEgMTY5LjM0NzY1NiAxOS43NSBMIDE2OS4zNDc2NTYgNDAuMjM4MjgxIEwgMTczLjg0NzY1NiA0MC4yMzgyODEgTCAxNzMuODQ3NjU2IDI1LjU4OTg0NCBMIDE4NS4xMTMyODEgNDAuMjM4MjgxIEwgMTg5LjI0MjE4OCA0MC4yMzgyODEgTCAxODkuMjQyMTg4IDE3Ljk5NjA5NCBMIDE4NC43MzgyODEgMTguMDA3ODEyIEwgMTg0LjczODI4MSAzMi40NDkyMTkgWiBNIDE3My42NTYyNSAxNy45OTYwOTQgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTQ4LjMxMjUgMTcuOTk2MDk0IEwgMTMxLjYwNTQ2OSAxOCBDIDEzMC41OTM3NSAxOCAxMjkuODQ3NjU2IDE4LjczODI4MSAxMjkuODU5Mzc1IDE5Ljc1IEwgMTI5Ljg1OTM3NSAyMS45Mzc1IEwgMTM2LjY1MjM0NCAyMS45Mzc1IEwgMTM2LjY1MjM0NCA0MC4yMzgyODEgTCAxNDEuMzc4OTA2IDQwLjIzODI4MSBMIDE0MS4zNzg5MDYgMjEuOTM3NSBMIDE0OC4zMTI1IDIxLjkzNzUgWiBNIDE0OC4zMTI1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSA2Mi4xNjQwNjIgMzMuNzI2NTYyIEMgNjIuNTc4MTI1IDM0LjM0NzY1NiA2My4xNzk2ODggMzQuOTE0MDYyIDY0LjA1ODU5NCAzNC45MTQwNjIgQyA2NC45NDE0MDYgMzQuOTE0MDYyIDY1LjU0Mjk2OSAzNC4zNTE1NjIgNjUuOTU3MDMxIDMzLjcyNjU2MiBMIDcxLjM3ODkwNiAyNS41MjczNDQgTCA3MS4zNzg5MDYgNDAuMjM4MjgxIEwgNzUuOTIxODc1IDQwLjIzODI4MSBMIDc1LjkyMTg3NSAxOCBMIDcxLjI2OTUzMSAxOCBMIDY0LjE1MjM0NCAyOC43MTg3NSBMIDU3LjA1MDc4MSAxOCBMIDUzLjk5NjA5NCAxOCBDIDUyLjk4MDQ2OSAxOCA1Mi4yMzQzNzUgMTguNzM0Mzc1IDUyLjI1IDE5Ljc1IEwgNTIuMjUgNDAuMjM4MjgxIEwgNTYuNzI2NTYyIDQwLjIzODI4MSBMIDU2LjcyNjU2MiAyNS41MjczNDQgWiBNIDYyLjE2NDA2MiAzMy43MjY1NjIgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTAuOTMzNTk0IDM4Ljg0Mzc1IEMgMTMuMTQ4NDM4IDQwLjQ4NDM3NSAxNi4wODU5MzggNDEuMTE3MTg4IDE4Ljc0NjA5NCA0MS4xMTcxODggQyAyMS40MTAxNTYgNDEuMTE3MTg4IDIzLjUwMzkwNiA0MC40Njg3NSAyNS4wNTQ2ODggMzkuMjY1NjI1IEMgMjYuNjIxMDk0IDM4LjA1MDc4MSAyNy40MjU3ODEgMzYuMzY3MTg4IDI3LjQ5MjE4OCAzNC4yNjE3MTkgQyAyNy41NTA3ODEgMzIuNTA3ODEyIDI3LjA5NzY1NiAzMC44NTE1NjIgMjUuNTI3MzQ0IDI5LjQ4NDM3NSBDIDI0LjU0Mjk2OSAyOC42Mjg5MDYgMjMuMDc0MjE5IDI4LjAzMTI1IDIxLjExNzE4OCAyNy4zMjQyMTkgQyAyMC4yNjk1MzEgMjcuMDE5NTMxIDE4LjMwODU5NCAyNi4zNTU0NjkgMTcuNzYxNzE5IDI2LjA4NTkzOCBDIDE3LjIzNDM3NSAyNS44MjQyMTkgMTYuMzUxNTYyIDI1LjEwNTQ2OSAxNi4zNjMyODEgMjMuOTg4MjgxIEMgMTYuMzc1IDIyLjU0Mjk2OSAxNy43MjI2NTYgMjEuNTI3MzQ0IDE5Ljk1MzEyNSAyMS41MjczNDQgQyAyMi4wNzgxMjUgMjEuNTI3MzQ0IDI0LjE2NDA2MiAyMi4xNDg0MzggMjUuODU5Mzc1IDIzLjQwNjI1IEwgMjYuNDY4NzUgMjEuODc1IEMgMjYuODE2NDA2IDIwLjkxNzk2OSAyNy4wMjczNDQgMjAuMTAxNTYyIDI2LjcyNjU2MiAxOS41MjM0MzggQyAyNi4zMjgxMjUgMTguNzQyMTg4IDI0LjczNDM3NSAxOC4xNzU3ODEgMjMuNTM1MTU2IDE3Ljg3ODkwNiBDIDIyLjMzNTkzOCAxNy41ODIwMzEgMjEuMjE4NzUgMTcuNDY0ODQ0IDE5Ljg1MTU2MiAxNy40NjQ4NDQgQyAxOC4yMDcwMzEgMTcuNDY0ODQ0IDE2Ljc1MzkwNiAxNy43NDIxODggMTUuNTE5NTMxIDE4LjI4OTA2MiBDIDE0LjI3MzQzOCAxOC44Mzk4NDQgMTMuMzA4NTk0IDE5LjYxNzE4OCAxMi42NDg0MzggMjAuNjAxNTYyIEMgMTEuOTg4MjgxIDIxLjU4MjAzMSAxMS42MDkzNzUgMjIuNzY1NjI1IDExLjU5Mzc1IDI0LjA1MDc4MSBDIDExLjU3ODEyNSAyNS44MzIwMzEgMTIuMTMyODEyIDI3LjI1MzkwNiAxMy4xODc1IDI4LjMzOTg0NCBDIDE0LjIyNjU2MiAyOS40MTc5NjkgMTUuODA4NTk0IDMwLjEwOTM3NSAxOC40MjE4NzUgMzEuMTIxMDk0IEMgMTkuNzM4MjgxIDMxLjYyODkwNiAyMS4yNzM0MzggMzIuMTcxODc1IDIxLjg2NzE4OCAzMi42Mjg5MDYgQyAyMi40NDE0MDYgMzMuMDc0MjE5IDIyLjc1MzkwNiAzMy42NTYyNSAyMi43NDYwOTQgMzQuMzc1IEMgMjIuNzMwNDY5IDM2LjA0Njg3NSAyMS4xNDg0MzggMzcuMDU0Njg4IDE4LjYyODkwNiAzNy4wNTQ2ODggQyAxNi4wODk4NDQgMzcuMDU0Njg4IDEzLjkyOTY4OCAzNi4wNDI5NjkgMTIuNDIxODc1IDM0LjgzNTkzOCBaIE0gMTAuOTMzNTk0IDM4Ljg0Mzc1ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDE5MS42ODM1OTQgMzguODQzNzUgQyAxOTMuODk0NTMxIDQwLjQ4NDM3NSAxOTYuODMyMDMxIDQxLjExNzE4OCAxOTkuNDkyMTg4IDQxLjExNzE4OCBDIDIwMi4xNjAxNTYgNDEuMTE3MTg4IDIwNC4yNSA0MC40Njg3NSAyMDUuODA0Njg4IDM5LjI2NTYyNSBDIDIwNy4zNjcxODggMzguMDUwNzgxIDIwOC4xNzU3ODEgMzYuMzY3MTg4IDIwOC4yNDIxODggMzQuMjYxNzE5IEMgMjA4LjI5Njg3NSAzMi41MDc4MTIgMjA3Ljg0Mzc1IDMwLjg1MTU2MiAyMDYuMjczNDM4IDI5LjQ4NDM3NSBDIDIwNS4yODkwNjIgMjguNjI4OTA2IDIwMy44MjQyMTkgMjguMDMxMjUgMjAxLjg2MzI4MSAyNy4zMjQyMTkgQyAyMDEuMDE1NjI1IDI3LjAxOTUzMSAxOTkuMDU4NTk0IDI2LjM1NTQ2OSAxOTguNTExNzE5IDI2LjA4NTkzOCBDIDE5Ny45ODA0NjkgMjUuODI0MjE5IDE5Ny4wOTc2NTYgMjUuMTA1NDY5IDE5Ny4xMDkzNzUgMjMuOTg4MjgxIEMgMTk3LjEyNSAyMi41NDI5NjkgMTk4LjQ2ODc1IDIxLjUyNzM0NCAyMDAuNjk5MjE5IDIxLjUyNzM0NCBDIDIwMi44MjgxMjUgMjEuNTI3MzQ0IDIwNC45MTAxNTYgMjIuMTQ4NDM4IDIwNi42MDU0NjkgMjMuNDA2MjUgTCAyMDcuMjE4NzUgMjEuODc1IEMgMjA3LjU2MjUgMjAuOTE3OTY5IDIwNy43NzM0MzggMjAuMTAxNTYyIDIwNy40NzY1NjIgMTkuNTIzNDM4IEMgMjA3LjA3NDIxOSAxOC43NDIxODggMjA1LjQ4MDQ2OSAxOC4xNzU3ODEgMjA0LjI4MTI1IDE3Ljg3ODkwNiBDIDIwMy4wODU5MzggMTcuNTgyMDMxIDIwMS45Njg3NSAxNy40NjQ4NDQgMjAwLjU5NzY1NiAxNy40NjQ4NDQgQyAxOTguOTU3MDMxIDE3LjQ2NDg0NCAxOTcuNSAxNy43NDIxODggMTk2LjI2NTYyNSAxOC4yODkwNjIgQyAxOTUuMDE5NTMxIDE4LjgzOTg0NCAxOTQuMDU0Njg4IDE5LjYxNzE4OCAxOTMuMzk0NTMxIDIwLjYwMTU2MiBDIDE5Mi43MzQzNzUgMjEuNTgyMDMxIDE5Mi4zNTkzNzUgMjIuNzY1NjI1IDE5Mi4zNDM3NSAyNC4wNTA3ODEgQyAxOTIuMzI0MjE5IDI1LjgzMjAzMSAxOTIuODgyODEyIDI3LjI1MzkwNiAxOTMuOTMzNTk0IDI4LjMzOTg0NCBDIDE5NC45NzY1NjIgMjkuNDE3OTY5IDE5Ni41NTQ2ODggMzAuMTA5Mzc1IDE5OS4xNjc5NjkgMzEuMTIxMDk0IEMgMjAwLjQ4NDM3NSAzMS42Mjg5MDYgMjAyLjAxOTUzMSAzMi4xNzE4NzUgMjAyLjYxMzI4MSAzMi42Mjg5MDYgQyAyMDMuMTg3NSAzMy4wNzQyMTkgMjAzLjUwMzkwNiAzMy42NTYyNSAyMDMuNDk2MDk0IDM0LjM3NSBDIDIwMy40NzY1NjIgMzYuMDQ2ODc1IDIwMS44OTg0MzggMzcuMDU0Njg4IDE5OS4zNzUgMzcuMDU0Njg4IEMgMTk2LjgzNTkzOCAzNy4wNTQ2ODggMTk0LjY3NTc4MSAzNi4wNDI5NjkgMTkzLjE2Nzk2OSAzNC44MzU5MzggWiBNIDE5MS42ODM1OTQgMzguODQzNzUgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMzYuMDc4MTI1IDMwLjg3MTA5NCBMIDM4Ljk5NjA5NCAyMi45MTQwNjIgTCA0MS45MjU3ODEgMzAuODcxMDk0IFogTSA0MS41NzgxMjUgMTcuOTk2MDk0IEwgMzkuNDk2MDk0IDE4IEMgMzcuNTQyOTY5IDE4IDM2LjQ4NDM3NSAxOC41ODk4NDQgMzUuNzEwOTM4IDIwLjUyMzQzOCBMIDI3Ljg4NjcxOSA0MC4yMzgyODEgTCAzMi42NDA2MjUgNDAuMjM4MjgxIEwgMzQuNjQ0NTMxIDM0Ljc3NzM0NCBMIDQzLjM2MzI4MSAzNC43NzczNDQgTCA0NS4zNzUgNDAuMjM4MjgxIEwgNTAuMzkwNjI1IDQwLjIzODI4MSBaIE0gNDEuNTc4MTI1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSA4NS44NjcxODggMzAuODcxMDk0IEwgODguNzg1MTU2IDIyLjkxNDA2MiBMIDkxLjcxNDg0NCAzMC44NzEwOTQgWiBNIDkxLjM2NzE4OCAxNy45OTYwOTQgTCA4OS4yODUxNTYgMTggQyA4Ny4zMzIwMzEgMTggODYuMjczNDM4IDE4LjU4OTg0NCA4NS41IDIwLjUyMzQzOCBMIDc3LjY3NTc4MSA0MC4yMzgyODEgTCA4Mi40Mjk2ODggNDAuMjM4MjgxIEwgODQuNDMzNTk0IDM0Ljc3NzM0NCBMIDkzLjE1MjM0NCAzNC43NzczNDQgTCA5NS4xNjQwNjIgNDAuMjM4MjgxIEwgMTAwLjE3OTY4OCA0MC4yMzgyODEgWiBNIDkxLjM2NzE4OCAxNy45OTYwOTQgIi8+CjxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0icmdiKDEwMCUsIDEwMCUsIDEwMCUpIiBmaWxsLW9wYWNpdHk9IjEiIGQ9Ik0gMTUyLjkyMTg3NSAzMC44NzEwOTQgTCAxNTUuODM5ODQ0IDIyLjkxNDA2MiBMIDE1OC43Njk1MzEgMzAuODcxMDk0IFogTSAxNTguNDIxODc1IDE3Ljk5NjA5NCBMIDE1Ni4zMzk4NDQgMTggQyAxNTQuMzg2NzE5IDE4IDE1My4zMjgxMjUgMTguNTg5ODQ0IDE1Mi41NTQ2ODggMjAuNTIzNDM4IEwgMTQ0LjczMDQ2OSA0MC4yMzgyODEgTCAxNDkuNDg0Mzc1IDQwLjIzODI4MSBMIDE1MS40ODgyODEgMzQuNzc3MzQ0IEwgMTYwLjIwNzAzMSAzNC43NzczNDQgTCAxNjIuMjIyNjU2IDQwLjIzODI4MSBMIDE2Ny4yMzQzNzUgNDAuMjM4MjgxIFogTSAxNTguNDIxODc1IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAzNi4wNzgxMjUgMzAuODcxMDk0IEwgMzguOTk2MDk0IDIyLjkxNDA2MiBMIDQxLjkyNTc4MSAzMC44NzEwOTQgWiBNIDQxLjU3ODEyNSAxNy45OTYwOTQgTCAzOS40OTYwOTQgMTggQyAzNy41NDI5NjkgMTggMzYuNDg0Mzc1IDE4LjU4OTg0NCAzNS43MTA5MzggMjAuNTIzNDM4IEwgMjcuODg2NzE5IDQwLjIzODI4MSBMIDMyLjY0MDYyNSA0MC4yMzgyODEgTCAzNC42NDQ1MzEgMzQuNzc3MzQ0IEwgNDMuMzYzMjgxIDM0Ljc3NzM0NCBMIDQ1LjM3NSA0MC4yMzgyODEgTCA1MC4zOTA2MjUgNDAuMjM4MjgxIFogTSA0MS41NzgxMjUgMTcuOTk2MDk0ICIvPgo8cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9InJnYigxMDAlLCAxMDAlLCAxMDAlKSIgZmlsbC1vcGFjaXR5PSIxIiBkPSJNIDg1Ljg2NzE4OCAzMC44NzEwOTQgTCA4OC43ODUxNTYgMjIuOTE0MDYyIEwgOTEuNzE0ODQ0IDMwLjg3MTA5NCBaIE0gOTEuMzY3MTg4IDE3Ljk5NjA5NCBMIDg5LjI4NTE1NiAxOCBDIDg3LjMzMjAzMSAxOCA4Ni4yNzM0MzggMTguNTg5ODQ0IDg1LjUgMjAuNTIzNDM4IEwgNzcuNjc1NzgxIDQwLjIzODI4MSBMIDgyLjQyOTY4OCA0MC4yMzgyODEgTCA4NC40MzM1OTQgMzQuNzc3MzQ0IEwgOTMuMTUyMzQ0IDM0Ljc3NzM0NCBMIDk1LjE2NDA2MiA0MC4yMzgyODEgTCAxMDAuMTc5Njg4IDQwLjIzODI4MSBaIE0gOTEuMzY3MTg4IDE3Ljk5NjA5NCAiLz4KPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJyZ2IoMTAwJSwgMTAwJSwgMTAwJSkiIGZpbGwtb3BhY2l0eT0iMSIgZD0iTSAxNTIuOTIxODc1IDMwLjg3MTA5NCBMIDE1NS44Mzk4NDQgMjIuOTE0MDYyIEwgMTU4Ljc2OTUzMSAzMC44NzEwOTQgWiBNIDE1OC40MjE4NzUgMTcuOTk2MDk0IEwgMTU2LjMzOTg0NCAxOCBDIDE1NC4zODY3MTkgMTggMTUzLjMyODEyNSAxOC41ODk4NDQgMTUyLjU1NDY4OCAyMC41MjM0MzggTCAxNDQuNzMwNDY5IDQwLjIzODI4MSBMIDE0OS40ODQzNzUgNDAuMjM4MjgxIEwgMTUxLjQ4ODI4MSAzNC43NzczNDQgTCAxNjAuMjA3MDMxIDM0Ljc3NzM0NCBMIDE2Mi4yMjI2NTYgNDAuMjM4MjgxIEwgMTY3LjIzNDM3NSA0MC4yMzgyODEgWiBNIDE1OC40MjE4NzUgMTcuOTk2MDk0ICIvPgo8L3N2Zz4K";
+const CFG = {
+  branch: "",
+  periodStart: "" || (() => { const d = new Date(); d.setDate(d.getDate() - 365);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; })(),
+  roles: ["listening volunteer", "probationer"],
+  dayShiftsPerWeek: 1, overnightEveryWeeks: 8,
+  dayHours: 3, nightHours: 6,
+  minPeople: 2,
+  leaderWords: ["leader"], leaderExpect: 1, quietDays: 56, leaderRole: "Shift Leader",   // Three Rings shows a listening shift as [closed] when fewer than this many are on it
+  include: ["listening"],
+  exclude: ["leader", "support", "training", "admin", "outreach", "meeting"],
+  nightWords: ["overnight", "night"], nightMinHours: 5,
+  minDays: 14, watch: 0.5, inactiveDays: 30, recentReturn: 30
+};
+
+/* ---------- dates, as whole-day numbers ---------- */
+const DAY = 864e5;
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const dn = (y, m, d) => Math.round(Date.UTC(y, m - 1, d) / DAY);
+const parts = n => { const d = new Date(n * DAY); return [d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate()]; };
+const iso = n => { const [y, m, d] = parts(n); return `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`; };
+const short = n => { const [, m, d] = parts(n); return `${d} ${MON[m - 1]}`; };
+const long = n => { const [y, m, d] = parts(n); return `${d} ${MONTHS[m - 1]} ${y}`; };
+const dayMonth = n => { const [, m, d] = parts(n); return `${d} ${MONTHS[m - 1]}`; };
+const todayDn = () => { const t = new Date(); return dn(t.getFullYear(), t.getMonth() + 1, t.getDate()); };
+function monthIdx(s) { s = s.toLowerCase().slice(0, 3); const i = MON.findIndex(m => m.toLowerCase() === s); return i < 0 ? 0 : i + 1; }
+function parseDay(s) {
+  s = String(s || "").trim(); if (!s) return null;
+  let m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s); if (m) return dn(+m[1], +m[2], +m[3]);
+  m = /^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/.exec(s);
+  if (m) { let y = +m[3]; if (y < 100) y += 2000; return dn(y, +m[2], +m[1]); }
+  m = /^(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]+),?\s+(\d{4})/.exec(s);
+  if (m && monthIdx(m[2])) return dn(+m[3], monthIdx(m[2]), +m[1]);
+  const d = new Date(s); if (!isNaN(d)) return dn(d.getFullYear(), d.getMonth() + 1, d.getDate());
+  return null;
+}
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm = s => String(s || "").normalize("NFKC").toLowerCase().replace(/[^\p{L}\p{N}\s'-]/gu, " ").replace(/\s+/g, " ").trim();
+const truthy = v => ["yes","y","true","1","exempt","excused","x","✓","✔","☑","ticked","checked","on"].includes(String(v || "").trim().toLowerCase());
+// any symbol or emoji in a name, which is how the Directory flags leave of absence
+const SYMBOL = /[^\p{L}\p{N}\p{M}\s.,'’"()#&\/\-\u2013\u2014]/u;
+const stripSymbols = s => String(s || "").replace(new RegExp(SYMBOL.source, "gu"), "").replace(/\s+/g, " ").trim();
+const plural = (n, one, many) => n === 1 ? one : many;
+
+/* ---------- CSV ---------- */
+function parseCSV(text) {
+  text = text.replace(/^﻿/, "");
+  const rows = []; let row = [], cell = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) {
+      if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+      else if (c === '"') q = false; else cell += c;
+    } else if (c === '"') q = true;
+    else if (c === ",") { row.push(cell); cell = ""; }
+    else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(cell); cell = ""; if (row.some(x => x.trim() !== "")) rows.push(row); row = [];
+    } else cell += c;
+  }
+  row.push(cell); if (row.some(x => x.trim() !== "")) rows.push(row);
+  return rows;
+}
+
+/* ---------- shifts ---------- */
+// Three Rings lets rota secretaries mark a shift closed. Look for that wherever it appears.
+function closedMarker(s, rota) {
+  if (/\bclosed\b/i.test(rota)) return "rota name";
+  for (const [k, v] of Object.entries(s)) {
+    const kl = k.toLowerCase();
+    if (v == null || v === "" || typeof v === "object") continue;
+    if (/closed|cancel/.test(kl) && !/_at$|_by|date|time/.test(kl) && !/^(false|no|0)$/i.test(String(v)) && v !== false) return `"${k}"`;
+    if (/^(status|state)$/.test(kl) && /closed|cancel/i.test(String(v))) return `"${k}"`;
+    if (/title|name|description|comment|note|label|message/.test(kl) && typeof v === "string" && /\bclosed\b/i.test(v)) return `"${k}"`;
+  }
+  if ((s.volunteers || []).some(v => /^\s*\[?\s*closed\s*\]?\s*$/i.test(typeof v === "string" ? v : (v && v.name) || ""))) return "a CLOSED entry on the shift";
+  return null;
+}
+
+function parseShift(s) {
+  // the export labels times as UTC ("Z") but they are UK local time, so read them as local
+  const st = new Date(String(s.start_datetime || s.start || "").replace(/(\.\d+)?Z$/, ""));
+  if (isNaN(st)) return null;
+  let hrs = null;
+  if (s.duration != null && !isNaN(+s.duration)) hrs = +s.duration > 48 ? +s.duration / 3600 : +s.duration;
+  else if (s.end_datetime) { const e = new Date(s.end_datetime); if (!isNaN(e)) hrs = (e - st) / 36e5; }
+  if (hrs == null) hrs = 3;
+  let rota = s.rota; if (rota && typeof rota === "object") rota = rota.name;
+  rota = String(rota || s.title || "");
+  const closed = closedMarker(s, rota);
+  const vols = (s.volunteers || []).map(v => typeof v === "string" ? {id: null, name: v}
+      : {id: v.id != null ? String(v.id) : null, name: v.name || v.volunteer_name || ""})
+    .filter(v => !/^\s*\[?\s*closed\s*\]?\s*$/i.test(v.name));
+  // the key only exists to drop exact duplicates when overlapping files are loaded together
+  const key = s.id != null ? "id" + s.id
+    : [rota, st.getTime(), ...vols.map(v => v.id || norm(v.name)).sort()].join("|");
+  const day = dn(st.getFullYear(), st.getMonth() + 1, st.getDate());
+  const hm = `${String(st.getHours()).padStart(2, "0")}:${String(st.getMinutes()).padStart(2, "0")}`;
+  return {key, rota, ms: st.getTime(), day, hm, slot: `${norm(rota)}|${day}|${hm}`,
+    hour: st.getHours(), hrs, vols, closed};
+}
+// only rotas with "listening" in the name count (so DD on Call, Rota Secretary and Leader are left out)
+const countsAsListening = rota => CFG.rotaSet ? CFG.rotaSet.has(rota) : (!CFG.include.length || CFG.include.some(k => k && norm(rota).includes(k)))
+  && !CFG.exclude.some(k => k && norm(rota).includes(k));
+const isOvernight = sh => CFG.nightWords.some(k => k && norm(sh.rota).includes(k)) ||
+  ((sh.hour >= 21 || sh.hour < 3) && sh.hrs >= CFG.nightMinHours);
+
+/* ---------- leave helpers ---------- */
+function leaveDays(periods, a, b) {
+  const set = new Set();
+  for (const [s, e] of periods) for (let d = Math.max(s, a); d <= Math.min(e ?? b, b); d++) set.add(d);
+  return set.size;
+}
+
+/* ---------- the sums (mirrors rota_dashboard.py) ---------- */
+function analyse(people, shifts, ws, today, match) {
+  const now = Date.now();
+  const copyByRow = new Map(people.map(v => [v.row, v]));
+  for (const v of people) Object.assign(v, {day: 0, overnight: 0, hours: 0, last: null, next: null});
+  const weekly = new Map(); let totalDay = 0, totalNight = 0, totalHours = 0;
+  const unmatched = new Map();
+  for (const s of shifts) {
+    if (!countsAsListening(s.rota) || s.day < ws) continue;
+    const night = isOvernight(s), credit = night ? CFG.nightHours : CFG.dayHours, past = s.ms < now;
+    let filled = false;
+    for (const sv of s.vols) {
+      const o = match(sv), v = o ? copyByRow.get(o.row) : null;
+      if (!v) { if (sv.name) unmatched.set(sv.name, (unmatched.get(sv.name) || 0) + 1); continue; }
+      if (past) {
+        filled = true;
+        if (v.started && s.day < v.started) continue;
+        v[night ? "overnight" : "day"]++; v.hours += credit; totalHours += credit;
+        if (v.last == null || s.day > v.last) v.last = s.day;
+      } else if (v.next == null || s.day < v.next) v.next = s.day;
+    }
+    if (past && filled) {
+      night ? totalNight++ : totalDay++;
+      const [y, m, d] = parts(s.day); const wd = (new Date(s.day * DAY).getUTCDay() + 6) % 7;
+      weekly.set(s.day - wd, (weekly.get(s.day - wd) || 0) + 1);
+    }
+  }
+  const assessed = [], tooNew = [], onLeave = [], returned = [];
+  for (const v of people) {
+    const own = Math.max(ws, v.started ?? ws);
+    v.leave = v.leave.map(([a, b]) => {
+      if (a !== "est") return [a, b];
+      v.leaveEstimated = true;
+      return [Math.min(v.last != null ? v.last + 1 : own, today), b];
+    });
+    const days = today - own;
+    const lv = days > 0 ? leaveDays(v.leave, own, today - 1) : 0;
+    v.activeDays = Math.max(days - lv, 0); v.leaveDays = lv; v.daysInWindow = days;
+    const cur = v.leave.filter(([a, b]) => a <= today && (b == null || b >= today));
+    v.onLeave = cur.length > 0;
+    if (v.onLeave) {
+      v.leaveFrom = Math.min(...cur.map(p => p[0]));
+      v.leaveUntil = cur.some(p => p[1] == null) ? null : Math.max(...cur.map(p => p[1]));
+      onLeave.push(v);
+    } else {
+      const rec = v.leave.map(p => p[1]).filter(b => b != null && b < today && b >= today - CFG.recentReturn);
+      if (rec.length) { v.returned = Math.max(...rec); returned.push(v); }
+    }
+    const ref = v.last ?? own, gap = today - ref;
+    v.activeGap = Math.max(gap - (gap > 0 ? leaveDays(v.leave, ref + 1, today) : 0), 0);
+    if (v.activeDays < CFG.minDays) { tooNew.push(v); continue; }
+    const weeks = v.activeDays / 7;
+    v.expHours = weeks * CFG.dayShiftsPerWeek * CFG.dayHours +
+      (v.exempt ? 0 : weeks / CFG.overnightEveryWeeks * CFG.nightHours);
+    v.pct = v.expHours ? v.hours / v.expHours : 0;
+    assessed.push(v);
+  }
+  // last month: every listening shift slot, filled or not
+  const mStart = today - 30;
+  const month = {start: mStart, day: {open: 0, closed: 0}, night: {open: 0, closed: 0}, hours: 0, weeks: new Map()};
+  for (const s of shifts) {
+    if (!countsAsListening(s.rota) || s.day < mStart || s.ms >= now) continue;
+    const night = isOvernight(s), filled = s.vols.filter(v => v.name || v.id).length;
+    const isClosed = CLOSED ? CLOSED.has(s.slot) : (!!s.closed || filled < CFG.minPeople);
+    month[night ? "night" : "day"][isClosed ? "closed" : "open"]++;
+    month.hours += filled * (night ? CFG.nightHours : CFG.dayHours);
+    const wk = s.day - (new Date(s.day * DAY).getUTCDay() + 6) % 7;
+    if (!month.weeks.has(wk)) month.weeks.set(wk, {open: 0, closed: 0});
+    month.weeks.get(wk)[isClosed ? "closed" : "open"]++;
+  }
+  month.fromReport = !!CLOSED;
+  month.open = month.day.open + month.night.open; month.closed = month.day.closed + month.night.closed;
+  month.openPct = month.open + month.closed ? Math.round(100 * month.open / (month.open + month.closed)) : 0;
+  month.weeks = [...month.weeks.entries()].sort((a, b) => a[0] - b[0]);
+
+  const buckets = [["Under 25%", 0, .25], ["25–49%", .25, .5], ["50–74%", .5, .75], ["75–99%", .75, 1], ["100%+", 1, 99]];
+  const dist = buckets.map(([l, lo, hi]) => [l, assessed.filter(v => v.pct >= lo && v.pct < hi).length]);
+  const needNight = assessed.filter(v => !v.exempt);
+  return {
+    assessed, tooNew, dist, onLeave: onLeave.sort((a, b) => a.leaveFrom - b.leaveFrom),
+    returned: returned.sort((a, b) => b.returned - a.returned),
+    watch: assessed.filter(v => v.pct < CFG.watch && !v.onLeave).sort((a, b) => a.pct - b.pct),
+    inactive: people.filter(v => !v.onLeave && v.activeGap >= CFG.inactiveDays).sort((a, b) => b.activeGap - a.activeGap),
+    weekly: [...weekly.entries()].sort((a, b) => a[0] - b[0]),
+    totalDay, totalNight, totalHours,
+    meeting: assessed.filter(v => v.pct >= 1).length,
+    exemptCount: people.filter(v => v.exempt).length,
+    nightDone: needNight.filter(v => v.overnight > 0).length, nightPool: needNight.length,
+    headcount: people.length, unmatched, month
+  };
+}
+
+/* ---------- rendering (mirrors rota_dashboard.py) ---------- */
+const fmtDate = n => n == null ? "none since go-live" : short(n);
+function personRows(list, kind, today) {
+  if (!list.length) return `<p class="empty">${{watch: "Nobody is below the line. Worth saying thank you.",
+    inactive: "Everyone not on leave has listened in the last month.",
+    leave: "Nobody is on leave of absence at the moment."}[kind]}</p>`;
+  const rows = list.map(v => {
+    const name = esc(v.name), tag = v.role === "Probationer" ? '<span class="tag">Probationer</span>' : "";
+    const nxt = v.next != null ? `<span class="next">Booked ${short(v.next)}</span>` : '<span class="next none">Nothing booked</span>';
+    if (kind === "watch") {
+      const night = v.exempt ? "" : ` · ${v.overnight} ${plural(v.overnight, "overnight", "overnights")}`;
+      const lv = v.leaveDays ? ` · ${v.leaveDays} days on leave taken out` : "";
+      return `<li><div class="who">${name}${tag}</div>
+        <div class="bar"><span style="width:${Math.min(v.pct, 1) * 100}%"></span></div>
+        <div class="pct">${Math.round(v.pct * 100)}%</div>
+        <div class="meta">${Math.round(v.hours)} of ${Math.round(v.expHours)} hours · ${v.day} ${plural(v.day, "day shift", "day shifts")}${night}${lv} · last shift ${fmtDate(v.last)} ${nxt}</div></li>`;
+    }
+    if (kind === "inactive") return `<li><div class="who">${name}${tag}</div>
+        <div class="days">${v.activeGap} days${v.last == null ? "+" : ""}</div>
+        <div class="meta">Last shift ${fmtDate(v.last)} ${nxt}</div></li>`;
+    return `<li><div class="who">${name}${tag}</div>
+        <div class="days">${v.leaveUntil != null ? "back " + short(v.leaveUntil) : "no return date set"}</div>
+        <div class="meta">On leave since ${short(v.leaveFrom)}${v.leaveEstimated ? " (estimated from their last shift)" : ` (${today - v.leaveFrom} days)`} ${nxt}</div></li>`;
+  });
+  return `<ul class="people ${kind}">${rows.join("")}</ul>`;
+}
+
+function stackBar(label, b) {
+  const tot = b.open + b.closed;
+  if (!tot) return `<div class="sbar"><div class="sbar-head"><b>${label}</b><span>none in this period</span></div></div>`;
+  const o = Math.round(b.open / tot * 100), c = 100 - o;
+  return `<div class="sbar"><div class="sbar-head"><b>${label}</b><span>${o}% open · ${c}% closed <em>(${b.open} open, ${b.closed} closed)</em></span></div>
+    <div class="sbar-track"><span class="s-open" style="width:${o}%">${o >= 12 ? o + "%" : ""}</span><span class="s-closed" style="width:${c}%">${c >= 12 ? c + "%" : ""}</span></div></div>`;
+}
+
+function render(r, ws, today, demo) {
+  const n = r.assessed.length, meetingPct = n ? Math.round(100 * r.meeting / n) : 0;
+  const maxb = Math.max(1, ...r.dist.map(d => d[1]));
+  const distHtml = r.dist.map(([l, c], i) => `<div class="col"><div class="count">${c}</div>
+    <div class="pillar b${i}" style="height:${Math.max(c / maxb * 100, 3)}%"></div><div class="lab">${l}</div></div>`).join("");
+  const below = r.dist[0][1] + r.dist[1][1], mid = r.dist[2][1] + r.dist[3][1], top = r.dist[4][1];
+  const tot = Math.max(below + mid + top, 1), c1 = top / tot * 100, c2 = (top + mid) / tot * 100;
+  const mw = r.month.weeks;
+  const maxw = Math.max(1, ...mw.map(([, w]) => w.open + w.closed));
+  const weeklyHtml = mw.map(([wk, w]) => { const [, m, d] = parts(wk);
+    return `<div class="wk" title="w/c ${short(wk)}: ${w.open} open, ${w.closed} closed">
+      <span class="c" style="height:${w.closed / maxw * 100}%"></span><span style="height:${w.open / maxw * 100}%"></span><em>${d}/${m}</em></div>`; }).join("");
+  const nightPct = r.nightPool ? Math.round(100 * r.nightDone / r.nightPool) : 0;
+  const weeks = (today - ws) / 7;
+  const early = weeks < 12 ? `<p class="caveat">Only ${Math.round(weeks)} weeks of Three Rings data so far. One missed week moves someone a long way, so read these figures as early signals.</p>` : "";
+  const returnedHtml = r.returned.length ? `<div class="returned"><b>Back from leave in the last ${CFG.recentReturn} days:</b> ${r.returned.map(v => `${esc(v.name)} (${short(v.returned)})`).join(", ")}. A welcome back could go a long way.</div>` : "";
+  const nIn = r.inactive.length, nL = r.onLeave.length, nT = r.tooNew.length;
+  const weeklyHours = CFG.dayShiftsPerWeek * CFG.dayHours + CFG.nightHours / CFG.overnightEveryWeeks;
+  const now = new Date();
+  return `${demo ? '<div class="demo">Made-up volunteers. No real data.</div>' : ""}
+<section class="card cover">
+  <img class="logo" src="${LOGO}" alt="Samaritans">
+  <p class="kicker">${CFG.branch ? esc(CFG.branch) + " branch" : "Samaritans"} · director group</p>
+  <h1>Our rota,<br><span class="hl">wrapped.</span></h1>
+  <p class="sub">${long(ws)} to ${long(today)}</p>
+  <div class="blob b-a"></div><div class="blob b-b"></div>
+  <p class="scroll">Scroll ↓</p>
+</section>
+<section class="card numbers">
+  <p class="kicker">Last month · ${short(r.month.start)} to ${short(today - 1)}</p>
+  <div class="big">${r.month.openPct}%</div>
+  <p class="lead">of listening shifts were open</p>
+  <div class="trio">
+    <div class="t-open"><b>${r.month.open}</b><span>shifts open</span></div>
+    <div class="t-closed"><b>${r.month.closed}</b><span>shifts closed</span></div>
+    <div><b>${Math.round(r.month.hours).toLocaleString("en-GB")}</b><span>volunteer hours</span></div>
+  </div>
+  ${stackBar("Day listening shifts", r.month.day)}
+  ${stackBar("Overnights", r.month.night)}
+  <div class="key"><span><i class="k-open"></i>Open</span><span><i class="k-closed"></i>Closed</span></div>
+  <div class="weekly stacked">${weeklyHtml}</div>
+  <p class="axis">Open and closed listening shifts each week. ${r.month.fromReport ? "Closed shifts are taken from the Three Rings closed shifts report." : `As on the Three Rings rota, a shift is closed when it has fewer than ${CFG.minPeople} people on it.`}</p>
+</section>
+<section class="card contribution">
+  <p class="kicker">Contribution</p>
+  <h2><span class="hl">${meetingPct}%</span> of the branch are meeting their full contribution</h2>
+  <div class="split">
+    <div class="donut" style="background:conic-gradient(var(--primary) 0 ${c1}%, var(--pale) ${c1}% ${c2}%, var(--yellow) ${c2}% 100%)"><div><b>${n}</b><span>assessed</span></div></div>
+    <ul class="legend">
+      <li><i style="background:var(--primary)"></i>${top} at 100% or more</li>
+      <li><i style="background:var(--pale)"></i>${mid} between 50% and 99%</li>
+      <li><i style="background:var(--yellow)"></i>${below} below 50%</li>
+    </ul>
+  </div>
+  <div class="dist">${distHtml}</div>
+  ${early}
+</section>
+<section class="card watch-card">
+  <p class="kicker">Below ${Math.round(CFG.watch * 100)}% of contribution</p>
+  <h2>People we might check in with</h2>
+  <p class="sub">A prompt for a supportive conversation, not a judgement. People currently on leave of absence are not included, and anyone who has had leave is measured only on the time they were available.</p>
+  ${personRows(r.watch, "watch", today)}
+</section>
+<section class="card inactive-card">
+  <p class="kicker">No listening shift for ${CFG.inactiveDays}+ days</p>
+  <h2>We haven't seen ${nIn} ${plural(nIn, "person", "people")} for a month or more</h2>
+  <p class="sub">Days on leave of absence are not counted, and people currently on leave are not included.</p>
+  ${personRows(r.inactive, "inactive", today)}
+</section>
+<section class="card leave-card">
+  <p class="kicker">Leave of absence</p>
+  <h2>${nL} ${plural(nL, "person is", "people are")} on leave right now</h2>
+  <p class="sub">For awareness. There is no expectation of a contribution while someone is on leave.</p>
+  ${personRows(r.onLeave, "leave", today)}
+  ${returnedHtml}
+</section>
+<section class="card nights">
+  <p class="kicker">Overnights</p>
+  <div class="big">${nightPct}%</div>
+  <p class="lead">of volunteers who do overnights have done one since ${dayMonth(ws)}</p>
+  <div class="moon"></div>
+  <p class="sub">${r.exemptCount} ${plural(r.exemptCount, "volunteer is", "volunteers are")} exempt from overnights and measured on day shifts only. Names are not shown.</p>
+</section>
+<section class="card method">
+  <h3>How the numbers work</h3>
+  <p>Each listening volunteer and probationer is expected to do ${CFG.dayShiftsPerWeek} listening shift a week and 1 overnight every ${CFG.overnightEveryWeeks} weeks. Contribution is counted in hours: a day shift counts as ${CFG.dayHours} hours and an overnight as ${CFG.nightHours} hours, so the expectation works out at about ${weeklyHours.toFixed(2)} hours a week. Volunteers exempt from overnights are expected to do ${CFG.dayShiftsPerWeek * CFG.dayHours} hours a week.</p>
+  <p>The expectation runs from ${dayMonth(ws)}, or from someone's start date if later. Days on leave of absence are taken out, so nobody is expected to contribute while on leave. Only shifts that have already happened count; booked shifts show under "Booked". ${nT} ${plural(nT, "person has", "people have")} fewer than ${CFG.minDays} available days in the window and ${plural(nT, "is", "are")} not yet scored.</p>
+  <p>Data from Three Rings, built ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()} at ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}. This page contains volunteer names: keep it within the director group and do not forward or upload it.</p>
+</section>`;
+}
+
+/* ---------- setup screen ---------- */
+const $ = id => document.getElementById(id);
+let SHIFTS = [], PEOPLE_ROWS = null, HEADERS = [], PEOPLE = [], DEMO = false;
+const ALIAS = new Map();   // rota name (normalised) -> person row, or -1 for "not someone we measure"
+
+// Sams numbers compared as digits only, ignoring leading zeros
+const numKey = s => { const m = String(s || "").match(/\d+/); return m ? String(+m[0]) : ""; };
+
+function splitName(p, first, surname) {
+  if (surname) { p.first = first; p.surname = surname; }
+  else { const t = String(first || "").trim().split(/\s+/); p.first = t[0] || ""; p.surname = t.slice(1).join(" "); }
+}
+
+// Rota names are often first name only, or first name plus an initial.
+function makeMatcher(list) {
+  const byId = new Map(), byRow = new Map(), byFull = new Map(), byRota = new Map(), byFirst = new Map(), byNum = new Map();
+  const add = (m, k, p) => { if (!k) return; if (!m.has(k)) m.set(k, []); m.get(k).push(p); };
+  for (const p of list) {
+    byRow.set(p.row, p); if (p.id) byId.set(p.id, p);
+    add(byFull, norm(p.name), p); add(byRota, norm(p.rotaName), p); add(byFirst, norm(p.first), p); add(byNum, p.num, p);
+  }
+  const one = a => a && a.length === 1 ? a[0] : null;
+  return sv => {
+    const n = norm(sv.name).replace(/(\p{L})(\d)/gu, "$1 $2").replace(/(\d)(\p{L})/gu, "$1 $2");
+    const raw = norm(sv.name);
+    if (ALIAS.has(raw)) { const r = ALIAS.get(raw); return r === -1 ? null : byRow.get(r) || null; }
+    if (ALIAS.has(n)) { const r = ALIAS.get(n); return r === -1 ? null : byRow.get(r) || null; }
+    if (sv.id && byId.has(sv.id)) return byId.get(sv.id);
+    // a Sams number in the rota name is the surest match
+    for (const d of (n.match(/\d+/g) || [])) { const hit = one(byNum.get(String(+d))); if (hit) return hit; }
+    const exact = one(byRota.get(n)) || one(byFull.get(n));
+    if (exact) return exact;
+    const t = n.replace(/[().,#\-]/g, " ").split(" ").filter(w => w && !/^\d+$/.test(w));
+    if (!t.length) return null;
+    const cands = byFirst.get(t[0]) || [];
+    if (t.length === 1) return one(cands);
+    const rest = t.slice(1).join(" ");
+    const hit = cands.filter(c => norm(c.surname).startsWith(rest));
+    if (hit.length === 1) return hit[0];
+    if (cands.length === 1 && rest.length <= 2) return cands[0];
+    return null;
+  };
+}
+const FIELDS = [
+  ["name", "Name (or first name)", /^(full |display |sam |sams |samaritan )?name$|^first ?name|forename|^volunteer$|known as/],
+  ["surname", "Surname, if separate", /^(last ?name|surname|family name)/],
+  ["samsno", "Sams number (optional)", /sams|samaritan (no|number)|member (no|number)|volunteer (no|number)|^number$|^no\.?$/],
+  ["rotaname", "Name as shown on the rota (optional)", /known as|samaritan name|rota name|preferred|nickname/],
+  ["id", "Volunteer ID (optional)", /^(volunteer )?id$/],
+  ["role", "Role(s) (optional)", /role/],
+  ["start", "Start date (optional)", /start/],
+  ["exempt", "Excused from night shifts (optional)", /excused from night|excused|exempt|overnight|night shift/]
+];
+
+function rotaUrl() {
+  const back = new Date(); back.setDate(back.getDate() - 31);
+  const b = `${back.getFullYear()}-${String(back.getMonth() + 1).padStart(2, "0")}-${String(back.getDate()).padStart(2, "0")}`;
+  const chosen = $("setStart").value || CFG.periodStart, s = chosen < b ? chosen : b;
+  const end = new Date(); end.setDate(end.getDate() + 28);
+  const e = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, "0")}-${String(end.getDate()).padStart(2, "0")}`;
+  return `https://www.3r.org.uk/stats/export_rotas.json?start_date=${s}&end_date=${e}`;
+}
+
+function setUrl() { const u = rotaUrl(); $("rotaUrl").textContent = u; $("rotaUrl").href = u; }
+
+function readFiles(files, cb) {
+  Promise.all([...files].map(f => f.text())).then(cb).catch(e => alert("Could not read the file: " + e));
+}
+
+function loadShifts(texts) {
+  const seen = new Map(); let bad = 0;
+  for (const t of texts) {
+    let data; try { data = JSON.parse(t.trim().replace(/^[^\[{]*/, "")); } catch { bad++; continue; }
+    if (data && data.type === "rota-wrapped-bundle") { loadFromButton(data); return; }
+    const list = Array.isArray(data) ? data : (data.shifts || []);
+    for (const s of list) { const p = parseShift(s); if (p) seen.set(p.key, p); }
+  }
+  SHIFTS = [...seen.values()];
+  const st = $("shiftStatus");
+  if (!SHIFTS.length) {
+    st.className = "status err";
+    st.textContent = bad ? "That file isn't in the expected format. Save the page from the address above (Ctrl+S) and try again. If Three Rings showed an error, check you have permission to view stats."
+      : "No shifts found in that file. Check the dates in the address.";
+    $("shiftDrop").classList.remove("ok"); return;
+  }
+  const days = SHIFTS.map(s => s.day);
+  st.className = "status";
+  st.textContent = `✓ ${SHIFTS.length} shifts from ${short(Math.min(...days))} to ${short(Math.max(...days))}.`;
+  $("shiftDrop").classList.add("ok");
+  drawRotaPick();
+  checkClosed();
+  if (PEOPLE_ROWS) buildPeople();
+}
+
+// tick-list of rotas found in the file; listening rotas ticked to start with
+function drawRotaPick() {
+  CFG.rotaSet = null;
+  const names = [...new Set(SHIFTS.map(x => x.rota))].sort();
+  const ticked = new Set(names.filter(countsAsListening));
+  CFG.rotaSet = ticked;
+  const box = $("rotaPick"); box.classList.remove("hidden");
+  box.innerHTML = `<p><b>Rotas counted as listening shifts</b> (untick any that shouldn't count):</p>` +
+    names.map(n => `<label><input type="checkbox" value="${esc(n)}" ${ticked.has(n) ? "checked" : ""}> ${esc(n)}</label>`).join("");
+  box.querySelectorAll("input").forEach(cb => cb.addEventListener("change", () => {
+    cb.checked ? CFG.rotaSet.add(cb.value) : CFG.rotaSet.delete(cb.value);
+    refreshMatches(); checkClosed();
+  }));
+}
+
+function loadPeople(text) {
+  const rows = parseCSV(text);
+  const st = $("peopleStatus");
+  if (rows.length < 2) { st.className = "status err"; st.textContent = "That doesn't look like a spreadsheet with volunteers in it."; return; }
+  HEADERS = rows[0].map(h => h.trim()); PEOPLE_ROWS = rows.slice(1); ALIAS.clear();
+  st.className = "status"; st.textContent = `✓ ${PEOPLE_ROWS.length} rows. Check the columns below are right.`;
+  $("peopleDrop").classList.add("ok");
+  const maps = $("maps"); maps.innerHTML = ""; maps.classList.remove("hidden");
+  for (const [key, label, re] of FIELDS) {
+    let guess = HEADERS.findIndex(h => re.test(h.toLowerCase()));
+    if (guess < 0 && key === "name") guess = HEADERS.findIndex(h => /name/i.test(h));
+    const opts = ['<option value="-1">(none)</option>'].concat(HEADERS.map((h, i) =>
+      `<option value="${i}"${i === guess ? " selected" : ""}>${esc(h)}</option>`));
+    maps.insertAdjacentHTML("beforeend", `<label>${label}<select data-field="${key}">${opts.join("")}</select></label>`);
+  }
+  maps.querySelectorAll("select").forEach(s => s.addEventListener("change", buildPeople));
+  buildPeople();
+}
+
+function col(key) { const s = document.querySelector(`#maps select[data-field="${key}"]`); return s ? +s.value : -1; }
+
+function buildPeople() {
+  if (!PEOPLE_ROWS) return;
+  const c = Object.fromEntries(FIELDS.map(([k]) => [k, col(k)]));
+  const get = (r, k) => c[k] >= 0 ? (r[c[k]] || "").trim() : "";
+  PEOPLE = PEOPLE_ROWS.map((r, i) => {
+    const role = get(r, "role");
+    const name = [stripSymbols(get(r, "name")), stripSymbols(get(r, "surname"))].filter(Boolean).join(" ");
+    const p = {
+      row: i, id: get(r, "id") || null, name, rotaName: stripSymbols(get(r, "rotaname")), onLeave: false,
+      num: numKey(get(r, "samsno")),
+      role: /probationer/i.test(role) ? "Probationer" : "Listening Volunteer",
+      include: c.role >= 0 ? CFG.roles.some(x => norm(role).includes(x)) : true,
+      raw: r, isLeader: false,
+      started: parseDay(get(r, "start")), exempt: truthy(get(r, "exempt")),
+      leaveFrom: null, leaveTo: null, leave: [], reportLeave: []
+    };
+    splitName(p, stripSymbols(get(r, "name")), stripSymbols(get(r, "surname")));
+    return p;
+  }).filter(p => p.name).sort((a, b) => a.name.localeCompare(b.name));
+  applyLeaderRole();
+  applyRoles();
+  applyLeaveReport();
+  drawReview();
+}
+
+// "Shift Leader" also matches "Shift Leaders"
+function leaderRoleRe() {
+  const name = (CFG.leaderRole || "leader").trim().replace(/s$/i, "");
+  return new RegExp("(^|[^\\p{L}])" + name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+") + "s?($|[^\\p{L}])", "iu");
+}
+
+// The leader role can sit in a Roles column, in a column of its own, or anywhere in the row
+function applyLeaderRole() {
+  const name = (CFG.leaderRole || "leader").trim();
+  const re = leaderRoleRe();
+  const cols = HEADERS.map((h, i) => re.test(h) ? i : -1).filter(i => i >= 0);
+  for (const p of PEOPLE) {
+    const r = p.raw || [];
+    p.isLeader = r.some(cell => re.test(cell || "")) ||
+      cols.some(i => { const v = String(r[i] || "").trim(); return v !== "" && !/^(no|n|false|0|-)$/i.test(v); });
+  }
+  const n = PEOPLE.filter(p => p.isLeader).length, el = $("leaderCount");
+  if (el) el.textContent = `${n} ${plural(n, "person has", "people have")} the ${name} role in the Directory file.`;
+}
+
+/* ---------- roles report ---------- */
+let ROLES = null;   // Three Rings ID -> {name, roles: Map(role name -> date assigned)}
+const cleanName = n => String(n || "").replace(/\s*\[[^\]]*\]\s*/g, " ").replace(/\s+/g, " ").trim();
+function loadRoles(text) {
+  const rows = parseCSV(text), st = $("rolesStatus");
+  const h = (rows[0] || []).map(x => x.trim().toLowerCase());
+  const cr = h.indexOf("role"), cn = h.indexOf("name"), ci = h.findIndex(x => /unique id|^id$/.test(x)), ca = h.findIndex(x => /assigned/.test(x));
+  if (rows.length < 2 || cr < 0 || cn < 0) { st.className = "status err"; st.textContent = "That doesn't look like the Roles report (it needs Role and Name columns)."; return; }
+  ROLES = new Map();
+  for (const r of rows.slice(1)) {
+    const id = ci >= 0 ? String(r[ci] || "").trim() : "", name = String(r[cn] || "").trim(), key = id || norm(name);
+    if (!key || !name) continue;
+    if (!ROLES.has(key)) ROLES.set(key, {id: id || null, name, roles: new Map()});
+    ROLES.get(key).roles.set(String(r[cr] || "").trim(), ca >= 0 ? parseDay(r[ca]) : null);
+  }
+  $("rolesDrop").classList.add("ok");
+  if (PEOPLE_ROWS) buildPeople();
+  else { PEOPLE = []; applyRoles(); applyLeaveReport(); drawReview(); }
+}
+function applyRoles() {
+  if (!ROLES) return;
+  const lre = leaderRoleRe(), match = makeMatcher(PEOPLE), seen = new Set();
+  let added = 0;
+  for (const [key, e] of ROLES) {
+    let p = PEOPLE.length ? match({id: e.id, name: e.name}) : null;
+    if (!p) {
+      p = {row: 100000 + PEOPLE.length, id: e.id, name: cleanName(e.name), rotaName: "", num: numKey(e.name), raw: [],
+        role: "Listening Volunteer", include: false, isLeader: false, started: null, exempt: false,
+        onLeave: false, leaveFrom: null, leaveTo: null, leave: [], reportLeave: []};
+      splitName(p, cleanName(e.name), ""); PEOPLE.push(p); added++;
+    }
+    if (e.id) p.id = e.id;
+    seen.add(p);
+    const names = [...e.roles.keys()];
+    const isProb = names.some(r => /probationer/i.test(r));
+    p.include = names.some(r => CFG.roles.some(x => norm(r).includes(x)));
+    p.role = isProb ? "Probationer" : "Listening Volunteer";
+    const lr = names.find(r => lre.test(r));
+    p.isLeader = !!lr; p.leaderSince = lr ? e.roles.get(lr) : null;
+  }
+  for (const p of PEOPLE) if (!seen.has(p)) { p.include = false; p.isLeader = false; }
+  // people with a listening or leader role first, then everyone else
+  PEOPLE.sort((a, b) => ((b.include || b.isLeader) - (a.include || a.isLeader)) || a.name.localeCompare(b.name));
+  const nL = PEOPLE.filter(p => p.isLeader).length, nI = PEOPLE.filter(p => p.include).length;
+  $("rolesStatus").className = "status";
+  $("rolesStatus").textContent = `✓ ${ROLES.size} people in the report: ${nI} listening volunteers or probationers, ${nL} shift leaders.` +
+    (PEOPLE_ROWS && added ? ` ${added} weren't in the Directory file and have been added.` : "");
+  const el = $("leaderCount");
+  if (el) el.textContent = `${nL} ${plural(nL, "person has", "people have")} the ${CFG.leaderRole} role in the roles report.`;
+}
+
+function drawReview() {
+  $("reviewStep").classList.remove("hidden");
+  const t = $("reviewTable");
+  t.innerHTML = `<tr><th>Include</th><th>Name</th><th>Probationer</th><th>Start date</th><th>Overnight exempt</th><th>Leader</th><th>On leave</th><th>Leave from</th><th>Back</th><th>Shifts found</th></tr>` +
+    PEOPLE.map((p, i) => `<tr class="${p.include || p.isLeader ? "" : "off"}" data-i="${i}">
+      <td><input type="checkbox" data-k="include" ${p.include ? "checked" : ""}></td>
+      <td><input type="text" data-k="name" value="${esc(p.name)}"></td>
+      <td><input type="checkbox" data-k="prob" ${p.role === "Probationer" ? "checked" : ""}></td>
+      <td><input type="date" data-k="started" value="${p.started != null ? iso(p.started) : ""}"></td>
+      <td><input type="checkbox" data-k="exempt" ${p.exempt ? "checked" : ""}></td>
+      <td><input type="checkbox" data-k="isLeader" ${p.isLeader ? "checked" : ""}></td>
+      <td><input type="checkbox" data-k="onLeave" ${p.onLeave ? "checked" : ""}></td>
+      <td><input type="date" data-k="leaveFrom" value="${p.leaveFrom != null ? iso(p.leaveFrom) : ""}"></td>
+      <td><input type="date" data-k="leaveTo" value="${p.leaveTo != null ? iso(p.leaveTo) : ""}"></td>
+      <td class="found"></td></tr>`).join("");
+  t.querySelectorAll("input").forEach(el => el.addEventListener("change", e => {
+    const tr = e.target.closest("tr"), p = PEOPLE[+tr.dataset.i], k = e.target.dataset.k;
+    if (k === "include") { p.include = e.target.checked; tr.classList.toggle("off", !p.include && !p.isLeader); }
+    else if (k === "prob") p.role = e.target.checked ? "Probationer" : "Listening Volunteer";
+    else if (k === "exempt") p.exempt = e.target.checked;
+    else if (k === "onLeave") p.onLeave = e.target.checked;
+    else if (k === "isLeader") { p.isLeader = e.target.checked; tr.classList.toggle("off", !p.include && !p.isLeader); }
+    else if (k === "name") { p.name = e.target.value.trim(); splitName(p, p.name, ""); }
+    else p[k] = e.target.value ? parseDay(e.target.value) : null;
+    refreshMatches();
+  }));
+  refreshMatches();
+}
+
+function refreshMatches() {
+  const match = makeMatcher(PEOPLE), counts = new Map(), unmatched = new Map();
+  const ws = parseDay($("setStart").value) ?? parseDay(CFG.periodStart);
+  for (const s of SHIFTS) {
+    if (s.day < ws || !countsAsListening(s.rota)) continue;
+    for (const v of s.vols) {
+      if (!v.name && !v.id) continue;
+      const p = match(v);
+      if (p) counts.set(p, (counts.get(p) || 0) + 1);
+      else if (ALIAS.get(norm(v.name)) !== -1) unmatched.set(v.name, (unmatched.get(v.name) || 0) + 1);
+    }
+  }
+  document.querySelectorAll("#reviewTable tr[data-i]").forEach(tr => {
+    tr.querySelector(".found").textContent = counts.get(PEOPLE[+tr.dataset.i]) || 0;
+  });
+  const u = [...unmatched.entries()].sort((a, b) => b[1] - a[1]);
+  if (!u.length || !SHIFTS.length) {
+    $("unmatched").innerHTML = SHIFTS.length && PEOPLE.length ? '<div class="okbox">✓ Every name on the rota is matched to someone.</div>' : "";
+    return;
+  }
+  const opts = '<option value="">Choose…</option><option value="-1">Not someone we measure</option>' +
+    [...PEOPLE].sort((a, b) => a.name.localeCompare(b.name))
+      .map(p => `<option value="${p.row}">${esc(p.name)}${p.include ? "" : " (not ticked)"}</option>`).join("");
+  $("unmatched").innerHTML = `<div class="warn"><b>${u.length} ${plural(u.length, "name", "names")} on the rota ${plural(u.length, "isn't", "aren't")} matched yet.</b>
+    Usually this is because two people share a first name, or the rota uses a name the Directory doesn't. Pick who each one is. Choose "Not someone we measure" for shift leaders and others.
+    <div class="matchwrap"><table class="matchtab">${u.map(([n, c]) =>
+      `<tr><td><b>${esc(n)}</b></td><td>${c} ${plural(c, "shift", "shifts")}</td><td><select data-n="${esc(norm(n))}">${opts}</select></td></tr>`).join("")}</table></div></div>`;
+  $("unmatched").querySelectorAll("select").forEach(sel => sel.addEventListener("change", () => {
+    if (sel.value === "") ALIAS.delete(sel.dataset.n); else ALIAS.set(sel.dataset.n, +sel.value);
+    refreshMatches();
+  }));
+}
+
+/* ---------- closed shifts report ---------- */
+let CLOSED = null;
+function loadClosed(text) {
+  const rows = parseCSV(text), st = $("closedStatus");
+  const h = (rows[0] || []).map(x => x.trim().toLowerCase());
+  const cr = h.findIndex(x => /rota/.test(x)), cs = h.findIndex(x => /start/.test(x));
+  if (rows.length < 2 || cr < 0 || cs < 0) {
+    st.className = "status err"; st.textContent = "That doesn't look like the closed shifts report (it needs Rota and Start Date & Time columns)."; CLOSED = null; return;
+  }
+  CLOSED = new Set();
+  for (const r of rows.slice(1)) {
+    const when = (r[cs] || "").trim(), day = parseDay(when), t = /(\d{1,2}):(\d{2})\s*$/.exec(when);
+    if (day == null || !t) continue;
+    CLOSED.add(`${norm(r[cr])}|${day}|${t[1].padStart(2, "0")}:${t[2]}`);
+  }
+  $("closedDrop").classList.add("ok");
+  checkClosed();
+}
+function checkClosed() {
+  if (!CLOSED) return;
+  const st = $("closedStatus"), mStart = todayDn() - 30;
+  const recent = SHIFTS.filter(x => x.day >= mStart && x.ms < Date.now() && countsAsListening(x.rota));
+  const hit = recent.filter(x => CLOSED.has(x.slot)).length;
+  st.className = "status";
+  st.textContent = `✓ ${CLOSED.size} closed shifts in the report` + (SHIFTS.length
+    ? `, ${hit} of them listening shifts in the last month.` + (hit === 0 ? " Check the report covers the same dates as the shifts file." : "")
+    : ". Load the shifts file as well.");
+}
+
+/* ---------- optional leave report ---------- */
+let LEAVE_ROWS = null, LEAVE_HEADERS = [];
+const LEAVE_FIELDS = [
+  ["name", "Volunteer", /sam|name|volunteer/],
+  ["from", "Leave starts", /start|from|begin/],
+  ["to", "Leave ends", /end|until|return|finish|^to$/],
+  ["type", "Type (optional)", /type|reason|activity|inactiv/]
+];
+function loadLeave(text) {
+  const rows = parseCSV(text), st = $("leaveStatus");
+  if (rows.length < 2) { st.className = "status err"; st.textContent = "That file has no rows in it."; return; }
+  LEAVE_HEADERS = rows[0].map(h => h.trim()); LEAVE_ROWS = rows.slice(1);
+  $("leaveDrop").classList.add("ok");
+  const maps = $("leaveMaps"); maps.innerHTML = ""; maps.classList.remove("hidden");
+  for (const [key, label, re] of LEAVE_FIELDS) {
+    const guess = LEAVE_HEADERS.findIndex(h => re.test(h.toLowerCase()));
+    maps.insertAdjacentHTML("beforeend", `<label>${label}<select data-field="${key}"><option value="-1">(none)</option>${
+      LEAVE_HEADERS.map((h, i) => `<option value="${i}"${i === guess ? " selected" : ""}>${esc(h)}</option>`).join("")}</select></label>`);
+  }
+  maps.insertAdjacentHTML("beforeend", `<label>Only count this type (optional)<input type="text" id="leaveType" placeholder="e.g. Leave of absence" style="width:100%;font:inherit;font-size:15px;padding:7px;border:1px solid #9bb;border-radius:4px;margin-top:4px"></label>`);
+  maps.querySelectorAll("select,input").forEach(x => x.addEventListener("change", () => { applyLeaveReport(); drawReview(); }));
+  if (PEOPLE.length) { applyLeaveReport(); drawReview(); }
+  else { st.className = "status"; st.textContent = `✓ ${LEAVE_ROWS.length} rows. Load the Directory as well and they'll be matched.`; }
+}
+function applyLeaveReport() {
+  for (const p of PEOPLE) { if (p.fromReport) { p.leaveFrom = p.leaveTo = null; } p.reportLeave = []; p.onLeave = false; p.fromReport = false; }
+  if (!LEAVE_ROWS || !PEOPLE.length) return;
+  const c = k => { const s = document.querySelector(`#leaveMaps select[data-field="${k}"]`); return s ? +s.value : -1; };
+  const [cn, cf, ct, cty] = ["name", "from", "to", "type"].map(c);
+  const want = norm(($("leaveType") || {}).value);
+  const match = makeMatcher(PEOPLE), today = todayDn();
+  let used = 0, missed = [];
+  for (const r of LEAVE_ROWS) {
+    if (cn < 0 || cf < 0) break;
+    if (want && cty >= 0 && !norm(r[cty]).includes(want)) continue;
+    const from = parseDay(r[cf]); if (from == null) continue;
+    const to = ct >= 0 ? parseDay(r[ct]) : null;
+    const p = match({name: stripSymbols(r[cn])});
+    if (!p) { missed.push(stripSymbols(r[cn])); continue; }
+    used++;
+    if (from <= today && (to == null || to >= today)) { p.onLeave = true; p.leaveFrom = from; p.leaveTo = to; p.fromReport = true; }
+    else p.reportLeave.push([from, to]);
+  }
+  const st = $("leaveStatus");
+  st.className = "status";
+  st.textContent = cn < 0 || cf < 0 ? "Choose which columns hold the volunteer and the leave start date."
+    : `✓ ${used} leave ${plural(used, "period", "periods")} matched` + (missed.length ? `. Not matched: ${missed.slice(0, 10).join(", ")}${missed.length > 10 ? "…" : ""}` : "");
+}
+
+function applySettings() {
+  CFG.branch = $("setBranch").value.trim() || CFG.branch;
+  CFG.periodStart = $("setStart").value || CFG.periodStart;
+  CFG.dayHours = +$("setDayH").value || CFG.dayHours;
+  CFG.nightHours = +$("setNightH").value || CFG.nightHours;
+  CFG.minPeople = +$("setMinPeople").value || CFG.minPeople;
+  CFG.include = $("setInclude").value.split(",").map(norm).filter(Boolean);
+  CFG.exclude = $("setExclude").value.split(",").map(norm).filter(Boolean);
+  CFG.nightWords = $("setNightWords").value.split(",").map(norm).filter(Boolean);
+  CFG.leaderRole = $("setLeaderRole").value.trim() || CFG.leaderRole;
+}
+
+function build() {
+  applySettings();
+  const st = $("buildStatus");
+  if (!SHIFTS.length || !PEOPLE.length) { st.className = "status err"; st.textContent = "Load the shifts file and either the Directory or the roles report first, or try the made-up data."; return; }
+  const people = PEOPLE.filter(p => p.include && p.name).map(p => ({
+    row: p.row, id: p.id, name: p.name, role: p.role, exempt: p.exempt, started: p.started,
+    leave: [...(p.leaveFrom != null ? [[p.leaveFrom, p.leaveTo]] : []), ...(p.reportLeave || []),
+            ...(p.onLeave && p.leaveFrom == null && !p.reportLeave.some(([a, b]) => b == null || b >= todayDn()) ? [["est", p.leaveTo]] : [])]
+  }));
+  if (!people.length) { st.className = "status err"; st.textContent = "Nobody is ticked to include."; return; }
+  const today = todayDn(), ws = parseDay(CFG.periodStart);
+  const r = analyse(people, SHIFTS, ws, today, makeMatcher(PEOPLE));
+  $("dashboard").innerHTML = render(r, ws, today, DEMO);
+  $("leaderDash").innerHTML = renderLeaders(analyseLeaders(PEOPLE, SHIFTS, ws, today, makeMatcher(PEOPLE)), ws, today, DEMO);
+  showView("listen");
+  $("setup").classList.add("hidden"); $("toolbar").classList.remove("hidden");
+  window.scrollTo(0, 0);
+}
+
+/* ---------- leader view ---------- */
+const WEEKDAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const weekdayOf = d => (new Date(d * DAY).getUTCDay() + 6) % 7;
+const isLeaderRota = rota => CFG.leaderWords.some(w => w && norm(rota).includes(w));
+const overlaps = (a, b) => a.ms < b.ms + b.hrs * 36e5 && b.ms < a.ms + a.hrs * 36e5;
+const fmtRate = r => r == null ? "not yet scored" : (r < 0.05 ? "none" : `${r.toFixed(1)} a week`);
+
+function leavePeriods(p) {
+  const out = [...(p.leaveFrom != null ? [[p.leaveFrom, p.leaveTo]] : []), ...(p.reportLeave || [])];
+  if (p.onLeave && !out.some(([a, b]) => a <= todayDn() && (b == null || b >= todayDn()))) out.push(["est", p.leaveTo]);
+  return out;
+}
+
+function analyseLeaders(people, shifts, ws, today, match) {
+  const now = Date.now(), mStart = today - 30;
+  const lead = shifts.filter(s => isLeaderRota(s.rota) && s.day >= ws);
+  const listen = shifts.filter(s => countsAsListening(s.rota) && s.day >= ws - 1);
+  const stats = new Map();
+  const ensure = p => {
+    if (!stats.has(p.row)) stats.set(p.row, {p, slots: 0, hours: 0, nights: 0, last: null, next: null, both: 0, listenHours: 0, recent: 0});
+    return stats.get(p.row);
+  };
+  people.filter(p => p.isLeader).forEach(ensure);
+
+  const month = {led: 0, unled: 0, exceptions: []};
+  const gaps = [], grid = new Map(), slotHours = new Map();
+  for (const s of lead) {
+    const led = s.vols.length > 0, who = s.vols.map(match).filter(Boolean);
+    slotHours.set(s.hm, s.hrs);
+    if (s.ms < now) {
+      const key = `${weekdayOf(s.day)}|${s.hm}`;
+      if (!grid.has(key)) grid.set(key, {total: 0, led: 0, people: new Set()});
+      const g = grid.get(key); g.total++; if (led) g.led++;
+      for (const v of s.vols) g.people.add(norm(v.name) || v.id);
+      if (s.day >= mStart) {
+        led ? month.led++ : month.unled++;
+        if (!led) {
+          const on = listen.filter(l => l.ms < now && overlaps(s, l)).reduce((n, l) => n + l.vols.length, 0);
+          if (on) month.exceptions.push({day: s.day, hm: s.hm, hrs: s.hrs, listeners: on});
+        }
+      }
+      for (const p of who) {
+        const st = ensure(p);
+        st.slots++; st.hours += s.hrs; if (s.hour < 6) st.nights++;
+        if (s.day >= mStart) st.recent++;
+        if (st.last == null || s.day > st.last) st.last = s.day;
+        if (listen.some(l => overlaps(s, l) && l.vols.some(v => match(v) === p))) st.both++;
+      }
+    } else if (s.day <= today + 28) {
+      if (!led) gaps.push(s);
+      for (const p of who) { const st = ensure(p); if (st.next == null || s.day < st.next) st.next = s.day; }
+    }
+  }
+  // listening hours for the same people
+  for (const l of listen) {
+    if (l.ms >= now || l.day < ws) continue;
+    const credit = isOvernight(l) ? CFG.nightHours : CFG.dayHours;
+    for (const v of l.vols) { const p = match(v); if (p && stats.has(p.row)) stats.get(p.row).listenHours += credit; }
+  }
+
+  const list = [...stats.values()];
+  const seen = new Map(); for (const st of list) seen.set(norm(st.p.name), (seen.get(norm(st.p.name)) || 0) + 1);
+  for (const st of list) st.label = st.p.name + (seen.get(norm(st.p.name)) > 1 && st.p.num ? ` (${st.p.num})` : "");
+  for (const st of list) {
+    const p = st.p, own = Math.max(ws, p.started ?? ws, p.leaderSince ?? ws), days = today - own;
+    const periods = leavePeriods(p).map(([a, b]) => [a === "est" ? Math.min((st.last ?? own) + 1, today) : a, b]);
+    const off = days > 0 ? leaveDays(periods, own, today - 1) : 0;
+    st.activeDays = Math.max(days - off, 0);
+    st.onLeave = periods.some(([a, b]) => a <= today && (b == null || b >= today));
+    st.rate = st.activeDays >= CFG.minDays ? st.slots / (st.activeDays / 7) : null;
+    st.listenRate = st.activeDays >= CFG.minDays ? st.listenHours / (st.activeDays / 7) : null;
+    const ref = st.last ?? own, gap = today - ref;
+    st.gap = Math.max(gap - (gap > 0 ? leaveDays(periods, ref + 1, today) : 0), 0);
+    st.notInRole = !p.isLeader;
+  }
+  const window = today - ws, quietAfter = Math.min(CFG.quietDays, window);
+  const active = list.filter(st => !st.onLeave);
+  const quiet = active.filter(st => st.gap >= quietAfter).sort((a, b) => b.gap - a.gap);
+  const totalLed = list.reduce((n, st) => n + st.slots, 0);
+  const top5 = [...list].sort((a, b) => b.slots - a.slots).slice(0, 5).reduce((n, st) => n + st.slots, 0);
+  const bands = [["None", 0, 0.05], ["Less than 1 a fortnight", 0.05, 0.5], ["1 a fortnight or more", 0.5, 1], ["1 a week or more", 1, 2], ["2 a week or more", 2, 99]];
+  const scored = list.filter(st => st.rate != null);
+  const slotsPerWeek = grid.size || 49;
+  return {
+    month, gaps: gaps.sort((a, b) => a.ms - b.ms), grid, slotHours,
+    list: list.sort((a, b) => (b.rate ?? -1) - (a.rate ?? -1) || b.slots - a.slots),
+    quiet, quietAfter, onLeave: list.filter(st => st.onLeave),
+    top5Share: totalLed ? Math.round(100 * top5 / totalLed) : 0,
+    dist: bands.map(([l, lo, hi]) => [l, scored.filter(st => st.rate >= lo && st.rate < hi).length]),
+    slotsPerWeek, activeCount: active.length,
+    needed: active.length ? slotsPerWeek / active.length : 0,
+    delivered: active.length ? (month.led * 7 / 30) / active.length : 0,
+    bothTotal: list.reduce((n, st) => n + st.both, 0),
+    notInRole: list.filter(st => st.notInRole && st.slots)
+  };
+}
+
+function leaderRows(list, today) {
+  const max = Math.max(2.5, ...list.map(st => st.rate || 0));
+  return `<ul class="people leaders">${list.map(st => {
+    const p = st.p, r = st.rate;
+    const nxt = st.next != null ? `<span class="next">Booked ${short(st.next)}</span>` : '<span class="next none">Nothing booked</span>';
+    const tags = (st.onLeave ? '<span class="tag">On leave</span>' : "") + (st.notInRole ? `<span class="tag">Not in ${esc(CFG.leaderRole)} role</span>` : "");
+    const meta = [`${st.slots} ${plural(st.slots, "slot", "slots")} led`, st.nights ? `${st.nights} ${plural(st.nights, "night", "nights")}` : "",
+      `last led ${st.last != null ? short(st.last) : "not since go-live"}`,
+      st.listenRate != null ? `listening ${st.listenRate.toFixed(1)} hours a week` : "",
+      st.both ? `${st.both} while also on a listening shift` : ""].filter(Boolean).join(" · ");
+    return `<li><div class="who">${esc(st.label)}${tags}</div>
+      <div class="lbar"><span style="width:${r == null ? 0 : Math.min(r / max, 1) * 100}%"></span><i style="left:${CFG.leaderExpect / max * 100}%"></i></div>
+      <div class="pct">${fmtRate(r)}</div>
+      <div class="meta">${meta} ${nxt}</div></li>`;
+  }).join("")}</ul>`;
+}
+
+function renderLeaders(lr, ws, today, demo) {
+  const m = lr.month, tot = m.led + m.unled, ledPct = tot ? Math.round(100 * m.led / tot) : 0;
+  const times = [...lr.slotHours.keys()].sort();
+  const end = hm => { const [h, mi] = hm.split(":").map(Number), e = (h + (lr.slotHours.get(hm) || 3)) % 24; return `${String(e).padStart(2, "0")}:${String(mi).padStart(2, "0")}`; };
+  const cell = g => {
+    if (!g || !g.total) return '<td class="hm-none">–</td>';
+    const pct = Math.round(100 * g.led / g.total), n = g.people.size;
+    const cls = pct >= 100 ? "hm4" : pct >= 90 ? "hm3" : pct >= 70 ? "hm2" : "hm1";
+    return `<td class="${cls}${n <= 2 ? " thin" : ""}" title="${g.led} of ${g.total} led by ${n} ${plural(n, "leader", "leaders")}"><b>${n}</b><span>${pct}% led</span></td>`;
+  };
+  const gridHtml = `<table class="heat"><tr><th></th>${times.map(t => `<th>${t}<br><small>to ${end(t)}</small></th>`).join("")}</tr>${
+    WEEKDAYS.map((d, i) => `<tr><th>${d.slice(0, 3)}</th>${times.map(t => cell(lr.grid.get(`${i}|${t}`))).join("")}</tr>`).join("")}</table>`;
+  const thin = [...lr.grid.values()].filter(g => g.total && g.people.size <= 2).length;
+
+  const exc = m.exceptions.length ? `<ul class="slotlist">${m.exceptions.map(e =>
+    `<li><b>${WEEKDAYS[weekdayOf(e.day)].slice(0, 3)} ${short(e.day)}</b> ${e.hm}–${end(e.hm)} <span>${e.listeners} ${plural(e.listeners, "listener", "listeners")} on duty</span></li>`).join("")}</ul>`
+    : '<p class="empty">Every listening shift in the last month had a leader.</p>';
+  const byDay = new Map(); for (const g of lr.gaps) { if (!byDay.has(g.day)) byDay.set(g.day, []); byDay.get(g.day).push(g.hm); }
+  const gapHtml = lr.gaps.length ? `<ul class="slotlist">${[...byDay.entries()].map(([d, hs]) =>
+    `<li><b>${WEEKDAYS[weekdayOf(d)].slice(0, 3)} ${short(d)}</b> ${hs.map(h => `${h}–${end(h)}`).join(", ")}</li>`).join("")}</ul>`
+    : '<p class="empty">Every leader slot in the next four weeks is filled.</p>';
+
+  const maxb = Math.max(1, ...lr.dist.map(d => d[1]));
+  const distHtml = lr.dist.map(([l, c], i) => `<div class="col"><div class="count">${c}</div>
+    <div class="pillar lb${i}" style="height:${Math.max(c / maxb * 100, 3)}%"></div><div class="lab">${l}</div></div>`).join("");
+  const nQ = lr.quiet.length, quietLabel = lr.quietAfter >= CFG.quietDays ? `in the last ${Math.round(CFG.quietDays / 7)} weeks` : `since ${dayMonth(ws)}`;
+  const quietHtml = nQ ? `<ul class="people inactive">${lr.quiet.map(st => `<li><div class="who">${esc(st.label)}</div>
+      <div class="days">${st.last != null ? `${st.gap} days` : "not since go-live"}</div>
+      <div class="meta">Last led ${st.last != null ? short(st.last) : "not since go-live"} ${st.next != null ? `<span class="next">Booked ${short(st.next)}</span>` : '<span class="next none">Nothing booked</span>'}</div></li>`).join("")}</ul>`
+    : `<p class="empty">Every leader not on leave has led ${quietLabel}.</p>`;
+  const now = new Date();
+  return `${demo ? '<div class="demo">Made-up volunteers. No real data.</div>' : ""}
+<section class="card cover">
+  <img class="logo" src="${LOGO}" alt="Samaritans">
+  <p class="kicker">${CFG.branch ? esc(CFG.branch) + " branch" : "Samaritans"} · leaders</p>
+  <h1>Our leaders,<br><span class="hl">wrapped.</span></h1>
+  <p class="sub">${long(ws)} to ${long(today)}</p>
+  <div class="blob b-a"></div><div class="blob b-b"></div>
+  <p class="scroll">Scroll ↓</p>
+</section>
+<section class="card numbers">
+  <p class="kicker">Last month · ${short(today - 30)} to ${short(today - 1)}</p>
+  <div class="big">${ledPct}%</div>
+  <p class="lead">of leader slots had a leader</p>
+  <div class="trio">
+    <div class="t-open"><b>${m.led}</b><span>slots led</span></div>
+    <div class="t-closed"><b>${m.unled}</b><span>slots without a leader</span></div>
+    <div class="t-closed"><b>${m.exceptions.length}</b><span>of those with listeners on duty</span></div>
+  </div>
+  <h3>Listeners on duty without a leader</h3>
+  ${exc}
+</section>
+<section class="card watch-card">
+  <p class="kicker">Next four weeks</p>
+  <h2>${lr.gaps.length} leader ${plural(lr.gaps.length, "slot", "slots")} still to fill</h2>
+  ${gapHtml}
+</section>
+<section class="card heat-card">
+  <p class="kicker">Where cover is thin · since ${dayMonth(ws)}</p>
+  <h2>How many different leaders cover each slot</h2>
+  <p class="sub">The big number is how many different people have led that slot. The colour shows how often it had a leader. ${thin} ${plural(thin, "slot depends", "slots depend")} on two people or fewer (outlined): those are the ones a holiday or a resignation would hit first.</p>
+  <div class="heatwrap">${gridHtml}</div>
+  ${(today - ws) < 84 ? `<p class="caveat">Only ${Math.round((today - ws) / 7)} weeks of data, so each square rests on a handful of shifts. More slots will look thin now than in a few months' time.</p>` : ""}
+  <div class="key"><span><i class="hm4"></i>Always led</span><span><i class="hm3"></i>90% or more</span><span><i class="hm2"></i>70–89%</span><span><i class="hm1"></i>Under 70%</span></div>
+</section>
+<section class="card contribution">
+  <p class="kicker">Is the team big enough?</p>
+  <h2>Full cover needs <span class="hl">${lr.needed.toFixed(1)}</span> slots a week from every leader</h2>
+  <p class="sub">There are ${lr.slotsPerWeek} leader slots a week and ${lr.activeCount} active ${plural(lr.activeCount, "leader", "leaders")}${lr.onLeave.length ? `, not counting ${lr.onLeave.length} on leave` : ""}. The informal expectation is ${CFG.leaderExpect} a week. Last month leaders averaged ${lr.delivered.toFixed(1)} a week each.</p>
+  <div class="need">
+    <div><span>Informal expectation</span><div class="nbar"><i style="width:${Math.min(CFG.leaderExpect / Math.max(lr.needed, 1) * 100, 100)}%"></i></div><b>${CFG.leaderExpect.toFixed(1)}</b></div>
+    <div><span>Average last month</span><div class="nbar"><i style="width:${Math.min(lr.delivered / Math.max(lr.needed, 1) * 100, 100)}%"></i></div><b>${lr.delivered.toFixed(1)}</b></div>
+    <div><span>Needed for full cover</span><div class="nbar full"><i style="width:100%"></i></div><b>${lr.needed.toFixed(1)}</b></div>
+  </div>
+  <p class="caveat">At the informal expectation of ${CFG.leaderExpect} a week, the branch would need ${Math.ceil(lr.slotsPerWeek / CFG.leaderExpect)} active leaders to cover every slot.</p>
+</section>
+<section class="card load-card">
+  <p class="kicker">How the load is shared</p>
+  <h2>The busiest five leaders carried <span class="hl2">${lr.top5Share}%</span> of slots led</h2>
+  <div class="dist">${distHtml}</div>
+  <p class="axis">Leaders by how often they lead, measured on the time they were available (leave taken out). Leading is in addition to listening contribution. In the list below, the dark line on each bar marks the informal expectation of ${CFG.leaderExpect} a week.</p>
+  <div class="named">${leaderRows(lr.list, today)}</div>
+  <p class="anon-only sub">Individual figures are hidden in this version.</p>
+</section>
+<section class="card inactive-card">
+  <p class="kicker">Not led ${quietLabel}</p>
+  <h2>${nQ} ${plural(nQ, "leader hasn't", "leaders haven't")} led ${quietLabel}</h2>
+  <p class="sub">Leading skills fade without practice. A prompt for a conversation: do they still want to lead, and would a buddy shift help? Leaders on leave are not included.</p>
+  <div class="named">${quietHtml}</div>
+  <p class="anon-only sub">Names are hidden in this version.</p>
+</section>
+<section class="card method">
+  <h3>How the numbers work</h3>
+  <p>Leader slots are shifts on rotas with "${CFG.leaderWords.join('", "')}" in the name. A slot counts as led if anyone was signed up to it. Listeners on duty without a leader means a leader slot was empty while at least one listening shift overlapping it had someone on it.</p>
+  <p>Each leader's rate is slots led per week, measured from ${dayMonth(ws)} or their start date if later, with any leave of absence taken out. Leading does not count towards listening contribution. The informal expectation is ${CFG.leaderExpect} slot a week. Leaders are people with the ${esc(CFG.leaderRole)} role in the Directory${lr.notInRole.length ? `, plus ${lr.notInRole.length} ${plural(lr.notInRole.length, "person", "people")} who led without that role` : ""}.${lr.bothTotal ? ` On ${lr.bothTotal} ${plural(lr.bothTotal, "occasion", "occasions")} a leader was also on a listening shift at the same time.` : ""}</p>
+  <p>Data from Three Rings, built ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}. Keep within the leader of leaders and the director group.</p>
+</section>`;
+}
+
+/* ---------- made-up data ---------- */
+function sample() {
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const pick = a => a[Math.floor(rnd() * a.length)];
+  const first = ["Alex","Bea","Cal","Dee","Eli","Fran","Gus","Hana","Ira","Jo","Kit","Lou","Max","Nell","Oli","Pip","Quin","Ray","Sol","Tess","Uma","Viv","Wren","Zac"];
+  const last = ["Ash","Birch","Cedar","Elm","Fern","Hazel","Ivy","Juniper","Larch","Maple","Oak","Pine","Rowan","Willow"];
+  const today = todayDn(), ws = parseDay(CFG.periodStart), shifts = [], people = [], used = new Set();
+  for (let i = 0; i < 86; i++) {
+    let name; do { name = pick(first) + " " + pick(last); } while (used.has(name)); used.add(name);
+    const r = rnd(), style = r < .56 ? "steady" : r < .70 ? "keen" : r < .88 ? "patchy" : r < .96 ? "lapsed" : "new";
+    const started = style === "new" ? today - 5 - Math.floor(rnd() * 15) : null;
+    const p = {row: i, id: String(1000 + i), name, role: rnd() < .14 ? "Probationer" : "Listening Volunteer",
+      include: true, exempt: rnd() < .09, started, leaveFrom: null, leaveTo: null, leave: [], reportLeave: [],
+      isLeader: i % 4 === 0, num: String(1000 + i)};
+    people.push(p);
+    const stop = style === "lapsed" ? today - 32 - Math.floor(rnd() * 20) : today + 28;
+    const rate = {steady: .95, keen: 1, patchy: .45, lapsed: .8, new: .9}[style];
+    for (let d = started ?? ws; d <= stop; d += 7) {
+      if (rnd() < rate) {
+        const day = d + Math.floor(rnd() * 7);
+        if (day <= stop) {
+          const [y, m, dd] = parts(day), h = pick([7, 10, 13, 16, 19]);
+          shifts.push(parseShift({rota: "Listening", start_datetime: `${iso(day)}T${String(h).padStart(2, "0")}:00:00`, duration: 10800, volunteers: [{id: p.id, name}]}));
+        }
+      }
+    }
+    if ((style === "steady" || style === "keen") && !p.exempt && rnd() < .55) {
+      const day = ws + Math.floor(rnd() * (today - ws));
+      shifts.push(parseShift({rota: "Listening Night Shift", start_datetime: `${iso(day)}T22:00:00`, duration: 32400, volunteers: [{id: p.id, name}]}));
+    }
+    if (style === "lapsed" && rnd() < .7) { p.leaveFrom = today - 25 - Math.floor(rnd() * 5); p.leaveTo = rnd() < .5 ? null : today + 10 + Math.floor(rnd() * 30); }
+  }
+  people[1].leaveFrom = ws + 5; people[1].leaveTo = today - 9;
+  const leaders = people.filter(p => p.isLeader), weight = leaders.map((p, i) => i < 4 ? 4 : i < 12 ? 2 : i < 19 ? 1 : 0);
+  const pickLeader = () => { let t = rnd() * weight.reduce((a, b) => a + b, 0); for (let i = 0; i < leaders.length; i++) { t -= weight[i]; if (t < 0) return leaders[i]; } return leaders[0]; };
+  for (let d = ws; d <= today + 28; d++) for (const h of [0, 6, 9, 12, 15, 18, 21]) {
+    const empty = rnd() < (d < today ? .07 : .3), p = pickLeader();
+    shifts.push(parseShift({rota: "Leader", start_datetime: `${iso(d)}T${String(h).padStart(2, "0")}:00:00`, duration: h ? 10800 : 21600,
+      volunteers: empty ? [] : [{id: p.id, name: p.name}]}));
+  }
+  for (let d = today - 35; d < today; d++) {
+    for (const h of [7, 10, 13, 16, 19]) if (rnd() < .08)
+      shifts.push(parseShift({rota: "Listening", start_datetime: `${iso(d)}T${String(h).padStart(2, "0")}:00:00`, duration: 10800, volunteers: []}));
+    shifts.push(parseShift({rota: "Listening Night Shift", start_datetime: `${iso(d)}T22:00:00`, duration: 32400,
+      volunteers: rnd() < .85 ? [{name: "Night listener"}] : []}));
+  }
+  SHIFTS = shifts.filter(Boolean); PEOPLE = people; DEMO = true;
+  build();
+}
+
+/* ---------- wiring ---------- */
+function setupDrop(dropId, inputId, handler, multiple) {
+  const drop = $(dropId), input = $(inputId);
+  input.addEventListener("change", () => input.files.length && handler(input.files));
+  drop.addEventListener("dragover", e => { e.preventDefault(); });
+  drop.addEventListener("drop", e => { e.preventDefault(); if (e.dataTransfer.files.length) handler(e.dataTransfer.files); });
+}
+$("setBranch").value = CFG.branch; $("setStart").value = CFG.periodStart;
+$("setDayH").value = CFG.dayHours; $("setMinPeople").value = CFG.minPeople; $("setNightH").value = CFG.nightHours;
+$("setExclude").value = CFG.exclude.join(", "); $("setInclude").value = CFG.include.join(", "); $("setNightWords").value = CFG.nightWords.join(", "); $("setLeaderRole").value = CFG.leaderRole;
+$("setLeaderRole").addEventListener("change", () => { CFG.leaderRole = $("setLeaderRole").value.trim() || "Shift Leader"; if (PEOPLE.length) { if (PEOPLE_ROWS) applyLeaderRole(); applyRoles(); drawReview(); } });
+setUrl();
+$("setStart").addEventListener("change", () => { setUrl(); refreshMatches(); });
+["setExclude", "setInclude"].forEach(id => $(id).addEventListener("change", () => { applySettings(); refreshMatches(); }));
+setupDrop("shiftDrop", "shiftFile", files => { DEMO = false; readFiles(files, loadShifts); });
+setupDrop("rolesDrop", "rolesFile", files => readFiles([files[0]], t => loadRoles(t[0])));
+setupDrop("closedDrop", "closedFile", files => readFiles([files[0]], t => loadClosed(t[0])));
+setupDrop("leaveDrop", "leaveFile", files => readFiles([files[0]], t => loadLeave(t[0])));
+setupDrop("peopleDrop", "peopleFile", files => { DEMO = false; readFiles([files[0]], t => loadPeople(t[0])); });
+$("buildBtn").addEventListener("click", build);
+$("sampleBtn").addEventListener("click", sample);
+$("backBtn").addEventListener("click", () => { $("dashboard").innerHTML = ""; $("leaderDash").innerHTML = ""; $("setup").classList.remove("hidden"); $("toolbar").classList.add("hidden"); DEMO = false; });
+$("printBtn").addEventListener("click", () => window.print());
+function showView(v) {
+  $("dashboard").classList.toggle("hidden", v !== "listen"); $("leaderDash").classList.toggle("hidden", v !== "lead");
+  $("tabListen").classList.toggle("on", v === "listen"); $("tabLead").classList.toggle("on", v === "lead");
+  $("namesBtn").classList.toggle("hidden", v !== "lead"); window.scrollTo(0, 0);
+}
+$("tabListen").addEventListener("click", () => showView("listen"));
+$("tabLead").addEventListener("click", () => showView("lead"));
+$("namesBtn").addEventListener("click", () => {
+  const hide = document.body.classList.toggle("hide-names");
+  $("namesBtn").textContent = hide ? "Show leader names" : "Hide leader names";
+});
+
+/* ---------- data from the Rota Wrapped button ----------
+   The button runs inside Three Rings with the user's own login, fetches the reports,
+   and passes them to this page in memory. Nothing is stored or sent anywhere else. */
+const THREE_RINGS = "https://www.3r.org.uk";
+const FONT_FACES = {"Regular": ["400", "normal"], "Bold": ["700", "normal"], "Italic": ["400", "italic"], "BoldItalic": ["700", "italic"]};
+
+async function loadFromButton(d) {
+  const problems = [];
+  const s = d.settings || {};
+  if (s.branch) { CFG.branch = s.branch; $("setBranch").value = s.branch; }
+  if (s.since) { CFG.periodStart = s.since; $("setStart").value = s.since; setUrl(); }
+  for (const f of d.fonts || []) {
+    try {
+      const [weight, style] = FONT_FACES[f.face] || ["400", "normal"];
+      const face = new FontFace("Varah", f.data, {weight, style});
+      document.fonts.add(await face.load());
+    } catch { /* fall back to Calibri */ }
+  }
+  const r = d.reports || {};
+  const ok = k => typeof r[k] === "string" && !/^\s*</.test(r[k]);
+  const label = {rota: "Shifts (rota export)", directory: "Directory", roles: "Roles report", closures: "Shift Closures report", inactivity: "Volunteer Inactivity report"};
+  for (const k of Object.keys(label)) if (k in r && !ok(k)) problems.push(`${label[k]}: ${r[k] && r[k].error ? r[k].error : "Three Rings didn't return it, so your account may not have permission to see it."}`);
+  if (ok("rota")) loadShifts([r.rota]);
+  if (ok("closures")) loadClosed(r.closures);
+  if (ok("directory")) loadPeople(r.directory);
+  if (ok("roles")) loadRoles(r.roles);
+  if (ok("inactivity")) loadLeave(r.inactivity);
+  $("fromButton").classList.add("hidden");
+  if (problems.length) $("buttonProblems").innerHTML = `<div class="warn"><b>Some reports couldn't be fetched.</b> The dashboard has been built from the rest.<ul>${problems.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`;
+  if (SHIFTS.length && PEOPLE.length) {
+    build();
+    if (problems.length) $("dashboard").insertAdjacentHTML("afterbegin", $("buttonProblems").innerHTML);
+  } else {
+    $("buildStatus").className = "status err";
+    $("buildStatus").textContent = "There wasn't enough from Three Rings to build the dashboard. See the messages above.";
+  }
+}
+
+if (/from-three-rings/.test(location.hash) && window.opener) {
+  $("fromButton").classList.remove("hidden");
+  let got = false;
+  window.addEventListener("message", e => {
+    if (got || e.origin !== THREE_RINGS || !e.data || e.data.type !== "rota-wrapped-data") return;
+    got = true; loadFromButton(e.data);
+  });
+  // tell the Three Rings tab we're ready; repeat briefly in case it isn't listening yet
+  let tries = 0;
+  const hello = () => { if (got || tries++ > 30) return; try { window.opener.postMessage({type: "rota-wrapped-ready"}, THREE_RINGS); } catch {} setTimeout(hello, 1000); };
+  hello();
+  history.replaceState(null, "", location.pathname);
+}
+</script>
+</body></html>
