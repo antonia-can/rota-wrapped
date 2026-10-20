@@ -477,7 +477,7 @@ function analyse(people, shifts, ws, today, match) {
     if (v.activeDays < CFG.minDays) { tooNew.push(v); continue; }
     const weeks = v.activeDays / 7;
     v.expHours = weeks * CFG.dayShiftsPerWeek * CFG.dayHours +
-      (v.exempt ? 0 : weeks / CFG.overnightEveryWeeks * CFG.nightHours);
+      (v.exempt || !CFG.overnightEveryWeeks ? 0 : weeks / CFG.overnightEveryWeeks * CFG.nightHours);
     v.pct = v.expHours ? v.hours / v.expHours : 0;
     assessed.push(v);
   }
@@ -568,7 +568,7 @@ function render(r, ws, today, demo) {
   const early = weeks < 12 ? `<p class="caveat">Only ${Math.round(weeks)} weeks of Three Rings data so far. One missed week moves someone a long way, so read these figures as early signals.</p>` : "";
   const returnedHtml = r.returned.length ? `<div class="returned"><b>Back from leave in the last ${CFG.recentReturn} days:</b> ${r.returned.map(v => `${esc(v.name)} (${short(v.returned)})`).join(", ")}. A welcome back could go a long way.</div>` : "";
   const nIn = r.inactive.length, nL = r.onLeave.length, nT = r.tooNew.length;
-  const weeklyHours = CFG.dayShiftsPerWeek * CFG.dayHours + CFG.nightHours / CFG.overnightEveryWeeks;
+  const weeklyHours = CFG.dayShiftsPerWeek * CFG.dayHours + (CFG.overnightEveryWeeks ? CFG.nightHours / CFG.overnightEveryWeeks : 0);
   const now = new Date();
   return `${demo ? '<div class="demo">Made-up volunteers. No real data.</div>' : ""}
 <section class="card cover">
@@ -636,7 +636,7 @@ function render(r, ws, today, demo) {
 </section>
 <section class="card method">
   <h3>How the numbers work</h3>
-  <p>Each listening volunteer and probationer is expected to do ${CFG.dayShiftsPerWeek} listening shift a week and 1 overnight every ${CFG.overnightEveryWeeks} weeks. Contribution is counted in hours: a day shift counts as ${CFG.dayHours} hours and an overnight as ${CFG.nightHours} hours, so the expectation works out at about ${weeklyHours.toFixed(2)} hours a week. Volunteers exempt from overnights are expected to do ${CFG.dayShiftsPerWeek * CFG.dayHours} hours a week.</p>
+  <p>Each listening volunteer and probationer is expected to do ${CFG.dayShiftsPerWeek} listening ${plural(CFG.dayShiftsPerWeek, "shift", "shifts")} a week${CFG.overnightEveryWeeks ? ` and 1 overnight every ${CFG.overnightEveryWeeks} weeks` : ""}. Contribution is counted in hours: a day shift counts as ${CFG.dayHours} hours and an overnight as ${CFG.nightHours} hours, so the expectation works out at about ${weeklyHours.toFixed(2)} hours a week.${CFG.overnightEveryWeeks ? ` Volunteers exempt from overnights are expected to do ${CFG.dayShiftsPerWeek * CFG.dayHours} hours a week.` : ""}</p>
   <p>The expectation runs from ${dayMonth(ws)}, or from someone's start date if later. Days on leave of absence are taken out, so nobody is expected to contribute while on leave. Only shifts that have already happened count; booked shifts show under "Booked". ${nT} ${plural(nT, "person has", "people have")} fewer than ${CFG.minDays} available days in the window and ${plural(nT, "is", "are")} not yet scored.</p>
   <p>Data from Three Rings, built ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()} at ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}. This page contains volunteer names: keep it within the director group and do not forward or upload it.</p>
 </section>`;
@@ -1147,7 +1147,7 @@ function leaderRows(list, today) {
       st.listenRate != null ? `listening ${st.listenRate.toFixed(1)} hours a week` : "",
       st.both ? `${st.both} while also on a listening shift` : ""].filter(Boolean).join(" · ");
     return `<li><div class="who">${esc(st.label)}${tags}</div>
-      <div class="lbar"><span style="width:${r == null ? 0 : Math.min(r / max, 1) * 100}%"></span><i style="left:${CFG.leaderExpect / max * 100}%"></i></div>
+      <div class="lbar"><span style="width:${r == null ? 0 : Math.min(r / max, 1) * 100}%"></span>${CFG.leaderExpect ? `<i style="left:${Math.min(CFG.leaderExpect / max, 1) * 100}%"></i>` : ""}</div>
       <div class="pct">${fmtRate(r)}</div>
       <div class="meta">${meta} ${nxt}</div></li>`;
   }).join("")}</ul>`;
@@ -1221,19 +1221,19 @@ function renderLeaders(lr, ws, today, demo) {
 <section class="card contribution">
   <p class="kicker">Is the team big enough?</p>
   <h2>Full cover needs <span class="hl">${lr.needed.toFixed(1)}</span> slots a week from every leader</h2>
-  <p class="sub">There are ${lr.slotsPerWeek} leader slots a week and ${lr.activeCount} active ${plural(lr.activeCount, "leader", "leaders")}${lr.onLeave.length ? `, not counting ${lr.onLeave.length} on leave` : ""}. The informal expectation is ${CFG.leaderExpect} a week. Last month leaders averaged ${lr.delivered.toFixed(1)} a week each.</p>
+  <p class="sub">There are ${lr.slotsPerWeek} leader slots a week and ${lr.activeCount} active ${plural(lr.activeCount, "leader", "leaders")}${lr.onLeave.length ? `, not counting ${lr.onLeave.length} on leave` : ""}.${CFG.leaderExpect ? ` The informal expectation is ${CFG.leaderExpect} a week.` : " There's no set expectation for leaders."} Last month leaders averaged ${lr.delivered.toFixed(1)} a week each.</p>
   <div class="need">
-    <div><span>Informal expectation</span><div class="nbar"><i style="width:${Math.min(CFG.leaderExpect / Math.max(lr.needed, 1) * 100, 100)}%"></i></div><b>${CFG.leaderExpect.toFixed(1)}</b></div>
+    ${CFG.leaderExpect ? "" : "<!--"}<div><span>Informal expectation</span><div class="nbar"><i style="width:${Math.min(CFG.leaderExpect / Math.max(lr.needed, 1) * 100, 100)}%"></i></div><b>${CFG.leaderExpect.toFixed(1)}</b></div>${CFG.leaderExpect ? "" : "-->"}
     <div><span>Average last month</span><div class="nbar"><i style="width:${Math.min(lr.delivered / Math.max(lr.needed, 1) * 100, 100)}%"></i></div><b>${lr.delivered.toFixed(1)}</b></div>
     <div><span>Needed for full cover</span><div class="nbar full"><i style="width:100%"></i></div><b>${lr.needed.toFixed(1)}</b></div>
   </div>
-  <p class="caveat">At the informal expectation of ${CFG.leaderExpect} a week, the branch would need ${Math.ceil(lr.slotsPerWeek / CFG.leaderExpect)} active leaders to cover every slot.</p>
+  ${CFG.leaderExpect ? `<p class="caveat">At the informal expectation of ${CFG.leaderExpect} a week, the branch would need ${Math.ceil(lr.slotsPerWeek / CFG.leaderExpect)} active leaders to cover every slot.</p>` : ""}
 </section>
 <section class="card load-card">
   <p class="kicker">How the load is shared</p>
   <h2>The busiest five leaders carried <span class="hl2">${lr.top5Share}%</span> of slots led</h2>
   <div class="dist">${distHtml}</div>
-  <p class="axis">Leaders by how often they lead, measured on the time they were available (leave taken out). Leading is in addition to listening contribution. In the list below, the dark line on each bar marks the informal expectation of ${CFG.leaderExpect} a week.</p>
+  <p class="axis">Leaders by how often they lead, measured on the time they were available (leave taken out). Leading is in addition to listening contribution.${CFG.leaderExpect ? ` In the list below, the dark line on each bar marks the informal expectation of ${CFG.leaderExpect} a week.` : ""}</p>
   <div class="named">${leaderRows(lr.list, today)}</div>
   <p class="anon-only sub">Individual figures are hidden in this version.</p>
 </section>
@@ -1247,7 +1247,7 @@ function renderLeaders(lr, ws, today, demo) {
 <section class="card method">
   <h3>How the numbers work</h3>
   <p>Leader slots are shifts on rotas with "${CFG.leaderWords.join('", "')}" in the name. A slot counts as led if anyone was signed up to it. Listeners on duty without a leader means a leader slot was empty while at least one listening shift overlapping it had someone on it.</p>
-  <p>Each leader's rate is slots led per week, measured from ${dayMonth(ws)} or their start date if later, with any leave of absence taken out. Leading does not count towards listening contribution. The informal expectation is ${CFG.leaderExpect} slot a week. Leaders are people with the ${esc(CFG.leaderRole)} role in the Directory${lr.notInRole.length ? `, plus ${lr.notInRole.length} ${plural(lr.notInRole.length, "person", "people")} who led without that role` : ""}.${lr.bothTotal ? ` On ${lr.bothTotal} ${plural(lr.bothTotal, "occasion", "occasions")} a leader was also on a listening shift at the same time.` : ""}</p>
+  <p>Each leader's rate is slots led per week, measured from ${dayMonth(ws)} or their start date if later, with any leave of absence taken out. Leading does not count towards listening contribution.${CFG.leaderExpect ? ` The informal expectation is ${CFG.leaderExpect} ${plural(CFG.leaderExpect, "slot", "slots")} a week.` : ""} Leaders are people with the ${esc(CFG.leaderRole)} role in the Directory${lr.notInRole.length ? `, plus ${lr.notInRole.length} ${plural(lr.notInRole.length, "person", "people")} who led without that role` : ""}.${lr.bothTotal ? ` On ${lr.bothTotal} ${plural(lr.bothTotal, "occasion", "occasions")} a leader was also on a listening shift at the same time.` : ""}</p>
   <p>Data from Three Rings, built ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}. Keep within the leader of leaders and the director group.</p>
 </section>`;
 }
@@ -1361,6 +1361,13 @@ async function loadFromButton(d) {
   const s = d.settings || {};
   if (s.branch) { CFG.branch = s.branch; $("setBranch").value = s.branch; }
   if (s.since) { CFG.periodStart = s.since; $("setStart").value = s.since; setUrl(); }
+  if (s.expect) {
+    const e = s.expect, n = (v, d) => (typeof v === "number" && isFinite(v) && v >= 0 ? v : d);
+    CFG.dayShiftsPerWeek = n(e.shifts, CFG.dayShiftsPerWeek); CFG.overnightEveryWeeks = n(e.nightEvery, CFG.overnightEveryWeeks);
+    CFG.dayHours = n(e.dayH, CFG.dayHours) || CFG.dayHours; CFG.nightHours = n(e.nightH, CFG.nightHours) || CFG.nightHours;
+    CFG.leaderExpect = n(e.lead, CFG.leaderExpect);
+    $("setDayH").value = CFG.dayHours; $("setNightH").value = CFG.nightHours;
+  }
   if (s.fontKey) await loadLockedFonts(s.fontKey);
   for (const f of d.fonts || []) {
     try {
