@@ -152,6 +152,32 @@ table.review input[type=date]{font:inherit;font-size:13px;padding:3px;border:1px
 .btn.secondary{background:var(--paper);color:var(--navy);border:1px solid var(--pale);font-size:15px;padding:10px 16px}
 .toolbar{position:sticky;top:0;z-index:6;display:flex;gap:10px;justify-content:flex-end;padding:10px 16px;background:var(--navy)}
 .hidden{display:none!important}
+/* noticeboard poster: A4 portrait */
+.board{background:var(--white);color:var(--navy);border-radius:6px;padding:30px 34px;max-width:794px;margin:0 auto 16px}
+.bd-head{display:flex;gap:22px;align-items:flex-start;border-bottom:6px solid var(--primary);padding-bottom:18px;margin-bottom:18px}
+.bd-head img{height:54px;flex:0 0 auto}
+.bd-kicker{font-weight:700;font-size:15px;color:var(--petrol);margin-bottom:6px}
+.bd-head h1{font-size:44px;line-height:1.02;letter-spacing:-.01em}
+.bd-head h1 span{color:var(--teal);font-size:30px}
+.bd-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.bd-t{border-radius:6px;padding:16px 14px}
+.bd-t b{display:block;font-size:42px;line-height:1;letter-spacing:-.02em}
+.bd-t span{font-size:15px;font-weight:700}
+.bd-green{background:var(--primary);color:var(--navy)}.bd-teal{background:var(--teal);color:var(--white)}
+.bd-navy{background:var(--navy);color:var(--white)}.bd-pale{background:var(--pale);color:var(--navy)}
+.bd-line{font-size:18px;margin:4px 0 18px}
+.bd-ask{background:var(--yellow);border-radius:6px;padding:18px 22px}
+.bd-ask h2{font-size:28px;line-height:1.1;margin-bottom:4px}
+.bd-sub{font-size:15px;margin-bottom:12px}
+.bd-needs{list-style:none;display:grid;gap:6px}
+.bd-needs li{background:rgba(255,255,255,.7);border-radius:4px;padding:7px 12px;font-size:15px;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline}
+.bd-needs li b{min-width:92px;font-size:16px}
+.bd-night{font-weight:700;color:var(--petrol)}
+.bd-more,.bd-lead{font-size:15px;margin-top:10px}
+.bd-full{font-size:20px;font-weight:700}
+.bd-foot{margin-top:16px;font-size:17px;font-weight:700;color:var(--petrol);text-align:center}
+@media (max-width:640px){.bd-tiles{grid-template-columns:1fr 1fr}.bd-head{flex-direction:column}.bd-head h1{font-size:34px}}
+@media print{body.board-mode main{padding:0}body.board-mode .board{max-width:none;padding:0;margin:0;border-radius:0}}
 .fetching{background:var(--primary);color:var(--navy);padding:14px 18px;border-radius:4px;font-size:17px;margin-bottom:20px}
 .fbList{list-style:none;display:flex;flex-wrap:wrap;gap:6px 18px;margin:10px 0 8px;font-size:16px}
 .fbList i{font-style:normal;font-weight:700;display:inline-block;width:20px}
@@ -224,6 +250,7 @@ body.hide-names .anon-only{display:block}
   <button class="btn secondary" id="backBtn">Back to setup</button>
   <button class="btn secondary tab on" id="tabListen">Listeners</button>
   <button class="btn secondary tab" id="tabLead">Leaders</button>
+  <button class="btn secondary tab" id="tabBoard">Noticeboard</button>
   <button class="btn secondary" id="namesBtn">Hide leader names</button>
   <button class="btn secondary" id="printBtn">Print or save as PDF</button>
 </div>
@@ -304,6 +331,7 @@ body.hide-names .anon-only{display:block}
 
 <div id="dashboard"></div>
 <div id="leaderDash" class="hidden"></div>
+<div id="boardDash" class="hidden"></div>
 </main>
 
 <script>
@@ -1034,6 +1062,7 @@ function build() {
   const r = analyse(people, SHIFTS, ws, today, makeMatcher(PEOPLE));
   $("dashboard").innerHTML = render(r, ws, today, DEMO);
   $("leaderDash").innerHTML = renderLeaders(analyseLeaders(PEOPLE, SHIFTS, ws, today, makeMatcher(PEOPLE)), ws, today, DEMO);
+  $("boardDash").innerHTML = renderBoard(analyseBoard(SHIFTS, today), today);
   showView("listen");
   $("setup").classList.add("hidden"); $("toolbar").classList.remove("hidden");
   window.scrollTo(0, 0);
@@ -1254,6 +1283,68 @@ function renderLeaders(lr, ws, today, demo) {
 </section>`;
 }
 
+/* ---------- noticeboard view: no names, no individual figures ---------- */
+function analyseBoard(shifts, today) {
+  const now = Date.now(), mStart = today - 30, ahead = today + 14;
+  const isClosed = s => CLOSED ? CLOSED.has(s.slot) : (!!s.closed || s.vols.length < CFG.minPeople);
+  const past = shifts.filter(s => countsAsListening(s.rota) && s.day >= mStart && s.ms < now);
+  let hours = 0, open = 0, nightsOpen = 0, nights = 0;
+  const people = new Set();
+  for (const s of past) {
+    const night = isOvernight(s);
+    if (night) nights++;
+    // hours and people match the main dashboard: everyone who turned up counts
+    hours += s.vols.length * (night ? CFG.nightHours : CFG.dayHours);
+    for (const v of s.vols) if (v.id || v.name) people.add(v.id || norm(v.name));
+    if (isClosed(s)) continue;
+    open++; if (night) nightsOpen++;
+  }
+  // listening shifts in the next fortnight that still need people
+  const needs = shifts.filter(s => countsAsListening(s.rota) && s.ms >= now && s.day <= ahead
+      && !(CLOSED && CLOSED.has(s.slot)) && s.vols.length < CFG.minPeople)
+    .map(s => ({day: s.day, hour: s.hour, hrs: s.hrs, night: isOvernight(s), rota: s.rota, more: CFG.minPeople - s.vols.length}))
+    .sort((a, b) => a.day - b.day || a.hour - b.hour);
+  const leaderGaps = shifts.filter(s => isLeaderRota(s.rota) && s.ms >= now && s.day <= ahead && !s.vols.length).length;
+  return {mStart, hours, open, total: past.length, nights, nightsOpen, people: people.size, needs, leaderGaps,
+    pct: past.length ? Math.round(100 * open / past.length) : 0};
+}
+
+function renderBoard(b, today) {
+  const hm = h => `${String(h % 24).padStart(2, "0")}:00`;
+  const byDay = new Map();
+  for (const n of b.needs) { if (!byDay.has(n.day)) byDay.set(n.day, []); byDay.get(n.day).push(n); }
+  const days = [...byDay.entries()];
+  const shown = days.slice(0, 10), hidden = days.slice(10).reduce((c, [, l]) => c + l.length, 0);
+  const needHtml = shown.length ? `<ul class="bd-needs">${shown.map(([d, l]) =>
+      `<li><b>${WEEKDAYS[weekdayOf(d)].slice(0, 3)} ${short(d)}</b>${l.map(n =>
+        `<span class="${n.night ? "bd-night" : ""}">${hm(n.hour)}–${hm(n.hour + Math.round(n.hrs))}${n.night ? " overnight" : ""} · needs ${n.more} more</span>`).join("")}</li>`).join("")}</ul>
+      ${hidden ? `<p class="bd-more">…and ${hidden} more after that.</p>` : ""}`
+    : `<p class="bd-full">Every listening shift in the next fortnight is covered. Thank you!</p>`;
+  const [, m] = parts(today - 1);
+  return `
+<section class="board">
+  <header class="bd-head">
+    <img src="${LOGO}" alt="Samaritans">
+    <div><p class="bd-kicker">${CFG.branch ? esc(CFG.branch) + " branch" : "Our branch"} · ${short(b.mStart)} to ${short(today - 1)}</p>
+    <h1>Thank you.<br><span>Here's what we gave together.</span></h1></div>
+  </header>
+  <div class="bd-tiles">
+    <div class="bd-t bd-green"><b>${Math.round(b.hours).toLocaleString("en-GB")}</b><span>hours of listening</span></div>
+    <div class="bd-t bd-teal"><b>${b.open}</b><span>listening shifts covered</span></div>
+    <div class="bd-t bd-navy"><b>${b.nightsOpen}</b><span>overnights covered</span></div>
+    <div class="bd-t bd-pale"><b>${b.people}</b><span>volunteers listened</span></div>
+  </div>
+  <p class="bd-line">We kept <b>${b.pct}%</b> of our listening shifts open in the last month, including ${b.nightsOpen} of ${b.nights} overnights.</p>
+  <div class="bd-ask">
+    <h2>Can you help? Shifts that still need listeners</h2>
+    <p class="bd-sub">The next two weeks, from ${short(today)} to ${short(today + 14)}.</p>
+    ${needHtml}
+    ${b.leaderGaps ? `<p class="bd-lead">Shift leaders: <b>${b.leaderGaps}</b> leader ${plural(b.leaderGaps, "slot", "slots")} in the same fortnight still need a leader.</p>` : ""}
+  </div>
+  <footer class="bd-foot">Sign up in Three Rings, or speak to a rota secretary. Every shift you give helps someone through a difficult time.</footer>
+</section>`;
+}
+
 /* ---------- made-up data ---------- */
 function sample() {
   let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -1300,7 +1391,13 @@ function sample() {
     shifts.push(parseShift({rota: "Listening Night Shift", start_datetime: `${iso(d)}T22:00:00`, duration: 32400,
       volunteers: rnd() < .85 ? [{name: "Night listener"}] : []}));
   }
-  SHIFTS = shifts.filter(Boolean); PEOPLE = people; DEMO = true;
+  // one shift per rota slot with everyone on it, as Three Rings exports them
+  const bySlot = new Map();
+  for (const s of shifts.filter(Boolean)) {
+    const k = s.slot, have = bySlot.get(k);
+    if (have) have.vols.push(...s.vols.filter(v => !have.vols.some(w => w.id && w.id === v.id))); else bySlot.set(k, {...s, key: "demo" + bySlot.size, vols: [...s.vols]});
+  }
+  SHIFTS = [...bySlot.values()]; PEOPLE = people; DEMO = true;
   build();
 }
 
@@ -1325,15 +1422,17 @@ setupDrop("leaveDrop", "leaveFile", files => readFiles([files[0]], t => loadLeav
 setupDrop("peopleDrop", "peopleFile", files => { DEMO = false; readFiles([files[0]], t => loadPeople(t[0])); });
 $("buildBtn").addEventListener("click", build);
 $("sampleBtn").addEventListener("click", sample);
-$("backBtn").addEventListener("click", () => { $("dashboard").innerHTML = ""; $("leaderDash").innerHTML = ""; $("setup").classList.remove("hidden"); $("toolbar").classList.add("hidden"); DEMO = false; });
+$("backBtn").addEventListener("click", () => { $("dashboard").innerHTML = ""; $("leaderDash").innerHTML = ""; $("boardDash").innerHTML = ""; $("setup").classList.remove("hidden"); $("toolbar").classList.add("hidden"); DEMO = false; });
 $("printBtn").addEventListener("click", () => window.print());
 function showView(v) {
   $("dashboard").classList.toggle("hidden", v !== "listen"); $("leaderDash").classList.toggle("hidden", v !== "lead");
-  $("tabListen").classList.toggle("on", v === "listen"); $("tabLead").classList.toggle("on", v === "lead");
+  $("boardDash").classList.toggle("hidden", v !== "board"); document.body.classList.toggle("board-mode", v === "board");
+  $("tabListen").classList.toggle("on", v === "listen"); $("tabLead").classList.toggle("on", v === "lead"); $("tabBoard").classList.toggle("on", v === "board");
   $("namesBtn").classList.toggle("hidden", v !== "lead"); window.scrollTo(0, 0);
 }
 $("tabListen").addEventListener("click", () => showView("listen"));
 $("tabLead").addEventListener("click", () => showView("lead"));
+$("tabBoard").addEventListener("click", () => showView("board"));
 $("namesBtn").addEventListener("click", () => {
   const hide = document.body.classList.toggle("hide-names");
   $("namesBtn").textContent = hide ? "Show leader names" : "Hide leader names";
