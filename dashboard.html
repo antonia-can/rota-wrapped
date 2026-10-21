@@ -176,8 +176,30 @@ table.review input[type=date]{font:inherit;font-size:13px;padding:3px;border:1px
 .bd-more,.bd-lead{font-size:15px;margin-top:10px}
 .bd-full{font-size:20px;font-weight:700}
 .bd-foot{margin-top:16px;font-size:17px;font-weight:700;color:var(--petrol);text-align:center}
-@media (max-width:640px){.bd-tiles{grid-template-columns:1fr 1fr}.bd-head{flex-direction:column}.bd-head h1{font-size:34px}}
-@media print{body.board-mode main{padding:0}body.board-mode .board{max-width:none;padding:0;margin:0;border-radius:0}}
+.of-three{grid-template-columns:repeat(3,1fr)}
+.of-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.of-card{border-radius:6px;padding:16px 18px}
+.of-card h2{font-size:24px;line-height:1.1;margin-bottom:4px}
+.of-card p{font-size:15px}
+.of-petrol,.of-teal{display:flex;gap:14px;align-items:center;color:var(--white)}
+.of-petrol{background:var(--petrol)}.of-teal{background:var(--teal)}
+.of-ring{width:108px;height:108px;flex:0 0 auto}
+.of-ring text{fill:#fff;font-size:28px;font-weight:700;font-family:inherit}
+.of-white{border:3px solid var(--primary)}.of-yellow{background:var(--yellow)}
+.of-sub{font-size:13px!important;margin-top:6px}
+.of-bars{display:flex;gap:8px;align-items:flex-end;height:110px;margin-top:10px}
+.of-wk{flex:1;display:flex;flex-direction:column;align-items:center;height:100%}
+.of-wk span{font-size:12px;margin-top:3px}
+.of-col{flex:1;width:100%;display:flex;flex-direction:column;justify-content:flex-end}
+.of-col i,.of-key i{display:block}.of-col .o,.of-key .o{background:var(--primary)}.of-col .c,.of-key .c{background:var(--pale)}
+.of-best .of-col .o{background:var(--green)}.of-best span{font-weight:700}
+.of-key{display:block;margin-top:2px}.of-key i{display:inline-block;width:10px;height:10px;margin:0 3px 0 8px;border-radius:2px}
+.of-k{display:grid;grid-template-columns:118px 1fr 46px;gap:8px;align-items:center;margin:10px 0;font-size:16px;font-weight:700}
+.of-meter{height:16px;background:rgba(255,255,255,.6);border-radius:8px;overflow:hidden}
+.of-meter i{display:block;height:100%;background:var(--petrol);border-radius:8px}
+.of-k b{text-align:right}
+@media (max-width:640px){.of-row,.of-three{grid-template-columns:1fr}.bd-tiles{grid-template-columns:1fr 1fr}.bd-head{flex-direction:column}.bd-head h1{font-size:34px}}
+@media print{body.board-mode main{padding:0}body.board-mode .board{max-width:none;padding:0;margin:0;border-radius:0}body.board-mode .office{zoom:1.12}}
 .fetching{background:var(--primary);color:var(--navy);padding:14px 18px;border-radius:4px;font-size:17px;margin-bottom:20px}
 .fbList{list-style:none;display:flex;flex-wrap:wrap;gap:6px 18px;margin:10px 0 8px;font-size:16px}
 .fbList i{font-style:normal;font-weight:700;display:inline-block;width:20px}
@@ -251,6 +273,7 @@ body.hide-names .anon-only{display:block}
   <button class="btn secondary tab on" id="tabListen">Listeners</button>
   <button class="btn secondary tab" id="tabLead">Leaders</button>
   <button class="btn secondary tab" id="tabBoard">Noticeboard</button>
+  <button class="btn secondary tab" id="tabOffice">Office board</button>
   <button class="btn secondary" id="namesBtn">Hide leader names</button>
   <button class="btn secondary" id="printBtn">Print or save as PDF</button>
 </div>
@@ -332,6 +355,7 @@ body.hide-names .anon-only{display:block}
 <div id="dashboard"></div>
 <div id="leaderDash" class="hidden"></div>
 <div id="boardDash" class="hidden"></div>
+<div id="officeDash" class="hidden"></div>
 </main>
 
 <script>
@@ -1063,6 +1087,7 @@ function build() {
   $("dashboard").innerHTML = render(r, ws, today, DEMO);
   $("leaderDash").innerHTML = renderLeaders(analyseLeaders(PEOPLE, SHIFTS, ws, today, makeMatcher(PEOPLE)), ws, today, DEMO);
   $("boardDash").innerHTML = renderBoard(analyseBoard(SHIFTS, today), today);
+  $("officeDash").innerHTML = renderOffice(analyseOffice(r, SHIFTS, today), r, ws, today);
   showView("listen");
   $("setup").classList.add("hidden"); $("toolbar").classList.remove("hidden");
   window.scrollTo(0, 0);
@@ -1345,6 +1370,73 @@ function renderBoard(b, today) {
 </section>`;
 }
 
+/* ---------- office board: celebratory listeners summary, no names ---------- */
+function analyseOffice(r, shifts, today) {
+  const now = Date.now(), mStart = today - 30;
+  const isClosed = s => CLOSED ? CLOSED.has(s.slot) : (!!s.closed || s.vols.length < CFG.minPeople);
+  const keys = [
+    ["Overnights", s => isOvernight(s)],
+    ["Weekends", s => !isOvernight(s) && weekdayOf(s.day) >= 5],
+    ["Early mornings", s => !isOvernight(s) && s.hour < 10],
+    ["Evenings", s => !isOvernight(s) && s.hour >= 18]
+  ].map(([label, test]) => {
+    const list = shifts.filter(s => countsAsListening(s.rota) && s.day >= mStart && s.ms < now && test(s));
+    const open = list.filter(s => !isClosed(s)).length;
+    return {label, open, total: list.length, pct: list.length ? Math.round(100 * open / list.length) : null};
+  }).filter(k => k.total);
+  const weeks = r.month.weeks.map(([wk, c]) => ({wk, ...c, pct: c.open + c.closed ? c.open / (c.open + c.closed) : 0}));
+  const best = weeks.filter(w => w.wk >= mStart && w.wk + 7 <= today).reduce((a, w) => !a || w.pct > a.pct ? w : a, null);
+  const n = r.assessed.length, nearly = r.assessed.filter(v => v.pct >= .75 && v.pct < 1).length;
+  return {keys, weeks, best, n, meeting: r.meeting, nearly,
+    meetPct: n ? Math.round(100 * r.meeting / n) : 0,
+    nightPct: r.nightPool ? Math.round(100 * r.nightDone / r.nightPool) : 0,
+    shiftsSince: r.totalDay + r.totalNight, nightsSince: r.totalNight, hoursSince: r.totalHours};
+}
+
+function renderOffice(o, r, ws, today) {
+  const m = r.month, fmt = x => Math.round(x).toLocaleString("en-GB");
+  const ring = (pct, col) => `<svg viewBox="0 0 120 120" class="of-ring"><circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="14"/>
+    <circle cx="60" cy="60" r="50" fill="none" stroke="${col}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${(Math.min(pct, 100) / 100 * 314.16).toFixed(1)} 314.16" transform="rotate(-90 60 60)"/>
+    <text x="60" y="68" text-anchor="middle">${pct}%</text></svg>`;
+  const maxW = Math.max(1, ...o.weeks.map(w => w.open + w.closed));
+  const bars = o.weeks.map(w => `<div class="of-wk${o.best && w.wk === o.best.wk ? " of-best" : ""}">
+      <div class="of-col"><i style="height:${(100 * w.closed / maxW).toFixed(1)}%" class="c"></i><i style="height:${(100 * w.open / maxW).toFixed(1)}%" class="o"></i></div>
+      <span>${short(w.wk)}</span></div>`).join("");
+  return `
+<section class="board office">
+  <header class="bd-head">
+    <img src="${LOGO}" alt="Samaritans">
+    <div><p class="bd-kicker">${CFG.branch ? esc(CFG.branch) + " branch" : "Our branch"} · listening since ${short(ws)}</p>
+    <h1>Look what we've done.<br><span>Thank you, every one of you.</span></h1></div>
+  </header>
+  <div class="bd-tiles of-three">
+    <div class="bd-t bd-green"><b>${fmt(o.hoursSince)}</b><span>hours of listening since ${short(ws)}</span></div>
+    <div class="bd-t bd-teal"><b>${fmt(o.shiftsSince)}</b><span>listening shifts we turned up for</span></div>
+    <div class="bd-t bd-navy"><b>${fmt(o.nightsSince)}</b><span>overnights through the small hours</span></div>
+  </div>
+  <div class="of-row">
+    <div class="of-card of-petrol">${ring(o.meetPct, "#84BD00")}
+      <div><h2>${o.meeting} of ${o.n} volunteers</h2><p>are meeting their listening contribution${o.nearly ? `, and another <b>${o.nearly}</b> are three-quarters of the way there` : ""}.</p></div></div>
+    <div class="of-card of-teal">${ring(o.nightPct, "#FECB4E")}
+      <div><h2>${o.nightPct}% of us</h2><p>have done an overnight since ${short(ws)}${r.exemptCount ? " (not counting anyone excused from nights)" : ""}.</p></div></div>
+  </div>
+  <div class="of-row">
+    <div class="of-card of-white">
+      <h2>Last month we kept <b>${m.openPct}%</b> of shifts open</h2>
+      <p class="of-sub">${short(m.start)} to ${short(today - 1)}: ${m.open} listening shifts open, day ${m.day.open + m.day.closed ? Math.round(100 * m.day.open / (m.day.open + m.day.closed)) : 0}%, overnight ${m.night.open + m.night.closed ? Math.round(100 * m.night.open / (m.night.open + m.night.closed)) : 0}%.</p>
+      <div class="of-bars">${bars}</div>
+      ${o.best ? `<p class="of-sub">Best week: from ${short(o.best.wk)}, ${Math.round(100 * o.best.pct)}% open. <span class="of-key"><i class="o"></i>open <i class="c"></i>closed</span></p>` : ""}
+    </div>
+    <div class="of-card of-yellow">
+      <h2>Key shifts last month</h2>
+      ${o.keys.map(k => `<div class="of-k"><span>${k.label}</span><div class="of-meter"><i style="width:${k.pct}%"></i></div><b>${k.pct}%</b></div>`).join("")}
+      <p class="of-sub">Share of each kind of shift that stayed open.</p>
+    </div>
+  </div>
+  <footer class="bd-foot">Every shift you give keeps the phones, emails and chats open for someone who needs us. Thank you.</footer>
+</section>`;
+}
+
 /* ---------- made-up data ---------- */
 function sample() {
   let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -1422,17 +1514,19 @@ setupDrop("leaveDrop", "leaveFile", files => readFiles([files[0]], t => loadLeav
 setupDrop("peopleDrop", "peopleFile", files => { DEMO = false; readFiles([files[0]], t => loadPeople(t[0])); });
 $("buildBtn").addEventListener("click", build);
 $("sampleBtn").addEventListener("click", sample);
-$("backBtn").addEventListener("click", () => { $("dashboard").innerHTML = ""; $("leaderDash").innerHTML = ""; $("boardDash").innerHTML = ""; $("setup").classList.remove("hidden"); $("toolbar").classList.add("hidden"); DEMO = false; });
+$("backBtn").addEventListener("click", () => { $("dashboard").innerHTML = ""; $("leaderDash").innerHTML = ""; $("boardDash").innerHTML = ""; $("officeDash").innerHTML = ""; $("setup").classList.remove("hidden"); $("toolbar").classList.add("hidden"); DEMO = false; });
 $("printBtn").addEventListener("click", () => window.print());
 function showView(v) {
   $("dashboard").classList.toggle("hidden", v !== "listen"); $("leaderDash").classList.toggle("hidden", v !== "lead");
-  $("boardDash").classList.toggle("hidden", v !== "board"); document.body.classList.toggle("board-mode", v === "board");
-  $("tabListen").classList.toggle("on", v === "listen"); $("tabLead").classList.toggle("on", v === "lead"); $("tabBoard").classList.toggle("on", v === "board");
+  $("boardDash").classList.toggle("hidden", v !== "board"); $("officeDash").classList.toggle("hidden", v !== "office");
+  document.body.classList.toggle("board-mode", v === "board" || v === "office");
+  $("tabListen").classList.toggle("on", v === "listen"); $("tabLead").classList.toggle("on", v === "lead"); $("tabBoard").classList.toggle("on", v === "board"); $("tabOffice").classList.toggle("on", v === "office");
   $("namesBtn").classList.toggle("hidden", v !== "lead"); window.scrollTo(0, 0);
 }
 $("tabListen").addEventListener("click", () => showView("listen"));
 $("tabLead").addEventListener("click", () => showView("lead"));
 $("tabBoard").addEventListener("click", () => showView("board"));
+$("tabOffice").addEventListener("click", () => showView("office"));
 $("namesBtn").addEventListener("click", () => {
   const hide = document.body.classList.toggle("hide-names");
   $("namesBtn").textContent = hide ? "Show leader names" : "Hide leader names";
