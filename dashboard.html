@@ -1076,7 +1076,9 @@ function analyseLeaders(people, shifts, ws, today, match) {
       if (s.day >= mStart) {
         led ? month.led++ : month.unled++;
         if (!led) {
-          const on = listen.filter(l => l.ms < now && overlaps(s, l)).reduce((n, l) => n + l.vols.length, 0);
+          // closed listening shifts don't count: nobody was listening
+          const open = l => !(CLOSED ? CLOSED.has(l.slot) : (l.closed || l.vols.length < CFG.minPeople));
+          const on = listen.filter(l => l.ms < now && overlaps(s, l) && open(l)).reduce((n, l) => n + l.vols.length, 0);
           if (on) month.exceptions.push({day: s.day, hm: s.hm, hrs: s.hrs, listeners: on});
         }
       }
@@ -1246,7 +1248,7 @@ function renderLeaders(lr, ws, today, demo) {
 </section>
 <section class="card method">
   <h3>How the numbers work</h3>
-  <p>Leader slots are shifts on rotas with "${CFG.leaderWords.join('", "')}" in the name. A slot counts as led if anyone was signed up to it. Listeners on duty without a leader means a leader slot was empty while at least one listening shift overlapping it had someone on it.</p>
+  <p>Leader slots are shifts on rotas with "${CFG.leaderWords.join('", "')}" in the name. A slot counts as led if anyone was signed up to it. Listeners on duty without a leader means a leader slot was empty while a listening shift overlapping it went ahead. Listening shifts that were closed are not counted, because nobody was listening.</p>
   <p>Each leader's rate is slots led per week, measured from ${dayMonth(ws)} or their start date if later, with any leave of absence taken out. Leading does not count towards listening contribution.${CFG.leaderExpect ? ` The informal expectation is ${CFG.leaderExpect} ${plural(CFG.leaderExpect, "slot", "slots")} a week.` : ""} Leaders are people with the ${esc(CFG.leaderRole)} role in the Directory${lr.notInRole.length ? `, plus ${lr.notInRole.length} ${plural(lr.notInRole.length, "person", "people")} who led without that role` : ""}.${lr.bothTotal ? ` On ${lr.bothTotal} ${plural(lr.bothTotal, "occasion", "occasions")} a leader was also on a listening shift at the same time.` : ""}</p>
   <p>Data from Three Rings, built ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}. Keep within the leader of leaders and the director group.</p>
 </section>`;
