@@ -585,6 +585,23 @@ function analyse(people, shifts, ws, today, match) {
     month.weeks.get(wk)[isClosed ? "closed" : "open"]++;
   }
   month.fromReport = !!CLOSED;
+
+  // hard-to-fill shifts: how often each day-and-time slot stayed open over the whole period.
+  // An overnight starting after midnight is filed under the evening before (Friday night, not Saturday).
+  const hardGrid = new Map(), hardTimes = new Map();
+  for (const s of shifts) {
+    if (!countsAsListening(s.rota) || s.day < ws || s.ms >= now) continue;
+    const early = s.hour < 5, wd = weekdayOf(early ? s.day - 1 : s.day), col = (early ? 24 + s.hour : s.hour) + s.hm.slice(2);
+    const k = `${wd}|${col}`;
+    if (!hardGrid.has(k)) hardGrid.set(k, {wd, col, hm: s.hm, night: isOvernight(s), key: 0, total: 0, open: 0});
+    const g = hardGrid.get(k); g.total++; if (isKeyShift(s)) g.key++;
+    if (!(CLOSED ? CLOSED.has(s.slot) : (!!s.closed || s.vols.filter(v => v.name || v.id).length < CFG.minPeople))) g.open++;
+    hardTimes.set(col, {hm: s.hm, night: g.night, hrs: s.hrs});
+  }
+  for (const g of hardGrid.values()) g.pct = g.total ? g.open / g.total : 0;
+  const hardest = [...hardGrid.values()].filter(g => g.total >= 3 && g.pct < 1)
+    .sort((a, b) => a.pct - b.pct || b.total - a.total).slice(0, 6);
+  const hard = {grid: hardGrid, times: [...hardTimes.entries()].sort((a, b) => a[0].localeCompare(b[0], undefined, {numeric: true})), hardest};
   month.open = month.day.open + month.night.open; month.closed = month.day.closed + month.night.closed;
   month.openPct = month.open + month.closed ? Math.round(100 * month.open / (month.open + month.closed)) : 0;
   month.weeks = [...month.weeks.entries()].sort((a, b) => a[0] - b[0]);
@@ -602,7 +619,7 @@ function analyse(people, shifts, ws, today, match) {
     meeting: assessed.filter(v => v.pct >= 1).length,
     exemptCount: people.filter(v => v.exempt).length,
     nightDone: needNight.filter(v => v.overnight > 0).length, nightPool: needNight.length,
-    headcount: people.length, unmatched, month
+    headcount: people.length, unmatched, month, hard
   };
 }
 
@@ -639,6 +656,33 @@ function stackBar(label, b) {
   const o = Math.round(b.open / tot * 100), c = 100 - o;
   return `<div class="sbar"><div class="sbar-head"><b>${label}</b><span>${o}% open · ${c}% closed <em>(${b.open} open, ${b.closed} closed)</em></span></div>
     <div class="sbar-track"><span class="s-open" style="width:${o}%">${o >= 12 ? o + "%" : ""}</span><span class="s-closed" style="width:${c}%">${c >= 12 ? c + "%" : ""}</span></div></div>`;
+}
+
+function renderHard(h, ws, today) {
+  if (!h.grid.size) return "";
+  const end = (hm, hrs) => { const [hh, mi] = hm.split(":").map(Number), e = (hh + Math.round(hrs || 3)) % 24; return `${String(e).padStart(2, "0")}:${String(mi).padStart(2, "0")}`; };
+  const cell = g => {
+    if (!g) return '<td class="hm-none">–</td>';
+    const pct = Math.round(100 * g.pct), cls = pct >= 90 ? "hm4" : pct >= 75 ? "hm3" : pct >= 50 ? "hm2" : "hm1";
+    return `<td class="${cls}${g.key ? " thin" : ""}" title="${g.open} of ${g.total} open${g.key ? ", key shift" : ""}"><b>${pct}%</b><span>${g.open} of ${g.total}</span></td>`;
+  };
+  const head = h.times.map(([, t]) => `<th>${t.night ? "Night" : t.hm}<br><small>${t.night ? `${t.hm}–${end(t.hm, t.hrs)}` : `to ${end(t.hm, t.hrs)}`}</small></th>`).join("");
+  const rows = WEEKDAYS.map((d, i) => `<tr><th>${d.slice(0, 3)}</th>${h.times.map(([c]) => cell(h.grid.get(`${i}|${c}`))).join("")}</tr>`).join("");
+  const name = g => `${WEEKDAYS[g.wd]}${g.night ? " night" : " " + g.hm}`;
+  const list = h.hardest.length ? `<ul class="slotlist">${h.hardest.map(g =>
+      `<li><b>${name(g)}</b>${g.key ? " · key shift" : ""}<span>open ${g.open} of ${g.total} times (${Math.round(100 * g.pct)}%)</span></li>`).join("")}</ul>`
+    : '<p class="empty">Every regular shift stayed open every time. Nothing stands out as hard to fill.</p>';
+  const weeks = Math.round((today - ws) / 7);
+  return `<section class="card heat-card hard-card">
+  <p class="kicker">Hard-to-fill shifts · ${sinceText(ws)}</p>
+  <h2>Which listening shifts are hardest to keep open</h2>
+  <p class="sub">Each square is one shift in the week, showing how often it stayed open. Overnights are shown under the evening they start from.${[...h.grid.values()].some(g => g.key) ? " Outlined squares are key shifts." : ""}</p>
+  <div class="heatwrap">${`<table class="heat"><tr><th></th>${head}</tr>${rows}</table>`}</div>
+  <div class="key"><span><i class="hm4"></i>90% or more open</span><span><i class="hm3"></i>75–89%</span><span><i class="hm2"></i>50–74%</span><span><i class="hm1"></i>Under 50%</span></div>
+  <h3>Hardest to fill</h3>
+  ${list}
+  ${weeks < 12 ? `<p class="caveat">Only ${weeks} ${plural(weeks, "week", "weeks")} of shifts, so each square rests on a handful of dates. One closure moves a square a long way. The picture firms up over a few months.</p>` : ""}
+</section>`;
 }
 
 function render(r, ws, today, demo) {
@@ -685,6 +729,7 @@ function render(r, ws, today, demo) {
   <div class="weekly stacked">${weeklyHtml}</div>
   <p class="axis">Open and closed listening shifts each week. ${r.month.fromReport ? "Closed shifts are taken from the Three Rings closed shifts report." : `As on the Three Rings rota, a shift is closed when it has fewer than ${CFG.minPeople} people on it.`}</p>
 </section>
+${renderHard(r.hard, ws, today)}
 <section class="card contribution">
   <p class="kicker">Contribution</p>
   <h2><span class="hl">${meetingPct}%</span> of the branch are meeting their full contribution</h2>
