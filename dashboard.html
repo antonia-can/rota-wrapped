@@ -74,6 +74,12 @@ h3{font-size:22px;font-weight:700;margin-bottom:12px}
 .inactive-card .kicker{background:var(--orange);color:var(--white)}
 .people{list-style:none;display:grid;gap:10px;max-height:58vh;overflow:auto;padding-right:4px}
 .people li{background:rgba(255,255,255,.6);border-radius:4px;padding:14px 18px;display:grid;grid-template-columns:1fr 160px 60px;gap:4px 14px;align-items:center}
+.prob-card{background:var(--orange);color:var(--white)}
+.prob-card .kicker{background:var(--navy);color:var(--white)}
+.prob-card .slotlist li{color:var(--navy);border-left-color:var(--navy)}
+.prob-card h3{margin:14px 0 8px}
+.prob-card.prob-none{background:var(--white);color:var(--navy);padding-top:24px;padding-bottom:24px}
+.prob-card.prob-none .lead{font-size:20px;margin:6px 0 0}
 .high-card{background:var(--petrol);color:var(--white)}
 .high-card .kicker{background:var(--yellow);color:var(--navy)}
 .high-card .people li{background:var(--white);color:var(--navy);border-left:5px solid var(--yellow)}
@@ -618,6 +624,13 @@ function analyse(people, shifts, ws, today, match) {
   for (const g of hardGrid.values()) g.pct = g.total ? g.open / g.total : 0;
   const hardest = [...hardGrid.values()].filter(g => g.total >= 3 && g.pct < 1)
     .sort((a, b) => a.pct - b.pct || b.total - a.total).slice(0, 6);
+  // shifts where everyone on the rota is a probationer: past ones in the period, and the next four weeks
+  const realNow = Date.now(), realToday = todayDn();
+  const probOnly = shifts.filter(s => countsAsListening(s.rota) && s.day >= ws && s.day <= realToday + 28
+      && (s.ms >= realNow || (s.ms < now && !(CLOSED && CLOSED.has(s.slot)))) && s.vols.length >= 2
+      && s.vols.every(sv => { const o = match(sv); return o && o.role === "Probationer"; }))
+    .map(s => ({day: s.day, hm: s.hm, hrs: s.hrs, rota: s.rota, future: s.ms >= realNow, names: s.vols.map(sv => match(sv).name)}))
+    .sort((a, b) => a.day - b.day || a.hm.localeCompare(b.hm));
   const hard = {grid: hardGrid, times: [...hardTimes.entries()].sort((a, b) => a[0].localeCompare(b[0], undefined, {numeric: true})), hardest};
   month.open = month.day.open + month.night.open; month.closed = month.day.closed + month.night.closed;
   month.openPct = month.open + month.closed ? Math.round(100 * month.open / (month.open + month.closed)) : 0;
@@ -637,7 +650,7 @@ function analyse(people, shifts, ws, today, match) {
     meeting: assessed.filter(v => v.pct >= 1).length,
     exemptCount: people.filter(v => v.exempt).length,
     nightDone: needNight.filter(v => v.overnight > 0).length, nightPool: needNight.length,
-    headcount: people.length, unmatched, month, hard
+    headcount: people.length, unmatched, month, hard, probOnly
   };
 }
 
@@ -683,6 +696,23 @@ function stackBar(label, b) {
   const o = Math.round(b.open / tot * 100), c = 100 - o;
   return `<div class="sbar"><div class="sbar-head"><b>${label}</b><span>${o}% open · ${c}% closed <em>(${b.open} open, ${b.closed} closed)</em></span></div>
     <div class="sbar-track"><span class="s-open" style="width:${o}%">${o >= 12 ? o + "%" : ""}</span><span class="s-closed" style="width:${c}%">${c >= 12 ? c + "%" : ""}</span></div></div>`;
+}
+
+function renderProbOnly(list, ws, today) {
+  const end = (hm, hrs) => { const [hh, mi] = hm.split(":").map(Number), e = (hh + Math.round(hrs || 3)) % 24; return `${String(e).padStart(2, "0")}:${String(mi).padStart(2, "0")}`; };
+  const item = x => `<li><b>${WEEKDAYS[weekdayOf(x.day)].slice(0, 3)} ${short(x.day)}</b> ${x.hm}–${end(x.hm, x.hrs)} · ${esc(x.rota)}<span>${x.names.map(esc).join(" and ")}</span></li>`;
+  const ahead = list.filter(x => x.future), past = list.filter(x => !x.future);
+  if (!list.length) return `<section class="card prob-card prob-none">
+  <p class="kicker">Probationers on their own</p>
+  <p class="lead">No listening shift ${sinceText(ws)} or in the next four weeks has only probationers on it.</p>
+</section>`;
+  return `<section class="card prob-card">
+  <p class="kicker">Probationers on their own</p>
+  <h2>${list.length} listening ${plural(list.length, "shift has", "shifts have")} only probationers on ${plural(list.length, "it", "them")}</h2>
+  <p class="sub">Shifts where everyone on the rota is a probationer, with no full listening volunteer alongside them.</p>
+  ${ahead.length ? `<h3>Coming up in the next four weeks</h3><ul class="slotlist">${ahead.map(item).join("")}</ul>` : ""}
+  ${past.length ? `<h3>${SinceText(ws)}</h3><ul class="slotlist">${past.map(item).join("")}</ul>` : ""}
+</section>`;
 }
 
 function renderHard(h, ws, today) {
@@ -756,6 +786,7 @@ function render(r, ws, today, demo) {
   <div class="weekly stacked">${weeklyHtml}</div>
   <p class="axis">Open and closed listening shifts each week. ${r.month.fromReport ? "Closed shifts are taken from the Three Rings closed shifts report." : `As on the Three Rings rota, a shift is closed when it has fewer than ${CFG.minPeople} people on it.`}</p>
 </section>
+${renderProbOnly(r.probOnly, ws, today)}
 ${renderHard(r.hard, ws, today)}
 <section class="card contribution">
   <p class="kicker">Contribution</p>
@@ -1619,6 +1650,10 @@ function sample() {
     if (have) have.vols.push(...s.vols.filter(v => !have.vols.some(w => w.id && w.id === v.id))); else bySlot.set(k, {...s, key: "demo" + bySlot.size, vols: [...s.vols]});
   }
   SHIFTS = [...bySlot.values()]; PEOPLE = people; DEMO = true;
+  // one upcoming shift with two probationers on it, so that section has something to show
+  const probs = people.filter(p => p.role === "Probationer").slice(0, 2);
+  if (probs.length === 2) SHIFTS.push(parseShift({rota: "Listening", start_datetime: `${iso(today + 9)}T13:00:00`, duration: 10800,
+    volunteers: probs.map(p => ({id: p.id, name: p.name}))}));
   // Friday and Saturday evenings and nights are key shifts in the made-up branch
   for (const s of SHIFTS) if (countsAsListening(s.rota) && weekdayOf(s.day) >= 4 && weekdayOf(s.day) <= 5 && s.hour >= 19) {
     s.rota = "Key " + s.rota; s.slot = `${norm(s.rota)}|${s.day}|${s.hm}`;
