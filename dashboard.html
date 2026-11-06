@@ -74,6 +74,12 @@ h3{font-size:22px;font-weight:700;margin-bottom:12px}
 .inactive-card .kicker{background:var(--orange);color:var(--white)}
 .people{list-style:none;display:grid;gap:10px;max-height:58vh;overflow:auto;padding-right:4px}
 .people li{background:rgba(255,255,255,.6);border-radius:4px;padding:14px 18px;display:grid;grid-template-columns:1fr 160px 60px;gap:4px 14px;align-items:center}
+.high-card{background:var(--petrol);color:var(--white)}
+.high-card .kicker{background:var(--yellow);color:var(--navy)}
+.high-card .people li{background:var(--white);color:var(--navy);border-left:5px solid var(--yellow)}
+.high-card .people .bar span{background:var(--teal)}
+.people .why{display:block;font-size:13px;font-weight:700;color:var(--petrol);margin-top:2px}
+.high-card .empty{color:var(--white)}
 .inactive-card .people li{background:var(--paper);grid-template-columns:1fr auto;border-left:5px solid var(--orange)}
 .who{font-weight:700;font-size:19px}
 .tag{font-size:12px;font-weight:700;background:var(--navy);color:var(--white);padding:3px 8px;margin-left:10px;vertical-align:middle}
@@ -392,7 +398,9 @@ const CFG = {
   include: ["listening"],
   exclude: ["leader", "support", "training", "admin", "outreach", "meeting"],
   nightWords: ["overnight", "night"], nightMinHours: 5,
-  minDays: 14, watch: 0.5, inactiveDays: 30, recentReturn: 30
+  minDays: 14, watch: 0.5, inactiveDays: 30, recentReturn: 30,
+  // "doing a lot": any one of these puts someone on the list
+  highPct: 2, highNightsPer4Weeks: 2, highNightsMin: 3, highWeek: 5, highLead: 4
 };
 
 /* ---------- dates, as whole-day numbers ---------- */
@@ -517,7 +525,7 @@ function leaveDays(periods, a, b) {
 function analyse(people, shifts, ws, today, match) {
   const now = endMs();
   const copyByRow = new Map(people.map(v => [v.row, v]));
-  for (const v of people) Object.assign(v, {day: 0, overnight: 0, hours: 0, last: null, next: null});
+  for (const v of people) Object.assign(v, {day: 0, overnight: 0, hours: 0, last: null, next: null, weeks: new Map()});
   const weekly = new Map(); let totalDay = 0, totalNight = 0, totalHours = 0;
   const unmatched = new Map();
   for (const s of shifts) {
@@ -531,6 +539,7 @@ function analyse(people, shifts, ws, today, match) {
         filled = true;
         if (v.started && s.day < v.started) continue;
         v[night ? "overnight" : "day"]++; v.hours += credit; totalHours += credit;
+        const wk = s.day - weekdayOf(s.day); v.weeks.set(wk, (v.weeks.get(wk) || 0) + 1);
         if (v.last == null || s.day > v.last) v.last = s.day;
       } else if (v.next == null || s.day < v.next) v.next = s.day;
     }
@@ -568,6 +577,14 @@ function analyse(people, shifts, ws, today, match) {
     v.expHours = weeks * CFG.dayShiftsPerWeek * CFG.dayHours +
       (v.exempt || !CFG.overnightEveryWeeks ? 0 : weeks / CFG.overnightEveryWeeks * CFG.nightHours);
     v.pct = v.expHours ? v.hours / v.expHours : 0;
+    // "doing a lot"
+    v.shiftsPerWeek = (v.day + v.overnight) / weeks;
+    v.nightRate = v.overnight / (v.activeDays / 28);
+    v.busiest = Math.max(0, ...v.weeks.values());
+    v.highWhy = [];
+    if (v.pct >= CFG.highPct) v.highWhy.push(`${Math.round(v.pct * 100)}% of contribution`);
+    if (v.overnight >= CFG.highNightsMin && v.nightRate >= CFG.highNightsPer4Weeks) v.highWhy.push("lots of overnights");
+    if (v.busiest >= CFG.highWeek) v.highWhy.push(`${v.busiest} shifts in one week`);
     assessed.push(v);
   }
   // last month: every listening shift slot, filled or not
@@ -613,6 +630,7 @@ function analyse(people, shifts, ws, today, match) {
     assessed, tooNew, dist, onLeave: onLeave.sort((a, b) => a.leaveFrom - b.leaveFrom),
     returned: returned.sort((a, b) => b.returned - a.returned),
     watch: assessed.filter(v => v.pct < CFG.watch && !v.onLeave).sort((a, b) => a.pct - b.pct),
+    high: assessed.filter(v => v.highWhy.length && !v.onLeave),
     inactive: people.filter(v => !v.onLeave && v.activeGap >= CFG.inactiveDays).sort((a, b) => b.activeGap - a.activeGap),
     weekly: [...weekly.entries()].sort((a, b) => a[0] - b[0]),
     totalDay, totalNight, totalHours,
@@ -628,6 +646,7 @@ const fmtDate = n => n == null ? "none since go-live" : short(n);
 function personRows(list, kind, today) {
   if (!list.length) return `<p class="empty">${{watch: "Nobody is below the line. Worth saying thank you.",
     inactive: "Everyone not on leave has listened in the last month.",
+    high: "Nobody stands out as doing a very heavy load.",
     leave: "Nobody is on leave of absence at the moment."}[kind]}</p>`;
   const rows = list.map(v => {
     const name = esc(v.name), tag = v.role === "Probationer" ? '<span class="tag">Probationer</span>' : "";
@@ -639,6 +658,14 @@ function personRows(list, kind, today) {
         <div class="bar"><span style="width:${Math.min(v.pct, 1) * 100}%"></span></div>
         <div class="pct">${Math.round(v.pct * 100)}%</div>
         <div class="meta">${Math.round(v.hours)} of ${Math.round(v.expHours)} hours · ${v.day} ${plural(v.day, "day shift", "day shifts")}${night}${lv} · last shift ${fmtDate(v.last)} ${nxt}</div></li>`;
+    }
+    if (kind === "high") {
+      const lead = v.leadRate ? ` · also leads about ${v.leadRate.toFixed(1)} a week` : "";
+      const night = v.overnight ? ` · ${v.overnight} ${plural(v.overnight, "overnight", "overnights")} (about ${v.nightRate.toFixed(v.nightRate < 3 ? 1 : 0)} every 4 weeks)` : " · no overnights";
+      return `<li><div class="who">${name}${tag}<span class="why">${v.highWhy.map(esc).join(" · ")}</span></div>
+        <div class="bar"><span style="width:${Math.min(v.pct / 3, 1) * 100}%"></span></div>
+        <div class="pct">${Math.round(v.pct * 100)}%</div>
+        <div class="meta">${Math.round(v.hours)} hours against ${Math.round(v.expHours)} expected · about ${v.shiftsPerWeek.toFixed(1)} shifts a week${night} · busiest week ${v.busiest} ${plural(v.busiest, "shift", "shifts")}${lead} ${nxt}</div></li>`;
     }
     if (kind === "inactive") return `<li><div class="who">${name}${tag}</div>
         <div class="days">${v.activeGap} days${v.last == null ? "+" : ""}</div>
@@ -749,6 +776,12 @@ ${renderHard(r.hard, ws, today)}
   <h2>People we might check in with</h2>
   <p class="sub">A prompt for a supportive conversation, not a judgement. People currently on leave of absence are not included, and anyone who has had leave is measured only on the time they were available.</p>
   ${personRows(r.watch, "watch", today)}
+</section>
+<section class="card high-card">
+  <p class="kicker">Doing a lot · ${sinceText(ws)}</p>
+  <h2>${r.high.length} ${plural(r.high.length, "person", "people")} might be taking on a lot</h2>
+  <p class="sub">Generosity worth thanking, and worth a gentle check-in about how they're finding it. Someone is listed if they've given ${Math.round(CFG.highPct * 100)}% or more of their contribution, done ${CFG.highNightsPer4Weeks} or more overnights every 4 weeks, done ${CFG.highWeek} or more shifts in a single week, or led ${CFG.highLead} or more slots a week on top of listening. People on leave are not included. The bar runs up to 300%.</p>
+  ${personRows(r.high, "high", today)}
 </section>
 <section class="card inactive-card">
   <p class="kicker">No listening shift for ${CFG.inactiveDays}+ days</p>
@@ -1172,8 +1205,19 @@ function build() {
   $("rTo").value = iso(RANGE_TO ?? todayDn()); $("rTo").min = iso(firstDay); $("rTo").max = iso(todayDn());
   $("rNote").textContent = ws < firstDay ? `Shifts only go back to ${short(firstDay)}.` : "";
   const r = analyse(people, SHIFTS, ws, today, makeMatcher(PEOPLE));
+  const lr = analyseLeaders(PEOPLE, SHIFTS, ws, today, makeMatcher(PEOPLE));
+  // leading is on top of listening, so a heavy leading load counts towards "doing a lot"
+  const leadRate = new Map(lr.list.filter(st => st.rate != null).map(st => [st.p.row, st.rate]));
+  for (const v of r.assessed) {
+    v.leadRate = leadRate.get(v.row) || 0;
+    if (v.leadRate >= CFG.highLead && !v.highWhy.some(w => w.startsWith("leads"))) {
+      v.highWhy.push(`leads ${v.leadRate.toFixed(1)} a week`);
+      if (!v.onLeave && !r.high.includes(v)) r.high.push(v);
+    }
+  }
+  r.high.sort((a, b) => b.highWhy.length - a.highWhy.length || b.pct - a.pct);
   $("dashboard").innerHTML = render(r, ws, today, DEMO);
-  $("leaderDash").innerHTML = renderLeaders(analyseLeaders(PEOPLE, SHIFTS, ws, today, makeMatcher(PEOPLE)), ws, today, DEMO);
+  $("leaderDash").innerHTML = renderLeaders(lr, ws, today, DEMO);
   $("boardDash").innerHTML = renderBoard(analyseBoard(SHIFTS, today, ws), today);
   $("officeDash").innerHTML = renderOffice(analyseOffice(r, SHIFTS, today), r, ws, today);
   showView(VIEW);
