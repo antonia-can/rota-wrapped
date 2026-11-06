@@ -1117,7 +1117,8 @@ function analyseLeaders(people, shifts, ws, today, match) {
   };
   people.filter(p => p.isLeader).forEach(ensure);
 
-  const month = {led: 0, unled: 0, exceptions: []};
+  const month = {led: 0, unled: 0, hours: 0};
+  let ledHours = 0;
   const gaps = [], grid = new Map(), slotHours = new Map();
   for (const s of lead) {
     const led = s.vols.length > 0, who = s.vols.map(match).filter(Boolean);
@@ -1125,16 +1126,12 @@ function analyseLeaders(people, shifts, ws, today, match) {
     if (s.ms < now) {
       const key = `${weekdayOf(s.day)}|${s.hm}`;
       if (!grid.has(key)) grid.set(key, {total: 0, led: 0, people: new Set()});
-      const g = grid.get(key); g.total++; if (led) g.led++;
+      const g = grid.get(key); g.total++; if (led) { g.led++; ledHours += s.hrs; }
       for (const v of s.vols) g.people.add(norm(v.name) || v.id);
       if (s.day >= mStart) {
+        // a listening shift never runs without a leader: an unfilled leader slot means the shift closed
         led ? month.led++ : month.unled++;
-        if (!led) {
-          // closed listening shifts don't count: nobody was listening
-          const open = l => !(CLOSED ? CLOSED.has(l.slot) : (l.closed || l.vols.length < CFG.minPeople));
-          const on = listen.filter(l => l.ms < now && overlaps(s, l) && open(l)).reduce((n, l) => n + l.vols.length, 0);
-          if (on) month.exceptions.push({day: s.day, hm: s.hm, hrs: s.hrs, listeners: on});
-        }
+        if (led) month.hours += s.hrs;
       }
       for (const p of who) {
         const st = ensure(p);
@@ -1179,7 +1176,7 @@ function analyseLeaders(people, shifts, ws, today, match) {
   const scored = list.filter(st => st.rate != null);
   const slotsPerWeek = grid.size || 49;
   return {
-    month, gaps: gaps.sort((a, b) => a.ms - b.ms), grid, slotHours,
+    month, ledHours, leadersWhoLed: list.filter(st => st.slots).length, gaps: gaps.sort((a, b) => a.ms - b.ms), grid, slotHours,
     list: list.sort((a, b) => (b.rate ?? -1) - (a.rate ?? -1) || b.slots - a.slots),
     quiet, quietAfter, onLeave: list.filter(st => st.onLeave),
     top5Share: totalLed ? Math.round(100 * top5 / totalLed) : 0,
@@ -1223,9 +1220,6 @@ function renderLeaders(lr, ws, today, demo) {
     WEEKDAYS.map((d, i) => `<tr><th>${d.slice(0, 3)}</th>${times.map(t => cell(lr.grid.get(`${i}|${t}`))).join("")}</tr>`).join("")}</table>`;
   const thin = [...lr.grid.values()].filter(g => g.total && g.people.size <= 2).length;
 
-  const exc = m.exceptions.length ? `<ul class="slotlist">${m.exceptions.map(e =>
-    `<li><b>${WEEKDAYS[weekdayOf(e.day)].slice(0, 3)} ${short(e.day)}</b> ${e.hm}–${end(e.hm)} <span>${e.listeners} ${plural(e.listeners, "listener", "listeners")} on duty</span></li>`).join("")}</ul>`
-    : '<p class="empty">Every listening shift in the last month had a leader.</p>';
   const byDay = new Map(); for (const g of lr.gaps) { if (!byDay.has(g.day)) byDay.set(g.day, []); byDay.get(g.day).push(g.hm); }
   const gapHtml = lr.gaps.length ? `<ul class="slotlist">${[...byDay.entries()].map(([d, hs]) =>
     `<li><b>${WEEKDAYS[weekdayOf(d)].slice(0, 3)} ${short(d)}</b> ${hs.map(h => `${h}–${end(h)}`).join(", ")}</li>`).join("")}</ul>`
@@ -1250,16 +1244,16 @@ function renderLeaders(lr, ws, today, demo) {
   <p class="scroll">Scroll ↓</p>
 </section>
 <section class="card numbers">
-  <p class="kicker">Last month · ${short(today - 30)} to ${short(today - 1)}</p>
-  <div class="big">${ledPct}%</div>
-  <p class="lead">of leader slots had a leader</p>
+  <p class="kicker">Since ${dayMonth(ws)}</p>
+  <div class="big">${Math.round(lr.ledHours).toLocaleString("en-GB")}</div>
+  <p class="lead">hours of shift leading, from ${lr.leadersWhoLed} ${plural(lr.leadersWhoLed, "leader", "leaders")}</p>
+  <h3>Last month · ${short(today - 30)} to ${short(today - 1)}</h3>
   <div class="trio">
-    <div class="t-open"><b>${m.led}</b><span>slots led</span></div>
-    <div class="t-closed"><b>${m.unled}</b><span>slots without a leader</span></div>
-    <div class="t-closed"><b>${m.exceptions.length}</b><span>of those with listeners on duty</span></div>
+    <div class="t-open"><b>${Math.round(m.hours).toLocaleString("en-GB")}</b><span>hours led</span></div>
+    <div class="t-open"><b>${m.led}</b><span>slots led (${ledPct}%)</span></div>
+    <div class="t-closed"><b>${m.unled}</b><span>slots left unfilled</span></div>
   </div>
-  <h3>Listeners on duty without a leader</h3>
-  ${exc}
+  <p class="axis">Listening shifts don't go ahead without a leader, so an unfilled leader slot means the listening shift alongside it was closed.</p>
 </section>
 <section class="card watch-card">
   <p class="kicker">Next four weeks</p>
