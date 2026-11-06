@@ -163,6 +163,9 @@ table.review input[type=date]{font:inherit;font-size:13px;padding:3px;border:1px
 .bd-t{border-radius:6px;padding:16px 14px}
 .bd-t b{display:block;font-size:42px;line-height:1;letter-spacing:-.02em}
 .bd-t span{font-size:15px;font-weight:700}
+.bd-t b small{font-size:22px;letter-spacing:0}
+.bd-five{grid-template-columns:repeat(5,1fr)}.bd-five .bd-t b{font-size:36px}
+.bd-yellow{background:var(--yellow);color:var(--navy)}
 .bd-green{background:var(--primary);color:var(--navy)}.bd-teal{background:var(--teal);color:var(--white)}
 .bd-navy{background:var(--navy);color:var(--white)}.bd-pale{background:var(--pale);color:var(--navy)}
 .bd-line{font-size:18px;margin:4px 0 18px}
@@ -476,6 +479,8 @@ function parseShift(s) {
 // only rotas with "listening" in the name count (so DD on Call, Rota Secretary and Leader are left out)
 const countsAsListening = rota => CFG.rotaSet ? CFG.rotaSet.has(rota) : (!CFG.include.length || CFG.include.some(k => k && norm(rota).includes(k)))
   && !CFG.exclude.some(k => k && norm(rota).includes(k));
+// key shifts have "key" in the rota name, e.g. "Key Listening Shift - DR1"
+const isKeyShift = sh => /\bkey\b/i.test(sh.rota || "");
 const isOvernight = sh => CFG.nightWords.some(k => k && norm(sh.rota).includes(k)) ||
   ((sh.hour >= 21 || sh.hour < 3) && sh.hrs >= CFG.nightMinHours);
 
@@ -545,12 +550,13 @@ function analyse(people, shifts, ws, today, match) {
   }
   // last month: every listening shift slot, filled or not
   const mStart = today - 30;
-  const month = {start: mStart, day: {open: 0, closed: 0}, night: {open: 0, closed: 0}, hours: 0, weeks: new Map()};
+  const month = {start: mStart, day: {open: 0, closed: 0}, night: {open: 0, closed: 0}, key: {open: 0, closed: 0}, hours: 0, weeks: new Map()};
   for (const s of shifts) {
     if (!countsAsListening(s.rota) || s.day < mStart || s.ms >= now) continue;
     const night = isOvernight(s), filled = s.vols.filter(v => v.name || v.id).length;
     const isClosed = CLOSED ? CLOSED.has(s.slot) : (!!s.closed || filled < CFG.minPeople);
     month[night ? "night" : "day"][isClosed ? "closed" : "open"]++;
+    if (isKeyShift(s)) month.key[isClosed ? "closed" : "open"]++;
     month.hours += filled * (night ? CFG.nightHours : CFG.dayHours);
     const wk = s.day - (new Date(s.day * DAY).getUTCDay() + 6) % 7;
     if (!month.weeks.has(wk)) month.weeks.set(wk, {open: 0, closed: 0});
@@ -652,6 +658,7 @@ function render(r, ws, today, demo) {
   </div>
   ${stackBar("Day listening shifts", r.month.day)}
   ${stackBar("Overnights", r.month.night)}
+  ${r.month.key.open + r.month.key.closed ? stackBar("Key shifts", r.month.key) : ""}
   <div class="key"><span><i class="k-open"></i>Open</span><span><i class="k-closed"></i>Closed</span></div>
   <div class="weekly stacked">${weeklyHtml}</div>
   <p class="axis">Open and closed listening shifts each week. ${r.month.fromReport ? "Closed shifts are taken from the Three Rings closed shifts report." : `As on the Three Rings rota, a shift is closed when it has fewer than ${CFG.minPeople} people on it.`}</p>
@@ -1317,24 +1324,25 @@ function analyseBoard(shifts, today) {
   const now = Date.now(), mStart = today - 30, ahead = today + 14;
   const isClosed = s => CLOSED ? CLOSED.has(s.slot) : (!!s.closed || s.vols.length < CFG.minPeople);
   const past = shifts.filter(s => countsAsListening(s.rota) && s.day >= mStart && s.ms < now);
-  let hours = 0, open = 0, nightsOpen = 0, nights = 0;
+  let hours = 0, open = 0, nightsOpen = 0, nights = 0, keys = 0, keysOpen = 0;
   const people = new Set();
   for (const s of past) {
     const night = isOvernight(s);
     if (night) nights++;
+    const key = isKeyShift(s); if (key) keys++;
     // hours and people match the main dashboard: everyone who turned up counts
     hours += s.vols.length * (night ? CFG.nightHours : CFG.dayHours);
     for (const v of s.vols) if (v.id || v.name) people.add(v.id || norm(v.name));
     if (isClosed(s)) continue;
-    open++; if (night) nightsOpen++;
+    open++; if (night) nightsOpen++; if (key) keysOpen++;
   }
   // listening shifts in the next fortnight that still need people
   const needs = shifts.filter(s => countsAsListening(s.rota) && s.ms >= now && s.day <= ahead
       && !(CLOSED && CLOSED.has(s.slot)) && s.vols.length < CFG.minPeople)
-    .map(s => ({day: s.day, hour: s.hour, hrs: s.hrs, night: isOvernight(s), rota: s.rota, more: CFG.minPeople - s.vols.length}))
+    .map(s => ({day: s.day, hour: s.hour, hrs: s.hrs, night: isOvernight(s), key: isKeyShift(s), rota: s.rota, more: CFG.minPeople - s.vols.length}))
     .sort((a, b) => a.day - b.day || a.hour - b.hour);
   const leaderGaps = shifts.filter(s => isLeaderRota(s.rota) && s.ms >= now && s.day <= ahead && !s.vols.length).length;
-  return {mStart, hours, open, total: past.length, nights, nightsOpen, people: people.size, needs, leaderGaps,
+  return {mStart, hours, open, total: past.length, nights, nightsOpen, keys, keysOpen, people: people.size, needs, leaderGaps,
     pct: past.length ? Math.round(100 * open / past.length) : 0};
 }
 
@@ -1346,7 +1354,7 @@ function renderBoard(b, today) {
   const shown = days.slice(0, 10), hidden = days.slice(10).reduce((c, [, l]) => c + l.length, 0);
   const needHtml = shown.length ? `<ul class="bd-needs">${shown.map(([d, l]) =>
       `<li><b>${WEEKDAYS[weekdayOf(d)].slice(0, 3)} ${short(d)}</b>${l.map(n =>
-        `<span class="${n.night ? "bd-night" : ""}">${hm(n.hour)}–${hm(n.hour + Math.round(n.hrs))}${n.night ? " overnight" : ""} · needs ${n.more} more</span>`).join("")}</li>`).join("")}</ul>
+        `<span class="${n.night || n.key ? "bd-night" : ""}">${hm(n.hour)}–${hm(n.hour + Math.round(n.hrs))}${n.key ? " key shift" : n.night ? " overnight" : ""} · needs ${n.more} more</span>`).join("")}</li>`).join("")}</ul>
       ${hidden ? `<p class="bd-more">…and ${hidden} more after that.</p>` : ""}`
     : `<p class="bd-full">Every listening shift in the next fortnight is covered. Thank you!</p>`;
   const [, m] = parts(today - 1);
@@ -1357,13 +1365,14 @@ function renderBoard(b, today) {
     <div><p class="bd-kicker">${CFG.branch ? esc(CFG.branch) + " branch" : "Our branch"} · ${short(b.mStart)} to ${short(today - 1)}</p>
     <h1>Thank you.<br><span>Here's what we gave together.</span></h1></div>
   </header>
-  <div class="bd-tiles">
+  <div class="bd-tiles${b.keys ? " bd-five" : ""}">
     <div class="bd-t bd-green"><b>${Math.round(b.hours).toLocaleString("en-GB")}</b><span>hours of listening</span></div>
     <div class="bd-t bd-teal"><b>${b.open}</b><span>listening shifts covered</span></div>
     <div class="bd-t bd-navy"><b>${b.nightsOpen}</b><span>overnights covered</span></div>
+    ${b.keys ? `<div class="bd-t bd-yellow"><b>${b.keysOpen}<small> of ${b.keys}</small></b><span>key shifts kept open</span></div>` : ""}
     <div class="bd-t bd-pale"><b>${b.people}</b><span>volunteers listened</span></div>
   </div>
-  <p class="bd-line">We kept <b>${b.pct}%</b> of our listening shifts open in the last month, including ${b.nightsOpen} of ${b.nights} overnights.</p>
+  <p class="bd-line">We kept <b>${b.pct}%</b> of our listening shifts open in the last month, including ${b.nightsOpen} of ${b.nights} overnights${b.keys ? ` and ${Math.round(100 * b.keysOpen / b.keys)}% of our key shifts` : ""}.</p>
   <div class="bd-ask">
     <h2>Can you help? Shifts that still need listeners</h2>
     <p class="bd-sub">The next two weeks, from ${short(today)} to ${short(today + 14)}.</p>
@@ -1379,6 +1388,7 @@ function analyseOffice(r, shifts, today) {
   const now = Date.now(), mStart = today - 30;
   const isClosed = s => CLOSED ? CLOSED.has(s.slot) : (!!s.closed || s.vols.length < CFG.minPeople);
   const keys = [
+    ["Key shifts", s => isKeyShift(s)],
     ["Overnights", s => isOvernight(s)],
     ["Weekends", s => !isOvernight(s) && weekdayOf(s.day) >= 5],
     ["Early mornings", s => !isOvernight(s) && s.hour < 10],
@@ -1432,9 +1442,9 @@ function renderOffice(o, r, ws, today) {
       ${o.best ? `<p class="of-sub">Best week: from ${short(o.best.wk)}, ${Math.round(100 * o.best.pct)}% open. <span class="of-key"><i class="o"></i>open <i class="c"></i>closed</span></p>` : ""}
     </div>
     <div class="of-card of-yellow">
-      <h2>Key shifts last month</h2>
+      <h2>Last month by type of shift</h2>
       ${o.keys.map(k => `<div class="of-k"><span>${k.label}</span><div class="of-meter"><i style="width:${k.pct}%"></i></div><b>${k.pct}%</b></div>`).join("")}
-      <p class="of-sub">Share of each kind of shift that stayed open.</p>
+      <p class="of-sub">Share of each kind of shift that stayed open.${o.keys[0] && o.keys[0].label === "Key shifts" ? ` We kept <b>${o.keys[0].open} of ${o.keys[0].total}</b> key shifts open.` : ""}</p>
     </div>
   </div>
   <footer class="bd-foot">Every shift you give keeps the phones, emails and chats open for someone who needs us. Thank you.</footer>
@@ -1494,6 +1504,10 @@ function sample() {
     if (have) have.vols.push(...s.vols.filter(v => !have.vols.some(w => w.id && w.id === v.id))); else bySlot.set(k, {...s, key: "demo" + bySlot.size, vols: [...s.vols]});
   }
   SHIFTS = [...bySlot.values()]; PEOPLE = people; DEMO = true;
+  // Friday and Saturday evenings and nights are key shifts in the made-up branch
+  for (const s of SHIFTS) if (countsAsListening(s.rota) && weekdayOf(s.day) >= 4 && weekdayOf(s.day) <= 5 && s.hour >= 19) {
+    s.rota = "Key " + s.rota; s.slot = `${norm(s.rota)}|${s.day}|${s.hm}`;
+  }
   build();
 }
 
