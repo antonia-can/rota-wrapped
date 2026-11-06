@@ -74,6 +74,34 @@ h3{font-size:22px;font-weight:700;margin-bottom:12px}
 .inactive-card .kicker{background:var(--orange);color:var(--white)}
 .people{list-style:none;display:grid;gap:10px;max-height:58vh;overflow:auto;padding-right:4px}
 .people li{background:rgba(255,255,255,.6);border-radius:4px;padding:14px 18px;display:grid;grid-template-columns:1fr 160px 60px;gap:4px 14px;align-items:center}
+.trends-card{background:var(--white);color:var(--navy)}
+.trends-card .kicker{background:var(--teal);color:var(--white)}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:12px 0}
+.tcard{background:var(--paper);border-radius:6px;padding:14px 16px}
+.tcard h3{font-size:18px;margin:0}
+.tsub{font-size:13px;opacity:.8;margin:2px 0 6px}
+.tchart{width:100%;height:auto;display:block;overflow:visible}
+.tchart .tg{stroke:#cfd8d4;stroke-width:1}
+.tchart .ty,.tchart .tx{font-size:10px;fill:#5b7078;text-anchor:middle}
+.tchart .ty{text-anchor:end}
+.tchart .tl{fill:none;stroke:var(--petrol);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.tchart .td{stroke-dasharray:4 4}
+.tchart .dot{fill:var(--petrol);stroke:var(--paper);stroke-width:2}
+.tchart .hollow{fill:var(--paper);stroke:var(--petrol);stroke-width:2}
+.tchart .hit{fill:transparent}
+.tchart .tp:hover .dot,.tchart .tp:hover .hollow{r:6}
+.tchart .tv{font-size:12px;font-weight:700;fill:var(--navy)}
+.ttable table th small,.ttable table td small{font-weight:400;opacity:.7}
+.ttable{max-height:none}
+.trends-gaps .heat th small.always{display:block;font-size:11px;color:var(--orange);font-weight:700}
+.trends-gaps .heat td.hm-all{background:var(--white);box-shadow:inset 0 0 0 2px var(--navy)}
+.notes-card{background:var(--white);color:var(--navy)}
+.notes-card .kicker{background:var(--navy);color:var(--white)}
+.notes{min-height:160px;border:2px dashed var(--pale);border-radius:6px;padding:14px;font-size:17px;line-height:1.5;margin:8px 0 12px;outline:none}
+.notes:focus{border-color:var(--teal)}
+.notes:empty::before{content:attr(data-placeholder);opacity:.5}
+.foot-note{font-size:13px;opacity:.75}
+@media print{.no-print{display:none}.notes{border:0;padding:0}.notes:empty{display:none}.trends-card,.trends-gaps,.notes-card{break-inside:avoid}}
 .prob-card{background:var(--orange);color:var(--white)}
 .prob-card .kicker{background:var(--navy);color:var(--white)}
 .prob-card .slotlist li{color:var(--navy);border-left-color:var(--navy)}
@@ -301,6 +329,7 @@ body.hide-names .anon-only{display:block}
   <button class="btn secondary" id="backBtn">Back to setup</button>
   <button class="btn secondary tab on" id="tabListen">Listeners</button>
   <button class="btn secondary tab" id="tabLead">Leaders</button>
+  <button class="btn secondary tab" id="tabTrends">Trends</button>
   <button class="btn secondary tab" id="tabBoard">Noticeboard</button>
   <button class="btn secondary tab" id="tabOffice">Office board</button>
   <button class="btn secondary" id="namesBtn">Hide leader names</button>
@@ -387,6 +416,7 @@ body.hide-names .anon-only{display:block}
 <div id="leaderDash" class="hidden"></div>
 <div id="boardDash" class="hidden"></div>
 <div id="officeDash" class="hidden"></div>
+<div id="trendsDash" class="hidden"></div>
 </main>
 
 <script>
@@ -1250,6 +1280,9 @@ function build() {
   $("dashboard").innerHTML = render(r, ws, today, DEMO);
   $("leaderDash").innerHTML = renderLeaders(lr, ws, today, DEMO);
   $("boardDash").innerHTML = renderBoard(analyseBoard(SHIFTS, today, ws), today);
+  { const notes = $("trendsDash").querySelector(".notes"), kept = notes ? notes.innerHTML : "";
+    $("trendsDash").innerHTML = renderTrends(analyseTrends(people, SHIFTS, ws, today, makeMatcher(PEOPLE)), ws, today);
+    if (kept) $("trendsDash").querySelector(".notes").innerHTML = kept; }
   $("officeDash").innerHTML = renderOffice(analyseOffice(r, SHIFTS, today), r, ws, today);
   showView(VIEW);
   $("setup").classList.add("hidden"); $("toolbar").classList.remove("hidden");
@@ -1597,6 +1630,175 @@ function renderOffice(o, r, ws, today) {
 </section>`;
 }
 
+/* ---------- trends: the longer view for the director group ---------- */
+function analyseTrends(people, shifts, ws, today, match) {
+  const now = endMs();
+  const isClosed = s => CLOSED ? CLOSED.has(s.slot) : (!!s.closed || s.vols.filter(v => v.name || v.id).length < CFG.minPeople);
+  // calendar months in the period; a month with under a week in it is left out
+  // a stub of under a week at the start (go-live on the 31st) is folded into the next month
+  const months = []; let carry = null;
+  for (let [y, m] = parts(ws); ; m === 12 ? (y++, m = 1) : m++) {
+    const a = carry ?? Math.max(dn(y, m, 1), ws), next = m === 12 ? dn(y + 1, 1, 1) : dn(y, m + 1, 1), b = Math.min(next, today);
+    if (a >= today) break;
+    carry = null;
+    if (!months.length && b === next && next - a < 7) { carry = a; continue; }
+    if (b - a >= 7) months.push({y, m, a, b, partial: b < next, label: MONTHS[m - 1].slice(0, 3),
+      listen: 0, open: 0, nights: 0, nightsOpen: 0, keys: 0, keysOpen: 0, hours: 0, active: new Map(),
+      lead: 0, led: 0, leaders: new Map(), starters: 0, quiet: 0, onLeave: 0, probs: 0, slots: new Map()});
+  }
+  const monthOf = d => months.find(x => d >= x.a && d < x.b);
+  const lastDays = new Map();
+  for (const s of shifts) {
+    if (s.ms >= now) continue;
+    const mo = monthOf(s.day);
+    if (countsAsListening(s.rota)) {
+      for (const sv of s.vols) { const o = match(sv); if (o) { if (!lastDays.has(o.row)) lastDays.set(o.row, []); lastDays.get(o.row).push(s.day); } }
+      if (!mo) continue;
+      const shut = isClosed(s), night = isOvernight(s), key = isKeyShift(s);
+      mo.listen++; if (!shut) mo.open++;
+      if (night) { mo.nights++; if (!shut) mo.nightsOpen++; }
+      if (key) { mo.keys++; if (!shut) mo.keysOpen++; }
+      for (const sv of s.vols) {
+        const o = match(sv); if (!o) continue;
+        mo.hours += night ? CFG.nightHours : CFG.dayHours;
+        mo.active.set(o.row, (mo.active.get(o.row) || 0) + 1);
+      }
+      const early = s.hour < 5, wd = weekdayOf(early ? s.day - 1 : s.day), col = (early ? 24 + s.hour : s.hour) + s.hm.slice(2);
+      const k = `${wd}|${col}`, sl = mo.slots.get(k) || {total: 0, open: 0, wd, hm: s.hm, night}; sl.total++; if (!shut) sl.open++; mo.slots.set(k, sl);
+    } else if (isLeaderRota(s.rota) && mo) {
+      mo.lead++;
+      if (s.vols.length) { mo.led++; for (const sv of s.vols) { const key = (match(sv) || {}).row ?? norm(sv.name); mo.leaders.set(key, (mo.leaders.get(key) || 0) + 1); } }
+    }
+  }
+  const byRow = new Map(PEOPLE.map(p => [p.row, p]));
+  const onLeaveOn = (p, d) => (p.leave || []).some(([a, b]) => a !== "est" && a <= d && (b == null || b >= d));
+  for (const p of people) {
+    const mo = p.started != null ? monthOf(p.started) : null; if (mo) mo.starters++;
+    // went quiet: a listening shift followed by 30+ days with nothing, not on leave
+    const days = [...new Set(lastDays.get(p.row) || [])].sort((a, b) => a - b);
+    days.forEach((d, i) => {
+      const nxt = days[i + 1] ?? Infinity;
+      if (nxt - d > CFG.inactiveDays && d + CFG.inactiveDays < today && !onLeaveOn(p, d + 1) && !onLeaveOn(p, d + CFG.inactiveDays)) { const m = monthOf(d); if (m) m.quiet++; }
+    });
+    for (const m of months) if (onLeaveOn(p, m.b - 1)) m.onLeave++;
+  }
+  for (const m of months) {
+    const pct = (a, b) => b ? a / b : null;
+    m.openPct = pct(m.open, m.listen); m.nightPct = pct(m.nightsOpen, m.nights); m.keyPct = pct(m.keysOpen, m.keys); m.ledPct = pct(m.led, m.lead);
+    m.activeCount = m.active.size;
+    m.probs = [...m.active.keys()].filter(row => (byRow.get(row) || {}).role === "Probationer").length;
+    const counts = [...m.active.values()].sort((a, b) => b - a), all = counts.reduce((a, b) => a + b, 0);
+    const top = Math.max(1, Math.ceil(counts.length * 0.1));
+    m.topShare = all ? counts.slice(0, top).reduce((a, b) => a + b, 0) / all : null;
+    const lc = [...m.leaders.values()].sort((a, b) => b - a), lall = lc.reduce((a, b) => a + b, 0);
+    m.top5Lead = lall ? lc.slice(0, 5).reduce((a, b) => a + b, 0) / lall : null;
+  }
+  // persistent gaps: slots under 75% open across the period, month by month
+  const overall = new Map();
+  for (const m of months) for (const [k, sl] of m.slots) { const o = overall.get(k) || {k, wd: sl.wd, hm: sl.hm, night: sl.night, total: 0, open: 0}; o.total += sl.total; o.open += sl.open; overall.set(k, o); }
+  const gaps = [...overall.values()].filter(o => o.total >= 4 && o.open / o.total < 0.75)
+    .sort((a, b) => a.open / a.total - b.open / b.total).slice(0, 10)
+    .map(o => ({...o, pct: o.open / o.total, cells: months.map(m => m.slots.get(o.k) || null)}));
+  for (const g of gaps) {
+    const seen = g.cells.filter(Boolean).map(c => c.open / c.total);
+    g.always = seen.length >= 2 && seen.every(p => p < 0.75);
+  }
+  return {months, gaps, full: months.filter(m => !m.partial).length};
+}
+
+function lineChart(months, get, {pct = true, fmt, note} = {}) {
+  const pts = months.map((m, i) => ({m, i, v: get(m)})).filter(p => p.v != null);
+  if (!pts.length) return '<p class="empty">No data in this period.</p>';
+  const W = 320, H = 130, L = 34, R = 14, T = 14, B = 24;
+  const nice = v => { const e = Math.pow(10, Math.floor(Math.log10(v))), f = v / e; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * e; };
+  const max = pct ? 1 : nice(Math.max(1, ...pts.map(p => p.v)) * 1.1), min = 0;
+  const x = i => months.length === 1 ? (L + W - R) / 2 : L + i * (W - L - R) / (months.length - 1);
+  const y = v => T + (1 - (v - min) / (max - min)) * (H - T - B);
+  const show = v => fmt ? fmt(v) : pct ? Math.round(v * 100) + "%" : Math.round(v).toLocaleString("en-GB");
+  const ticks = pct ? [0, 0.5, 1] : [0, max / 2, max].map(v => v);
+  const grid = ticks.map(t => `<line x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}" class="tg"/><text x="${L - 6}" y="${y(t) + 4}" class="ty">${pct ? Math.round(t * 100) + "%" : Math.round(t)}</text>`).join("");
+  const full = pts.filter(p => !p.m.partial);
+  const path = full.length > 1 ? `<path d="${full.map((p, k) => `${k ? "L" : "M"}${x(p.i).toFixed(1)},${y(p.v).toFixed(1)}`).join("")}" class="tl"/>` : "";
+  const lastFull = full[full.length - 1], part = pts.find(p => p.m.partial);
+  const dash = lastFull && part ? `<path d="M${x(lastFull.i).toFixed(1)},${y(lastFull.v).toFixed(1)}L${x(part.i).toFixed(1)},${y(part.v).toFixed(1)}" class="tl td"/>` : "";
+  const dots = pts.map(p => `<g class="tp"><circle cx="${x(p.i)}" cy="${y(p.v)}" r="9" class="hit"/><circle cx="${x(p.i)}" cy="${y(p.v)}" r="4.5" class="${p.m.partial ? "hollow" : "dot"}"/><title>${MONTHS[p.m.m - 1]} ${p.m.y}${p.m.partial ? " (so far)" : ""}: ${show(p.v)}</title></g>`).join("");
+  const labels = months.map((m, i) => `<text x="${x(i)}" y="${H - 6}" class="tx">${m.label}</text>`).join("");
+  const last = pts[pts.length - 1];
+  const lab = `<text x="${Math.min(x(last.i) + 8, W - 2)}" y="${y(last.v) - 9}" class="tv" text-anchor="${x(last.i) > W - 60 ? "end" : "start"}">${show(last.v)}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" class="tchart" role="img" aria-label="${note || ""}">${grid}${path}${dash}${dots}${labels}${lab}</svg>`;
+}
+
+function renderTrends(t, ws, today) {
+  const ms = t.months;
+  if (!ms.length) return '<section class="card"><p class="empty">Not enough dates chosen for a longer view. Pick at least a few weeks.</p></section>';
+  const pc = v => v == null ? "–" : Math.round(v * 100) + "%";
+  const tile = (title, sub, get, opts) => `<div class="tcard"><h3>${title}</h3><p class="tsub">${sub}</p>${lineChart(ms, get, {...opts, note: title})}</div>`;
+  const early = t.full < 3 ? `<p class="caveat">Only ${t.full} full ${plural(t.full, "month", "months")} of Three Rings data so far, so these are early readings rather than trends. Each extra month makes them more reliable.</p>` : "";
+  const table = (rows) => `<div class="tablewrap ttable"><table class="review"><tr><th></th>${ms.map(m => `<th>${m.label}${m.partial ? "<small> so far</small>" : ""}</th>`).join("")}</tr>${rows.map(([l, f]) => `<tr><th>${l}</th>${ms.map(m => `<td>${f(m)}</td>`).join("")}</tr>`).join("")}</table></div>`;
+  const gapRows = t.gaps.length ? `<div class="heatwrap"><table class="heat"><tr><th></th>${ms.map(m => `<th>${m.label}</th>`).join("")}<th>All</th></tr>${t.gaps.map(g => {
+      const name = `${WEEKDAYS[g.wd].slice(0, 3)} ${g.night ? "night" : g.hm}`;
+      const cell = c => { if (!c) return '<td class="hm-none">–</td>'; const p = c.open / c.total, cls = p >= 0.9 ? "hm4" : p >= 0.75 ? "hm3" : p >= 0.5 ? "hm2" : "hm1"; return `<td class="${cls}" title="${c.open} of ${c.total} open"><b>${Math.round(p * 100)}%</b><span>${c.open} of ${c.total}</span></td>`; };
+      return `<tr><th>${name}${g.always ? '<small class="always">every month</small>' : ""}</th>${g.cells.map(cell).join("")}<td class="hm-all"><b>${Math.round(g.pct * 100)}%</b><span>${g.open} of ${g.total}</span></td></tr>`;
+    }).join("")}</table></div>
+    <div class="key"><span><i class="hm4"></i>90% or more open</span><span><i class="hm3"></i>75–89%</span><span><i class="hm2"></i>50–74%</span><span><i class="hm1"></i>Under 50%</span></div>`
+    : '<p class="empty">No regular shift has been under 75% open over this period.</p>';
+  return `
+<section class="card cover trends-cover">
+  <img class="logo" src="${LOGO}" alt="Samaritans">
+  <p class="kicker">${CFG.branch ? esc(CFG.branch) + " branch" : "Samaritans"} · the longer view</p>
+  <h1>How we're<br><span class="hl">doing over time.</span></h1>
+  <p class="sub">${long(ms[0].a)} to ${long(lastDayShown(today))}, month by month</p>
+  <div class="blob b-a"></div><div class="blob b-b"></div>
+</section>
+<section class="card trends-card">
+  <p class="kicker">Cover</p>
+  <h2>Are we keeping the lines open?</h2>
+  <p class="sub">Each point is a calendar month. A hollow point is the current month so far. Hover over a point for the figure.</p>
+  ${early}
+  <div class="tgrid">
+    ${tile("Listening shifts open", "Share of listening shifts that went ahead", m => m.openPct)}
+    ${tile("Overnights open", "Share of overnight shifts that went ahead", m => m.nightPct)}
+    ${ms.some(m => m.keys) ? tile("Key shifts open", "Share of key shifts that went ahead", m => m.keyPct) : ""}
+    ${tile("Leader slots filled", "Share of leader slots with a leader", m => m.ledPct)}
+  </div>
+</section>
+<section class="card trends-card">
+  <p class="kicker">Capacity</p>
+  <h2>Are we growing or shrinking?</h2>
+  <p class="sub">Active listeners are people who did at least one listening shift that month. "Went quiet" counts people whose last shift that month was followed by ${CFG.inactiveDays} days or more with nothing, leaving out time on leave of absence.</p>
+  <div class="tgrid">
+    ${tile("Active listeners", "People who listened at least once", m => m.activeCount, {pct: false})}
+    ${tile("Listening hours given", "Hours on listening shifts", m => m.hours, {pct: false})}
+  </div>
+  ${table([["Active listeners", m => m.activeCount], ["of them probationers", m => m.probs], ["New starters", m => m.starters],
+    ["Went quiet", m => m.partial && m.b > today - CFG.inactiveDays ? `${m.quiet}<small> so far</small>` : m.quiet], ["On leave at month end", m => m.partial ? "–" : m.onLeave],
+    ["Shifts per active listener", m => m.activeCount ? ([...m.active.values()].reduce((a, b) => a + b, 0) / m.activeCount).toFixed(1) : "–"]])}
+  <p class="caveat">New starters come from the start date in the Directory, so they only show when the Directory is loaded. Probationers are counted by their role today.</p>
+</section>
+<section class="card heat-card trends-gaps">
+  <p class="kicker">Persistent gaps</p>
+  <h2>Which shifts are hard every month, and which just had a bad one</h2>
+  <p class="sub">The ten regular shifts with the lowest share open across the whole period (only shifts that came up at least four times). "Every month" marks a shift that was under 75% open in every month it ran: a sign the rota pattern itself may need looking at.</p>
+  ${gapRows}
+</section>
+<section class="card trends-card">
+  <p class="kicker">Fragility</p>
+  <h2>How much rests on a few people?</h2>
+  <p class="sub">If these lines creep up, the branch is depending on fewer people, and is more exposed if one of them stops or burns out.</p>
+  <div class="tgrid">
+    ${tile("Listening done by the busiest 10%", "Share of all listening by the busiest tenth of active listeners", m => m.topShare)}
+    ${tile("Leading done by the busiest 5", "Share of leader slots led by the five busiest leaders", m => m.top5Lead)}
+  </div>
+</section>
+<section class="card notes-card">
+  <p class="kicker">Rota manager's commentary</p>
+  <h2>What this means</h2>
+  <p class="sub no-print">Type your notes here before printing. They are not saved anywhere: they go when you close the tab.</p>
+  <div class="notes" contenteditable="true" data-placeholder="Your commentary for the director group…"></div>
+  <p class="foot-note">Data from Three Rings, built ${(() => { const n = new Date(); return `${n.getDate()} ${MONTHS[n.getMonth()]} ${n.getFullYear()}`; })()}. For the director group.</p>
+</section>`;
+}
+
 /* ---------- made-up data ---------- */
 function sample() {
   let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -1682,15 +1884,15 @@ setupDrop("leaveDrop", "leaveFile", files => readFiles([files[0]], t => loadLeav
 setupDrop("peopleDrop", "peopleFile", files => { DEMO = false; readFiles([files[0]], t => loadPeople(t[0])); });
 $("buildBtn").addEventListener("click", build);
 $("sampleBtn").addEventListener("click", sample);
-$("backBtn").addEventListener("click", () => { RANGE_TO = null; VIEW = "listen"; $("dashboard").innerHTML = ""; $("leaderDash").innerHTML = ""; $("boardDash").innerHTML = ""; $("officeDash").innerHTML = ""; $("setup").classList.remove("hidden"); $("toolbar").classList.add("hidden"); DEMO = false; });
+$("backBtn").addEventListener("click", () => { RANGE_TO = null; VIEW = "listen"; $("dashboard").innerHTML = ""; $("leaderDash").innerHTML = ""; $("boardDash").innerHTML = ""; $("officeDash").innerHTML = ""; $("trendsDash").innerHTML = ""; $("setup").classList.remove("hidden"); $("toolbar").classList.add("hidden"); DEMO = false; });
 $("printBtn").addEventListener("click", () => window.print());
 let VIEW = "listen";
 function showView(v) {
   VIEW = v;
   $("dashboard").classList.toggle("hidden", v !== "listen"); $("leaderDash").classList.toggle("hidden", v !== "lead");
-  $("boardDash").classList.toggle("hidden", v !== "board"); $("officeDash").classList.toggle("hidden", v !== "office");
+  $("boardDash").classList.toggle("hidden", v !== "board"); $("officeDash").classList.toggle("hidden", v !== "office"); $("trendsDash").classList.toggle("hidden", v !== "trends");
   document.body.classList.toggle("board-mode", v === "board" || v === "office");
-  $("tabListen").classList.toggle("on", v === "listen"); $("tabLead").classList.toggle("on", v === "lead"); $("tabBoard").classList.toggle("on", v === "board"); $("tabOffice").classList.toggle("on", v === "office");
+  $("tabListen").classList.toggle("on", v === "listen"); $("tabLead").classList.toggle("on", v === "lead"); $("tabBoard").classList.toggle("on", v === "board"); $("tabOffice").classList.toggle("on", v === "office"); $("tabTrends").classList.toggle("on", v === "trends");
   $("namesBtn").classList.toggle("hidden", v !== "lead"); window.scrollTo(0, 0);
 }
 $("tabListen").addEventListener("click", () => showView("listen"));
@@ -1705,6 +1907,7 @@ $("rangeForm").addEventListener("submit", e => {
 });
 $("tabLead").addEventListener("click", () => showView("lead"));
 $("tabBoard").addEventListener("click", () => showView("board"));
+$("tabTrends").addEventListener("click", () => showView("trends"));
 $("tabOffice").addEventListener("click", () => showView("office"));
 $("namesBtn").addEventListener("click", () => {
   const hide = document.body.classList.toggle("hide-names");
