@@ -273,7 +273,7 @@ function buttonCode(cfg, id = "buttonSrc") {
 }
 
 // Short set-up links: only what differs from the defaults goes in the link
-const EXPECT_DEFAULT = [1, 8, 3, 6, 1];
+const EXPECT_DEFAULT = [1, 8, 3, 6, 2];
 function shortLink(cfg) {
   const q = new URLSearchParams();
   if (cfg.branch) q.set("b", cfg.branch);
@@ -303,7 +303,7 @@ function readLink(h) {
 function readForm() {
   const num = (id, d) => { const v = parseFloat($(id).value); return isFinite(v) && v >= 0 ? v : d; };
   const cfg = {branch: $("branch").value.trim(), since: $("since").value, holidays: $("holidays").checked, meOnly: $("meOnly").checked, reports: {}, fonts: [],
-    expect: {shifts: num("e_shifts", 1), nightEvery: num("e_nightEvery", 8), dayH: num("e_dayH", 3), nightH: num("e_nightH", 6), lead: num("e_lead", 1)}};
+    expect: {shifts: num("e_shifts", 1), nightEvery: num("e_nightEvery", 8), dayH: num("e_dayH", 3), nightH: num("e_nightH", 6), lead: num("e_lead", 2)}};
   for (const k of REPORTS) { const v = toPattern($("r_" + k).value) || DEFAULTS[k] || ""; if (v) cfg.reports[k] = v; }
   for (const f of FACES) { const v = $("f_" + f).value.trim(); if (v) cfg.fonts.push([f, toPattern(v)]); }
   if ($("fontKey").value.trim()) cfg.fontKey = $("fontKey").value.trim();
@@ -318,7 +318,7 @@ function fillForm(cfg) {
 }
 for (const k of REPORTS) $("r_" + k).value = DEFAULTS[k];
 function fillExpect(e) {
-  const d = {shifts: 1, nightEvery: 8, dayH: 3, nightH: 6, lead: 1};
+  const d = {shifts: 1, nightEvery: 8, dayH: 3, nightH: 6, lead: 2};
   for (const [k, id] of [["shifts", "e_shifts"], ["nightEvery", "e_nightEvery"], ["dayH", "e_dayH"], ["nightH", "e_nightH"], ["lead", "e_lead"]])
     $(id).value = e[k] ?? d[k];
 }
